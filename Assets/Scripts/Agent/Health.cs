@@ -36,6 +36,9 @@ public class Health : MonoBehaviour {
     //Fix for multiple bullet hits
     private bool bulletColliding = false;
 
+    //quitting from Unity Editor scene play
+    private bool isQuitting = false;
+
     private void Awake() {
         renderMaterial = GetComponent<Renderer>();
         originalColor = renderMaterial.material.color;
@@ -93,10 +96,18 @@ public class Health : MonoBehaviour {
         yield break;
     }
 
+    private void OnApplicationQuit()
+    {
+        isQuitting = true;
+    }
+
     void OnDestroy() {
-        Destroy(GameObject.Find("HealthBar"));
-        Destroy(GameObject.Find("FrustrationBar"));
-        Instantiate(destroyEffect, new Vector3(transform.position.x, transform.position.y, -1), transform.rotation);
+        if (!isQuitting) //making sure if scene is quit through editor to not call any of this
+        {
+            Destroy(GameObject.Find("HealthBar"));
+            Destroy(GameObject.Find("FrustrationBar"));
+            Instantiate(destroyEffect, new Vector3(transform.position.x, transform.position.y, -1), transform.rotation);
+        }
     }
 
     private void DetectFire() {

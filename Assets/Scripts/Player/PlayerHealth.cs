@@ -41,6 +41,8 @@ public class PlayerHealth : MonoBehaviour {
     private int lastHealth;
     public int deltaHealth;
 
+    private bool isQuitting = false;
+
     private void Awake() {
         renderMaterial = GetComponent<Renderer>();
         originalColor = renderMaterial.material.color;
@@ -116,10 +118,19 @@ public class PlayerHealth : MonoBehaviour {
         }
     }
 
+    private void OnApplicationQuit()
+    {
+        isQuitting = true;
+    }
+
     void OnDestroy() {
-        GameObject.Find("Player Indicators").GetComponent<CanvasGroup>().alpha = 0;
-        Destroy(GameObject.Find("PlayerHealthBar"));
-        Instantiate(destroyEffect, new Vector3(transform.position.x, transform.position.y, -1), transform.rotation);
+        if (!isQuitting)
+        {
+            GameObject.Find("Player Indicators").GetComponent<CanvasGroup>().alpha = 0;
+            Destroy(GameObject.Find("PlayerHealthBar"));
+            Instantiate(destroyEffect, new Vector3(transform.position.x, transform.position.y, -1), transform.rotation);
+        }
+        
     }
 
     private void DetectFire() {
