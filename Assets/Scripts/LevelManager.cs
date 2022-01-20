@@ -144,6 +144,8 @@ public class LevelManager : MonoBehaviour {
         }
 
         agent.transform.position = agentStartPosition;
+
+        //Monster Movement
         Movement agentStatus = agent.GetComponent<Movement>();
         agentStatus.shouldLookAround = true;
         agentStatus.shouldWait = true;
@@ -160,6 +162,11 @@ public class LevelManager : MonoBehaviour {
         //Dirty workaround to stop the agent from following the previous path. 
             //For some reason the coroutine started by the same expression was not able to stop, so just call a new path request that instantly exits.
         PathRequestManager.RequestPath(transform.position, agentStartPosition, agentStatus.OnPathFound);
+
+        //Player AI Movement
+        PlayerAIMovement playerStatus = player.GetComponent<PlayerAIMovement>();
+        //TODO:reset all attributes here too
+
     }
 
     private void FixedUpdate() {

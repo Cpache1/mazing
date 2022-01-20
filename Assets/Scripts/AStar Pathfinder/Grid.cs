@@ -44,7 +44,7 @@ public class Grid : MonoBehaviour {
         } else {
             fleeingModifier = 0;
         }
-        Debug.Log("Agent is fleeing: " + agent.GetComponent<Movement>().fleeing);
+        //Debug.Log("Agent is fleeing: " + agent.GetComponent<Movement>().fleeing);
         UpdateGrid();
     }
 

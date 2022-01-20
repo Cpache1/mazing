@@ -21,7 +21,8 @@ public class Test_Movements : MonoBehaviour {
     Quaternion fireRot = Quaternion.LookRotation(Vector3.forward, Vector3.up);
 
     private Vector2 direction;
-    private Rigidbody2D rigidBody2D;
+    //private Rigidbody2D rigidBody2D;
+    private Rigidbody rigidBody;
     private PlayerHealth health;
 
     private void Awake() {
@@ -31,7 +32,8 @@ public class Test_Movements : MonoBehaviour {
     }
 
     void Start() {
-        rigidBody2D = GetComponent<Rigidbody2D>();
+        //rigidBody2D = GetComponent<Rigidbody2D>();
+        rigidBody = GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
@@ -42,7 +44,8 @@ public class Test_Movements : MonoBehaviour {
 
         if (autoMoveInDirection) { 
             direction = new Vector2(inputX * movementSpeed, inputY* movementSpeed);
-            rigidBody2D.AddForce(direction);
+            //rigidBody2D.AddForce(direction);
+            rigidBody.AddForce(direction);
         }
         if (spawnFire) {   
             timer += Time.deltaTime;

@@ -5,7 +5,8 @@ using UnityEngine;
 public class IndicatorVision : MonoBehaviour {
     FieldOfView[] fov;
     CanvasGroup AIindicators;
-    ViewIndicator agent;
+    [HideInInspector]
+    public ViewIndicator agent;
 
     private void Awake() {
         fov = GetComponents<FieldOfView>();

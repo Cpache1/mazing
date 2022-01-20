@@ -76,6 +76,8 @@ public class Movement : MonoBehaviour {
     [HideInInspector]
     public bool takingRiskyPath = false;
 
+    //int counter;
+
     void Awake() {
         proximityDetector = transform.GetComponent<ProximityDetector>();
         fov = transform.GetComponent<FieldOfView>();
@@ -85,6 +87,7 @@ public class Movement : MonoBehaviour {
         playerGun = GameObject.Find("GunControls").GetComponent<GunControls>();
         previousPosition = transform.position;
         previousRotation = transform.eulerAngles.z;
+        //counter = 0;
     }
     
     void Update() {
@@ -92,7 +95,7 @@ public class Movement : MonoBehaviour {
         bool stuckInRotation = (Mathf.Abs(transform.eulerAngles.z - previousRotation) < 0.1f);
 
         if (stuckAtPosition && stuckInRotation) {
-            Debug.Log("Agent is stuck...");
+            //Debug.Log("Agent is stuck...");
             breakBeingStuck = true;
             newRandomPosition = GetRandomPoint(proximityDetector.hearingRadius * 2, 180);
         }
@@ -131,7 +134,7 @@ public class Movement : MonoBehaviour {
                 rotationSpeed = coreRotationSpeed;
             }
             if (Physics2D.OverlapCircle(lastVisibleTargetPosition, 0.5f, fireMask) != null) {
-                Debug.Log("Fire!");
+                //Debug.Log("Fire!");
                 if (!hasTarget) {
                     hasTarget = true;
                 }
@@ -150,7 +153,7 @@ public class Movement : MonoBehaviour {
             }
             if (!hasTarget) {
                 hasTarget = true;
-                Debug.Log("Getting new target");
+                //Debug.Log("Getting new target");
                 GetNewTarget();
                 previousRotation = transform.eulerAngles.z;
                 previousPosition = transform.position;
@@ -210,7 +213,7 @@ public class Movement : MonoBehaviour {
     public void OnPathFound(Vector3[] newPath, Vector3[] newRiskyPath, bool pathSuccessful) {
         if (pathSuccessful) {
             path = FindBestPath(newPath, newRiskyPath);
-            Debug.Log("Path found!");
+            //Debug.Log("Path found!");
             StopAllCoroutines();
             StartCoroutine("FollowPath");            
         }
@@ -248,6 +251,9 @@ public class Movement : MonoBehaviour {
 
     IEnumerator FollowPath() {
         Vector3 currentWaypoint;
+
+        //counter++;
+        //Debug.Log("Monster counter: " + counter);
         if (path.Length <= 0) {
             Debug.Log("Path Ends.");
             StopAllCoroutines();
@@ -303,7 +309,7 @@ public class Movement : MonoBehaviour {
 
     IEnumerator Wait(float cycles) {
         shouldWait = false;
-        Debug.Log("Searching for target...");
+        //Debug.Log("Searching for target...");
         isWaiting = true;
 
         StopCoroutine("OscillateView");

@@ -6,6 +6,10 @@ public class PlayerController : MonoBehaviour {
     ReportGenerator reportGenerator;
     public GameObject dashReloadAnimation;
 
+    //AI or Human Control
+    public bool isAI = false;
+    private PlayerAIMovement playerAIMovement;
+
     public float movementSpeed;
     private float originalMovementSpeed;
     public float rotationSpeed = 0.1f;
@@ -37,9 +41,30 @@ public class PlayerController : MonoBehaviour {
         originalMovementSpeed = movementSpeed;
         renderMaterial = GetComponent<Renderer>();
         originalColor = renderMaterial.material.color;
+        playerAIMovement = GetComponent<PlayerAIMovement>();
     }
 
     void FixedUpdate() {
+
+        if (isAI) {
+            AIControl();
+        }
+        else
+        {
+            HumanControl();
+        }
+    }
+
+    void AIControl()
+    {
+        if (!playerAIMovement.enabled)
+        {
+            playerAIMovement.enabled = true;
+        }
+    }
+
+    void HumanControl()
+    {
         //Facing mouse position
         Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Quaternion rot = Quaternion.LookRotation(transform.position - mousePosition, Vector3.forward);
@@ -51,7 +76,7 @@ public class PlayerController : MonoBehaviour {
         //Button controls
         inputY = Input.GetAxisRaw("Vertical");// * movementSpeed;
         inputX = Input.GetAxisRaw("Horizontal");// * movementSpeed;
-        
+
         direction = new Vector2(inputX, inputY);
 
         //rigidBody.AddForce(direction);
@@ -59,21 +84,25 @@ public class PlayerController : MonoBehaviour {
         transform.position = Vector3.MoveTowards(transform.position, new Vector3(transform.position.x + inputX, transform.position.y + inputY, 1), movementSpeed * Time.deltaTime);
 
         //Dashing controls
-        if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift) || Input.GetKeyDown(KeyCode.Space)) {
-            if (dashTimeStamp <= Time.time && !dashing) {
+        if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift) || Input.GetKeyDown(KeyCode.Space))
+        {
+            if (dashTimeStamp <= Time.time && !dashing)
+            {
                 //reportGenerator.currentPlaySession.numberOfDashes++;
                 renderMaterial.material.color = new Color32(35, 130, 140, 255);
                 dashing = true;
                 dashTimeStamp = Time.time + dashCoolDown + dashDuration;
-           
+
                 movementSpeed = originalMovementSpeed * dashMultiplier;
                 dashOnCD = true;
                 animateDash = true;
             }
         }
 
-        if (dashTimeStamp <= Time.time && !dashing) {
-            if (animateDash) {
+        if (dashTimeStamp <= Time.time && !dashing)
+        {
+            if (animateDash)
+            {
                 animateDash = false;
                 GameObject dashReload = Instantiate(dashReloadAnimation, new Vector3(transform.position.x, transform.position.y, -1), transform.rotation);
                 dashReload.transform.parent = transform;
@@ -82,7 +111,8 @@ public class PlayerController : MonoBehaviour {
             dashOnCD = false;
         }
 
-        if (dashTimeStamp - dashCoolDown<= Time.time) {
+        if (dashTimeStamp - dashCoolDown <= Time.time)
+        {
             dashing = false;
             movementSpeed = originalMovementSpeed;
         }
