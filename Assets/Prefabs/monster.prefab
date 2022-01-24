@@ -4942,6 +4942,7 @@ GameObject:
   - component: {fileID: 114254160729861202}
   - component: {fileID: 114621789609731876}
   - component: {fileID: 114720475240824702}
+  - component: {fileID: 186172805673647296}
   - component: {fileID: 54912960217641142}
   - component: {fileID: 135167210769621340}
   - component: {fileID: 33435563871099140}
@@ -4993,6 +4994,8 @@ MonoBehaviour:
   fireDamage: 1
   bulletDamage: 5
   isBurning: 0
+  botDied: 0
+  deltaHealth: 0
 --- !u!114 &114827046803738070
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5125,6 +5128,18 @@ MonoBehaviour:
   levelOfFrustration: 0
   increaseWithTime: 0
   incrementDelay: 1
+--- !u!114 &186172805673647296
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1394940737569290}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34c6d43f6bbae1848823f5b89880da94, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!54 &54912960217641142
 Rigidbody:
   m_ObjectHideFlags: 0

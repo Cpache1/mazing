@@ -11,6 +11,7 @@ TagManager:
   - wall
   - AI
   - bomb
+  - a-star
   layers:
   - Default
   - TransparentFX

@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 114355812322675786}
   - component: {fileID: 114454984717213530}
   - component: {fileID: 532851217831869639}
-  - component: {fileID: 114892673869877532}
+  - component: {fileID: 4704531972104581710}
   - component: {fileID: 114161797357858706}
   - component: {fileID: 114653411329126090}
   - component: {fileID: 114460865288006998}
@@ -179,7 +179,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e93d73ac087297440ba3cfbe65d18ed3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &114892673869877532
+  unwalkableMask:
+    serializedVersion: 2
+    m_Bits: 0
+  fireMask:
+    serializedVersion: 2
+    m_Bits: 0
+  target: {fileID: 0}
+  tutorialActive: 0
+  speed: 3
+  rotationSpeed: 0.1
+  dashMultiplier: 3
+  dashCoolDown: 1
+  dashDuration: 0.2
+  riskAversion: 100
+  path: []
+  riskyPath: []
+  safePath: []
+  displayPath: 0
+  hasTarget: 0
+  monsterTooClose: 0
+  fleeing: 0
+  riskTakingFactor: 0
+  takingRiskyPath: 0
+--- !u!114 &4704531972104581710
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -188,17 +211,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1117385781199972}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 65ab579ab7166d244a41d9953e6aab1c, type: 3}
+  m_Script: {fileID: 11500000, guid: 34c6d43f6bbae1848823f5b89880da94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  autoMoveInDirection: 0
-  movementSpeed: 20
-  inputX: 1
-  inputY: 0
-  spawnFire: 0
-  invulnerableToFire: 0
-  fireFrequency: 1.2
-  fire: {fileID: 1539580688395384, guid: cb0919b450cd3304fad8fe8e54e3635d, type: 3}
 --- !u!114 &114161797357858706
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -263,6 +278,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5de44d9a96a6f47489242ccbacc52dee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  agent: {fileID: 0}
 --- !u!1 &1210280243055472
 GameObject:
   m_ObjectHideFlags: 0

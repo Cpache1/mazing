@@ -30,6 +30,7 @@ public class PlayerAIMovement : MonoBehaviour
     FieldOfView[] fov;
     PlayerHealth status;
     private GunControls playerGun;
+    PathController pathController; //-----NEW----
 
 
     [HideInInspector]
@@ -61,6 +62,7 @@ public class PlayerAIMovement : MonoBehaviour
         fov = transform.GetComponents<FieldOfView>();
         status = transform.GetComponent<PlayerHealth>();
         vision = transform.GetComponent<IndicatorVision>();
+        pathController = transform.GetComponent<PathController>(); //----New Script---
 
         target = GameObject.Find("Monster").transform;
 
@@ -97,7 +99,7 @@ public class PlayerAIMovement : MonoBehaviour
         {
             //shoot = false;
             fleeing = false;
-            PathRequestManager.RequestPath(transform.position, target.position, PathFound);
+            pathController.RequestPath(transform.position, target.position, OnPathFound);
         }
         else if (vision.agent.detected && monsterTooClose) //if it sees the monster but it is too close.
         {
@@ -110,14 +112,14 @@ public class PlayerAIMovement : MonoBehaviour
                 GetNewTarget();
                 previousPosition = transform.position;
             }
-            PathRequestManager.RequestPath(transform.position, newTarget, PathFound);
+            pathController.RequestPath(transform.position, newTarget, OnPathFound);
         }
 
         //Correcting position z index
         transform.position = new Vector3(transform.position.x, transform.position.y, 0);
     }
 
-    public void PathFound(Vector3[] newPath, Vector3[] newRiskyPath, bool pathSuccessful)
+    public void OnPathFound(Vector3[] newPath, Vector3[] newRiskyPath, bool pathSuccessful)
     {
         if (pathSuccessful)
         {

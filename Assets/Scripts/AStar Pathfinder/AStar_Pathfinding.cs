@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class AStar_Pathfinding : MonoBehaviour {
 
-    PathRequestManager pathRequestManager;
+    //PathRequestManager pathRequestManager; //it no longer uses the pathRequestManager 
     Grid grid;
 
     int GetDistance(Node nodeA, Node nodeB) {
@@ -20,15 +20,15 @@ public class AStar_Pathfinding : MonoBehaviour {
     }
 
     void Awake() {
-        pathRequestManager = GetComponent<PathRequestManager>();
+        //pathRequestManager = GetComponent<PathRequestManager>();
         grid = GetComponent<Grid>();
     }
 
-    public void StartFindPath(Vector3 startPos, Vector3 targetPos) {
-        StartCoroutine(FindPath(startPos, targetPos));
+    public void StartFindPath(Vector3 startPos, Vector3 targetPos, PathController controller) {
+        StartCoroutine(FindPath(startPos, targetPos, controller));
     }
 
-    IEnumerator FindPath(Vector3 startPosition, Vector3 targetPosition) {
+    IEnumerator FindPath(Vector3 startPosition, Vector3 targetPosition, PathController controller) {
         
         Vector3[] waypoints = new Vector3[0];
         Vector3[] riskyWaypoints = new Vector3[0];
@@ -129,7 +129,7 @@ public class AStar_Pathfinding : MonoBehaviour {
                 Debug.Log(waypoints[i]);
             } */
         }
-        pathRequestManager.FinishedProcessingPath(waypoints, riskyWaypoints, pathSuccess);
+        controller.FinishedProcessingPath(waypoints, riskyWaypoints, pathSuccess);
     }
 
     Vector3[] RetracePath (Node startNode, Node targetNode) {

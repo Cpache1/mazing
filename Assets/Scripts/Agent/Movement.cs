@@ -38,6 +38,7 @@ public class Movement : MonoBehaviour {
     ProximityDetector proximityDetector;
     FieldOfView fov;
     Health status;
+    PathController pathController; //--------NEW------
 
     [HideInInspector]
     public bool shouldLookAround = true;
@@ -82,6 +83,7 @@ public class Movement : MonoBehaviour {
         proximityDetector = transform.GetComponent<ProximityDetector>();
         fov = transform.GetComponent<FieldOfView>();
         status = transform.GetComponent<Health>();
+        pathController = transform.GetComponent<PathController>(); //----NEW-----
         frustration = transform.GetComponent<FrustrationComponent>();
 
         playerGun = GameObject.Find("GunControls").GetComponent<GunControls>();
@@ -125,7 +127,8 @@ public class Movement : MonoBehaviour {
             }
             shouldLookAround = false;
             fleeing = false;
-            PathRequestManager.RequestPath(transform.position, target.position, OnPathFound);
+            pathController.RequestPath(transform.position, target.position, OnPathFound);
+            //PathRequestManager.RequestPath(transform.position, target.position, OnPathFound);
             lastVisibleTargetPosition = target.position;
             targetLastSeen = true;
             //If player is lost, travel to the last known location
@@ -139,12 +142,14 @@ public class Movement : MonoBehaviour {
                     hasTarget = true;
                 }
                 Debug.DrawLine(transform.position, newRandomPosition, Color.magenta);
-                PathRequestManager.RequestPath(transform.position, newRandomPosition, OnPathFound);
+                //PathRequestManager.RequestPath(transform.position, newRandomPosition, OnPathFound);
+                pathController.RequestPath(transform.position, newRandomPosition, OnPathFound);
             } else {
                 shouldLookAround = false;
                 fleeing = false;
                 Debug.DrawLine(transform.position, lastVisibleTargetPosition, Color.cyan);
-                PathRequestManager.RequestPath(transform.position, lastVisibleTargetPosition, OnPathFound);
+                //PathRequestManager.RequestPath(transform.position, lastVisibleTargetPosition, OnPathFound);
+                pathController.RequestPath(transform.position, lastVisibleTargetPosition, OnPathFound);
             }  
             //If burning, flee from the fire to a new random location
         } else if (fleeing && !breakBeingStuck) {
@@ -159,7 +164,7 @@ public class Movement : MonoBehaviour {
                 previousPosition = transform.position;
             }
             shouldLookAround = false;
-            PathRequestManager.RequestPath(transform.position, newTarget, OnPathFound);
+            pathController.RequestPath(transform.position, newTarget, OnPathFound);
             //If hit with a bullet, investigate the direction to the extent of the current hearing distance
         } else if (hitRegistered) {
             if (frustration.frustrationIsActive) {
@@ -170,7 +175,7 @@ public class Movement : MonoBehaviour {
                 lastVisibleTargetPosition = hitDirection;
             }
             Debug.DrawLine(transform.position, hitDirection, Color.black);
-            PathRequestManager.RequestPath(transform.position, lastVisibleTargetPosition, OnPathFound);
+            pathController.RequestPath(transform.position, lastVisibleTargetPosition, OnPathFound);
             //If the agent is stuck at a location it moves to a random position within hearing distance
         } else if (breakBeingStuck && !tutorialActive) {
             if (frustration.frustrationIsActive) {
@@ -182,7 +187,7 @@ public class Movement : MonoBehaviour {
                 hasTarget = true;
             }
             Debug.DrawLine(transform.position, newRandomPosition, Color.magenta);
-            PathRequestManager.RequestPath(transform.position, newRandomPosition, OnPathFound);
+            pathController.RequestPath(transform.position, newRandomPosition, OnPathFound);
             return;
         //If has nothing to do, commence search behaviour
         } else {
@@ -303,7 +308,7 @@ public class Movement : MonoBehaviour {
                 Debug.Log("Getting new target");
                 GetNewTarget();
             }
-            PathRequestManager.RequestPath(transform.position, newTarget, OnPathFound);
+            pathController.RequestPath(transform.position, newTarget, OnPathFound);
         }
     }
 
