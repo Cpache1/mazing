@@ -159,10 +159,10 @@ public class LevelManager : MonoBehaviour {
         agent.GetComponent<FieldOfView>().targetDetected = false;
         agent.GetComponent<ProximityDetector>().playerDetected = false;
         agentStatus.lastVisibleTargetPosition = agentStartPosition;
+        
         //Dirty workaround to stop the agent from following the previous path. 
         //For some reason the coroutine started by the same expression was not able to stop, so just call a new path request that instantly exits.
         //PathRequestManager.RequestPath(transform.position, agentStartPosition, agentStatus.OnPathFound);
-
         PathController agentPathController = agent.GetComponent<PathController>();
         agentPathController.RequestPath(transform.position, agentStartPosition, agentStatus.OnPathFound);
 

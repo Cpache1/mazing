@@ -1,0 +1,10 @@
+------24th Jan Changes-----
+
+These were the changes conducted to remove the path request manager and use individual path controllers instead:
+- These changes were done in Game_Effect scene.
+- AStar_Pathfinder (GameObject) no longer has PathRequestManager Component.
+- AStar_Pathfinder has been tagged with "a-star" (new tag).
+- Monster and Player Prefabs have a 'PathController' Component now. 
+- PathRequestManager script has a commented out line that must be commented back in if ever used again.
+- PlayerAIMovement Script added to Player Prefab as well. This is inactive and activates when 'Is AI' is selected as true in GameController.
+- Test_Movement Component removed from Player Prefab.
