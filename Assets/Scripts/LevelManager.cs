@@ -168,7 +168,10 @@ public class LevelManager : MonoBehaviour {
 
         //Player AI Movement
         PlayerAIMovement playerStatus = player.GetComponent<PlayerAIMovement>();
-        //TODO:reset all attributes here too
+        playerStatus.hasTarget = false;
+        playerStatus.takingRiskyPath = false;
+        playerStatus.fleeing = false;
+        //missing fov? not using for now but might later.
 
         PathController playerPathController = agent.GetComponent<PathController>();
         agentPathController.RequestPath(playerStartPosition, playerStartPosition, playerStatus.OnPathFound);
