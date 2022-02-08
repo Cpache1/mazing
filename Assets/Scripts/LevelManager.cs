@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UnityEngine.Events;
+using Monte;
 
 public class LevelManager : MonoBehaviour {    
     public bool moderatorActive;
@@ -29,6 +30,12 @@ public class LevelManager : MonoBehaviour {
     public Vector3 playerStartPosition;
     GameObject agent;
     GameObject player;
+
+    //For Algorithm stuff
+    int algorithmIndx; 
+    AIAgent agentType;
+    Model model;
+    string settings;
 
     //Game Events
     public UnityEvent OnGameStart;
