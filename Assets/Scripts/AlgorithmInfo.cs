@@ -11,7 +11,7 @@ using UnityEngine;
 public class AlgorithmInfo : MonoBehaviour
 {
 	//Defaults for the player indx and selected AI agent
-	static public int playerIndex = 0;
+	static public int playerIndex = 0; //TODO: Is this needed or used?
 	static public int selectedAgent = 2;
 
 	//File paths for the model and settings.

@@ -120,6 +120,7 @@ public class LevelManager : MonoBehaviour {
         }
     }
 
+    //TODO: Reset will needs additions for latest AI (MCTS)
     public void ResetStage(int reward) {
         GameObject[] currentBombs = GameObject.FindGameObjectsWithTag("bomb");
         for (int i = 0; i < currentBombs.Length; i++) {

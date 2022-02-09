@@ -177,7 +177,7 @@ public class PlayerAIMovement : MonoBehaviour
     IEnumerator FollowThePath()
     {
         counter++;
-        Debug.Log(counter);
+        //Debug.Log(counter);
         Vector3 currentWaypoint;
         if (path.Length <= 0)
         {
