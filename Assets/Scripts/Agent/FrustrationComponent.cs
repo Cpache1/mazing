@@ -25,8 +25,8 @@ public class FrustrationComponent : MonoBehaviour {
     // Variables to assess frustrating events
     private Vector3[] currentPath;
     private int previousPathLength = 0;
-    private bool targetWasVisible;
-    private bool targetIsVisible;
+    public bool targetWasVisible;
+    public bool targetIsVisible;
     private bool decreasingFrustration = false;
 
     public bool increaseWithTime = false;
