@@ -10,7 +10,7 @@ namespace Monte
     //Agent which selects it's moves at random
     public class RandomAgent : AIAgent
     {
-        protected override void mainAlgorithm(AIState initialState)
+        protected override void mainAlgorithm(AIState initialState, long a_timeDue)
         {
             //Generate all possible moves
             List<AIState> children = initialState.generateChildren();

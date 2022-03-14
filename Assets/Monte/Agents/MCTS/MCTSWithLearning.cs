@@ -58,7 +58,7 @@ namespace Monte
 	    }
 
 		//Main MCTS algortim
-	    protected override void mainAlgorithm(AIState initialState)
+	    protected override void mainAlgorithm(AIState initialState, long a_timeDue)
 	    {
 	        //Make the intial children
 	        initialState.generateChildren ();

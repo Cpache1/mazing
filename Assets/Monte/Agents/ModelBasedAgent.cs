@@ -26,7 +26,7 @@ namespace Monte
 	        model = _model;
 	    }
 
-	    protected override void mainAlgorithm(AIState initialState)
+	    protected override void mainAlgorithm(AIState initialState, long a_timeDue)
 		{
 		    //Create the children
 			List<AIState> children = initialState.generateChildren();
