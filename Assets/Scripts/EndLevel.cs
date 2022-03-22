@@ -1,8 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class EndLevel : MonoBehaviour {
+public class EndLevel : MonoBehaviour
+{
 
     private LevelManager levelManager;
 
@@ -13,19 +12,24 @@ public class EndLevel : MonoBehaviour {
     [HideInInspector]
     public bool LoseCondition = false;
 
-    void Awake() {
+    void Awake()
+    {
         levelManager = GameObject.FindObjectOfType<LevelManager>();
     }
 
-    private void FixedUpdate() {
-        if (winCondition) {
+    private void FixedUpdate()
+    {
+        if (winCondition)
+        {
             //reportGenerator.currentPlaySession.wonTheMatch = true;
         }
-        if (LoseCondition) {
+        if (LoseCondition)
+        {
             //reportGenerator.currentPlaySession.wonTheMatch = false;
         }
- 
-        if (winCondition || LoseCondition) {
+
+        if (winCondition || LoseCondition)
+        {
             //levelManager.LoadEndScreen();
             Destroy(gameObject);
         }

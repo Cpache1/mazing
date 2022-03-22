@@ -1,8 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class GunControls : MonoBehaviour{
+public class GunControls : MonoBehaviour
+{
     ReportGenerator reportGenerator;
 
     //Position when firing
@@ -54,7 +53,8 @@ public class GunControls : MonoBehaviour{
     private Vector3 mousePosition;
     private float rotationSpeed;
 
-    private void Awake() {
+    private void Awake()
+    {
         Cursor.visible = false;
         player = GameObject.Find("PlayerController").GetComponent<PlayerController>();
         //reportGenerator = GameObject.Find("ReportGenerator").GetComponent<ReportGenerator>();
@@ -76,69 +76,84 @@ public class GunControls : MonoBehaviour{
         transform.position = new Vector2(mousePosition.x, mousePosition.y); //Vector2.Lerp(transform.position, mousePosition, rotationSpeed);
     }
 
-    void Update() {
+    void Update()
+    {
         //Making sure that the crosshairs stay on top
         gameObject.transform.Translate(Vector3.back);
 
         //Weapon Select
-        if (Input.GetMouseButton(1)) {
+        if (Input.GetMouseButton(1))
+        {
             GetComponent<SpriteRenderer>().sprite = crosshairs[1];
-        } else {
+        }
+        else
+        {
             GetComponent<SpriteRenderer>().sprite = crosshairs[0];
         }
 
         //Global Cooldown
-        if (((projectileCount < startingBullets && projectileCount > 0) && !onGlobalCooldown) || 
-            ((bombCount < startingBombs && bombCount > 0) && !onGlobalCooldown)) {
+        if (((projectileCount < startingBullets && projectileCount > 0) && !onGlobalCooldown) ||
+            ((bombCount < startingBombs && bombCount > 0) && !onGlobalCooldown))
+        {
             onGlobalCooldown = true;
             globalTimeStamp = Time.time + globalCoolDown;
         }
 
-        if (globalTimeStamp <= Time.time && lastFired + globalCoolDown <= Time.time) {
+        if (globalTimeStamp <= Time.time && lastFired + globalCoolDown <= Time.time)
+        {
             projectileCount = Mathf.Clamp(projectileCount + 1, 1, startingBullets);
             bombCount = Mathf.Clamp(bombCount + 1, 1, startingBombs);
             onGlobalCooldown = false;
         }
-        if (Input.GetMouseButtonUp(0) || Input.GetMouseButtonUp(1)) {
+        if (Input.GetMouseButtonUp(0) || Input.GetMouseButtonUp(1))
+        {
             lastFired = Time.time;
         }
 
         //Primary Firing
-        if (projectileCount > 0 && projectileTimeStamp <= Time.time && reloadTimeStamp <= Time.time) {
+        if (projectileCount > 0 && projectileTimeStamp <= Time.time && reloadTimeStamp <= Time.time)
+        {
 
-            if (Input.GetMouseButton(0)) {
+            if (Input.GetMouseButton(0))
+            {
                 ShootProjectile();
                 projectileCount--;
                 projectileTimeStamp = Time.time + firingRate;
                 firePosition = player.transform.position;
             }
         }
-        if (projectileCount <= 0 && !reloading) {
+        if (projectileCount <= 0 && !reloading)
+        {
             reloading = true;
             reloadTimeStamp = Time.time + reloadTime;
         }
-        if (reloadTimeStamp <= Time.time && reloading) {
+        if (reloadTimeStamp <= Time.time && reloading)
+        {
             reloading = false;
             projectileCount = startingBullets;
         }
 
         //Secondary Firing        
-        if (bombCount > 0 && bombThrowTimeStamp <= Time.time && bombCoodownTimeStamp <= Time.time) {
-            if (Input.GetMouseButtonUp(1)) {
+        if (bombCount > 0 && bombThrowTimeStamp <= Time.time && bombCoodownTimeStamp <= Time.time)
+        {
+            if (Input.GetMouseButtonUp(1))
+            {
                 ThrowBomb();
                 bombCount--;
                 bombThrowTimeStamp = Time.time + bombThrowRate;
             }
         }
-        if (bombCount <= 0 && !bombReloading) {
+        if (bombCount <= 0 && !bombReloading)
+        {
             bombReloading = true;
             bombCoodownTimeStamp = Time.time + reloadTime;
         }
-        if (bombCoodownTimeStamp <= Time.time && bombReloading) {
+        if (bombCoodownTimeStamp <= Time.time && bombReloading)
+        {
             bombReloading = false;
             bombCount = startingBombs;
         }
-    }   
+    }
 
     void ShootProjectile()
     {

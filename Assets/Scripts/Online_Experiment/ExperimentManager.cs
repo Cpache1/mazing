@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.SceneManagement;
-using UnityEngine.Events;
-using UnityEngine.Networking;
+﻿using System.Collections;
 using System.Runtime.InteropServices;
+using UnityEngine;
 
 public class ExperimentManager : MonoBehaviour
 {
@@ -21,21 +15,26 @@ public class ExperimentManager : MonoBehaviour
     public bool warmRecorder;
     private LevelManager levelManager;
 
-    private void Awake() {
+    private void Awake()
+    {
         levelManager = GameObject.Find("LevelManager").GetComponent<LevelManager>();
-        if (warmRecorder) {
+        if (warmRecorder)
+        {
             InitRecord();
         }
     }
 
-    private void Start() {
+    private void Start()
+    {
         levelManager.OnGameEnd.AddListener(EndLevel);
-        if (recordLevel) {
+        if (recordLevel)
+        {
             levelManager.OnGameStart.AddListener(StartRecord);
         }
     }
 
-    private void EndLevel() {
+    private void EndLevel()
+    {
         StartCoroutine(EndLevelProcess());
     }
 
@@ -43,7 +42,8 @@ public class ExperimentManager : MonoBehaviour
     /// Starts the game shutdown coroutine.
     /// </summary>
     /// <returns>yield enumerator</returns>
-    public IEnumerator EndLevelProcess() {
+    public IEnumerator EndLevelProcess()
+    {
         Debug.Log("End Game");
         //GameObject.FindWithTag("Player").SetActive(false);
         yield return new WaitForSeconds(0.5f);

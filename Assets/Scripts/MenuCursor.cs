@@ -1,15 +1,16 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class MenuCursor : MonoBehaviour {
+public class MenuCursor : MonoBehaviour
+{
     Vector3 mousePosition;
 
-    private void Awake() {
+    private void Awake()
+    {
         Cursor.visible = false;
     }
 
-    void FixedUpdate() {
+    void FixedUpdate()
+    {
         mousePosition = Input.mousePosition;
         mousePosition = Camera.main.ScreenToWorldPoint(mousePosition);
         //transform.position = Vector2.Lerp(transform.position, mousePosition, 0.1f);

@@ -1,8 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class TutorialGunControls : MonoBehaviour {
+public class TutorialGunControls : MonoBehaviour
+{
     //Position when firing
     [HideInInspector]
     public Vector3 firePosition;
@@ -49,60 +48,73 @@ public class TutorialGunControls : MonoBehaviour {
     private Vector3 mousePosition;
     private float rotationSpeed;
 
-    private void Awake() {
+    private void Awake()
+    {
         player = GameObject.Find("PlayerTutorialController").GetComponent<TutorialControls>();
     }
 
-    void Start() {
+    void Start()
+    {
         //Get the rotation speed of the player
         rotationSpeed = player.rotationSpeed;
         projectileCount = startingBullets;
         bombCount = startingBombs;
     }
 
-    void FixedUpdate() {
+    void FixedUpdate()
+    {
         //Crosshair follows the mouse in fixed update
         mousePosition = Input.mousePosition;
         mousePosition = Camera.main.ScreenToWorldPoint(mousePosition);
         transform.position = Vector2.Lerp(transform.position, mousePosition, rotationSpeed);
     }
 
-    void Update() {
+    void Update()
+    {
         //Making sure that the crosshairs stay on top
         gameObject.transform.Translate(Vector3.back);
 
         //Weapon Select
-        if (Input.GetMouseButton(1)) {
+        if (Input.GetMouseButton(1))
+        {
             GetComponent<SpriteRenderer>().sprite = crosshairs[1];
-        } else {
+        }
+        else
+        {
             GetComponent<SpriteRenderer>().sprite = crosshairs[0];
         }
 
         //Primary Firing
-        if (projectileCount > 0 && projectileTimeStamp <= Time.time && reloadTimeStamp <= Time.time) {
+        if (projectileCount > 0 && projectileTimeStamp <= Time.time && reloadTimeStamp <= Time.time)
+        {
 
-            if (Input.GetMouseButton(0)) {
+            if (Input.GetMouseButton(0))
+            {
                 ShootProjectile();
                 projectileCount--;
                 projectileTimeStamp = Time.time + firingRate;
                 firePosition = player.transform.position;
             }
         }
-        if (projectileCount <= 0 && !reloading) {
+        if (projectileCount <= 0 && !reloading)
+        {
             reloading = true;
             reloadTimeStamp = Time.time + reloadTime;
         }
-        if (reloadTimeStamp <= Time.time && reloading) {
+        if (reloadTimeStamp <= Time.time && reloading)
+        {
             reloading = false;
             projectileCount = startingBullets;
         }
 
-        if ((projectileCount < startingBullets && !onGlobalCooldown) || (bombCount < startingBombs && !onGlobalCooldown)) {
+        if ((projectileCount < startingBullets && !onGlobalCooldown) || (bombCount < startingBombs && !onGlobalCooldown))
+        {
             onGlobalCooldown = true;
             globalTimeStamp = Time.time + globalCoolDown;
         }
 
-        if (globalTimeStamp <= Time.time) {
+        if (globalTimeStamp <= Time.time)
+        {
             projectileCount = startingBullets;
             bombCount = startingBombs;
             onGlobalCooldown = false;
@@ -110,30 +122,36 @@ public class TutorialGunControls : MonoBehaviour {
 
 
         //Secondary Firing        
-        if (bombCount > 0 && bombThrowTimeStamp <= Time.time && bombCoodownTimeStamp <= Time.time) {
-            if (Input.GetMouseButtonUp(1)) {
+        if (bombCount > 0 && bombThrowTimeStamp <= Time.time && bombCoodownTimeStamp <= Time.time)
+        {
+            if (Input.GetMouseButtonUp(1))
+            {
                 ThrowBomb();
                 bombCount--;
                 bombThrowTimeStamp = Time.time + bombThrowRate;
             }
         }
-        if (bombCount <= 0 && !bombReloading) {
+        if (bombCount <= 0 && !bombReloading)
+        {
             bombReloading = true;
             bombCoodownTimeStamp = Time.time + reloadTime;
         }
-        if (bombCoodownTimeStamp <= Time.time && reloading) {
+        if (bombCoodownTimeStamp <= Time.time && reloading)
+        {
             reloading = false;
             bombCount = startingBombs;
         }
     }
 
-    void ShootProjectile() {
+    void ShootProjectile()
+    {
         Vector3 bulletPos = new Vector3(player.transform.position.x, player.transform.position.y, 0);
         GameObject bullet = Instantiate(projectile, bulletPos, player.transform.rotation) as GameObject;
         bullet.GetComponent<Rigidbody>().AddForce(bullet.transform.up * bulletSpeed);
     }
 
-    void ThrowBomb() {
+    void ThrowBomb()
+    {
         //Create an invisible trigger collider to catch the thrown bomb.
         Vector3 currentPos = transform.position; //Camera.main.ScreenToWorldPoint(Input.mousePosition);
         currentPos.z = 0;

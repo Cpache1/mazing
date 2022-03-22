@@ -1,8 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class Test_Movements : MonoBehaviour {
+public class Test_Movements : MonoBehaviour
+{
     public bool autoMoveInDirection;
     public float movementSpeed = 20;
     [Range(-1, 1)]
@@ -25,34 +24,41 @@ public class Test_Movements : MonoBehaviour {
     private Rigidbody rigidBody;
     private PlayerHealth health;
 
-    private void Awake() {
+    private void Awake()
+    {
         fFreq = fireFrequency;
         delay = fFreq;
         health = gameObject.GetComponent<PlayerHealth>();
     }
 
-    void Start() {
+    void Start()
+    {
         //rigidBody2D = GetComponent<Rigidbody2D>();
         rigidBody = GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
-    void Update () {
-        if (invulnerableToFire) {
+    void Update()
+    {
+        if (invulnerableToFire)
+        {
             health.health = 100;
         }
 
-        if (autoMoveInDirection) { 
-            direction = new Vector2(inputX * movementSpeed, inputY* movementSpeed);
+        if (autoMoveInDirection)
+        {
+            direction = new Vector2(inputX * movementSpeed, inputY * movementSpeed);
             //rigidBody2D.AddForce(direction);
             rigidBody.AddForce(direction);
         }
-        if (spawnFire) {   
+        if (spawnFire)
+        {
             timer += Time.deltaTime;
-            if (timer > fFreq) {
+            if (timer > fFreq)
+            {
                 Instantiate(fire, transform.position, fireRot);
                 fFreq = timer + delay;
             }
         }
-	}
+    }
 }

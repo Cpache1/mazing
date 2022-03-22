@@ -1,20 +1,21 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 
-public class EndLevelScreen : MonoBehaviour {
+public class EndLevelScreen : MonoBehaviour
+{
     SpriteRenderer background;
     ReportGenerator reportGenerator;
     Text levelIndicator;
     Text scoreBoard;
-    
-    void Awake() {
+
+    void Awake()
+    {
         Debug.Log("Background Loaded.");
         Scene scene = SceneManager.GetActiveScene();
-        if (scene.name != "Tutorial") {
+        if (scene.name != "Tutorial")
+        {
             //reportGenerator = GameObject.Find("ReportGenerator").GetComponent<ReportGenerator>();
             levelIndicator = GameObject.Find("LevelIndicator").GetComponent<Text>();
             //levelIndicator.text = ("level " + (4 - reportGenerator.possibleLevels.Count) + "/4");
@@ -22,7 +23,7 @@ public class EndLevelScreen : MonoBehaviour {
             scoreBoard = GameObject.Find("Score").GetComponent<Text>();
             //scoreBoard.text = reportGenerator.currentPlaySession.score.ToString();
         }
-        
+
 
         /*Turned off as there are no win or lose conditions in the current build
          * 

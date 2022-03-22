@@ -1,8 +1,8 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class FrustrationComponent : MonoBehaviour {
+public class FrustrationComponent : MonoBehaviour
+{
     //ReportGenerator reportGenerator;
 
     [Tooltip("Disabling this sets Frustration to the Min Frusation value indefinitely.")]
@@ -39,7 +39,8 @@ public class FrustrationComponent : MonoBehaviour {
     private float speed;
     private float coreRotationSpeed;
 
-    void Awake() {
+    void Awake()
+    {
         agent = GameObject.Find("Monster");
         fov = agent.GetComponent<FieldOfView>();
         hearing = agent.GetComponent<ProximityDetector>();
@@ -52,7 +53,8 @@ public class FrustrationComponent : MonoBehaviour {
         coreRotationSpeed = movement.coreRotationSpeed;
     }
 
-    void FixedUpdate() {
+    void FixedUpdate()
+    {
         //reportGenerator.currentPlaySession.agentAvgFrustration.Add(levelOfFrustration);
         healthLost = 100 - status.health;
         fov.viewAngle = Mathf.Abs(levelOfFrustration - 100) * 1.35f;
@@ -68,11 +70,13 @@ public class FrustrationComponent : MonoBehaviour {
         // Checking for frustrating events here
         CheckPathLengths();
         CheckTargetVisible();
-        if (movement.isWaiting && !decreasingFrustration) {
+        if (movement.isWaiting && !decreasingFrustration)
+        {
             decreasingFrustration = true;
             StartCoroutine("DecreaseFrustration");
         }
-        if (!movement.isWaiting && decreasingFrustration) {
+        if (!movement.isWaiting && decreasingFrustration)
+        {
             StopCoroutine("DecreaseFrustration");
             decreasingFrustration = false;
         }
@@ -81,46 +85,57 @@ public class FrustrationComponent : MonoBehaviour {
         // Checking for frustration-resolving events here
 
         // Debug mode - Incremental increase of frustration with time (sec)     
-        if (timeStamp <= Time.time && increaseWithTime) {
+        if (timeStamp <= Time.time && increaseWithTime)
+        {
             timeStamp = Time.time + incrementDelay;
             levelOfFrustration++;
             levelOfFrustration = Mathf.Clamp(levelOfFrustration, healthLost, 95);
         }
 
         // Keeps frustration 0 (off) for the session
-        if (!frustrationIsActive) {
+        if (!frustrationIsActive)
+        {
             levelOfFrustration = minFrustration;
         }
 
         // Correcting min-max setup of frustration
-        if (maxFrustration < minFrustration) {
+        if (maxFrustration < minFrustration)
+        {
             maxFrustration = minFrustration;
         }
-        if (levelOfFrustration < minFrustration) {
+        if (levelOfFrustration < minFrustration)
+        {
             levelOfFrustration = minFrustration;
         }
-        if (levelOfFrustration > maxFrustration) {
+        if (levelOfFrustration > maxFrustration)
+        {
             levelOfFrustration = maxFrustration;
         }
     }
 
-    void OnTriggerEnter2D(Collider2D collision) {
-        if (collision.gameObject.CompareTag("projectile")) {
+    void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("projectile"))
+        {
             levelOfFrustration += 3;
         }
     }
 
     // Checks if the new path is significantly longer than the previous one, which indicates unexpected obstacles
-    private void CheckPathLengths() {
+    private void CheckPathLengths()
+    {
         currentPath = agent.GetComponent<Movement>().path;
 
-        if (previousPathLength > 0) {
-            if (currentPath.Length > previousPathLength) {
+        if (previousPathLength > 0)
+        {
+            if (currentPath.Length > previousPathLength)
+            {
                 Debug.Log("Retracing path, getting frustrated");
                 levelOfFrustration += (currentPath.Length - previousPathLength);
             }
 
-            if (currentPath.Length > previousPathLength && targetIsVisible) {
+            if (currentPath.Length > previousPathLength && targetIsVisible)
+            {
                 Debug.Log("Getting closer to the player");
                 levelOfFrustration -= (currentPath.Length - previousPathLength) / 2;
             }
@@ -129,16 +144,19 @@ public class FrustrationComponent : MonoBehaviour {
     }
 
     // Checks if the player is lost after the agent arrived at the "last seen" location
-    private void CheckTargetVisible() {
+    private void CheckTargetVisible()
+    {
         targetIsVisible = agent.GetComponent<Movement>().targetLastSeen;
 
-        if (!targetIsVisible && targetWasVisible) {
+        if (!targetIsVisible && targetWasVisible)
+        {
             Debug.Log("Target lost, getting frustrated");
             //reportGenerator.currentPlaySession.agentLostPlayer++;
             levelOfFrustration += 7;
         }
 
-        if (targetIsVisible && !targetWasVisible) {
+        if (targetIsVisible && !targetWasVisible)
+        {
             Debug.Log("Spotted the player");
             //reportGenerator.currentPlaySession.agentDetectedPlayer++;
             levelOfFrustration += 3;
@@ -148,13 +166,16 @@ public class FrustrationComponent : MonoBehaviour {
     }
 
     // Clamps the level of frustration to the amount of health lost
-    private void CheckHealth() {
+    private void CheckHealth()
+    {
         levelOfFrustration = Mathf.Clamp(levelOfFrustration, healthLost * 0.5f, 100);
     }
 
-    IEnumerator DecreaseFrustration() {
+    IEnumerator DecreaseFrustration()
+    {
         //Debug.Log("Decreasing Frustraion");
-        while (true) {
+        while (true)
+        {
             yield return new WaitForSeconds(0.1f);
             levelOfFrustration -= 0.1f;
         }

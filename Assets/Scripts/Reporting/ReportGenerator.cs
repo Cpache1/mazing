@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.Networking;
-using UnityEngine.SceneManagement;
 
-public class ReportGenerator : MonoBehaviour {
+public class ReportGenerator : MonoBehaviour
+{
     private GameObject player;
     private GameObject bot;
     private FrustrationComponent botFrustrationComponent;
@@ -92,24 +89,30 @@ public class ReportGenerator : MonoBehaviour {
 
     private bool recordStarted = false;
 
-    private void Awake() {
+    private void Awake()
+    {
         canRecord = false;
         levelManager = GameObject.Find("LevelManager").GetComponent<LevelManager>();
         form = new WWWForm();
         ResetForm();
     }
 
-    private void Start() {
+    private void Start()
+    {
         StartCoroutine(LateStart());
-        levelManager.OnGameEnd.AddListener(delegate {
-            if (recordGameplay && recordStarted) {
+        levelManager.OnGameEnd.AddListener(delegate
+        {
+            if (recordGameplay && recordStarted)
+            {
                 recordGameplay = false;
                 CompressPackage();
                 StartCoroutine(SendPackage(url, form));
             }
         });
-        levelManager.OnGameStart.AddListener(delegate {
-            if (recordGameplay && !recordStarted) {
+        levelManager.OnGameStart.AddListener(delegate
+        {
+            if (recordGameplay && !recordStarted)
+            {
                 Debug.Log("Record Started!");
                 ResetForm();
                 recordStarted = true;
@@ -118,13 +121,16 @@ public class ReportGenerator : MonoBehaviour {
         });
     }
 
-    private void FixedUpdate() {
+    private void FixedUpdate()
+    {
         tick++;
 
-        if (recordGameplay && canRecord) {
+        if (recordGameplay && canRecord)
+        {
             int botInChase = 0;
             int targetSeen = 0;
-            if (!bot.Equals(null)) {
+            if (!bot.Equals(null))
+            {
                 targetSeen = (bot.GetComponent<ProximityDetector>().playerDetected || bot.GetComponent<FieldOfView>().targetDetected) ? 1 : 0;
                 botInChase = bot.GetComponent<Movement>().targetLastSeen ? 1 : 0;
 
@@ -158,12 +164,14 @@ public class ReportGenerator : MonoBehaviour {
                 botBurning.Add((bot.GetComponent<Health>().isBurning ? 1 : 0));
                 botDeltaHealth.Add((bot.GetComponent<Health>().deltaHealth));
             }
-            if (!bot.Equals(null) && !player.Equals(null)) {
+            if (!bot.Equals(null) && !player.Equals(null))
+            {
                 botDistanceFromPlayer.Add((new Vector2(bot.transform.position.x, bot.transform.position.y) -
                     new Vector2(player.transform.position.x, player.transform.position.y)).magnitude);
             }
 
-            if (!player.Equals(null)) {
+            if (!player.Equals(null))
+            {
                 playerDistanceTravelled.Add((player.GetComponent<PlayerController>().transform.position - previousPlayerPosition).magnitude);
                 previousPlayerPosition = player.GetComponent<PlayerController>().transform.position;
                 playerPositionX.Add(player.GetComponent<PlayerController>().transform.position.x);
@@ -205,20 +213,24 @@ public class ReportGenerator : MonoBehaviour {
             onScreenBullets.Add(GameObject.FindGameObjectsWithTag("projectile").Length);
         }
 
-        foreach (KeyCode kcode in Enum.GetValues(typeof(KeyCode))) {
-            if (Input.GetKey(kcode)) {
+        foreach (KeyCode kcode in Enum.GetValues(typeof(KeyCode)))
+        {
+            if (Input.GetKey(kcode))
+            {
                 keyPresses.Add(kcode.ToString());
             }
         }
 
-        if (!Input.anyKey) {
+        if (!Input.anyKey)
+        {
             //Starts counting when no button is being pressed
             idleTime = idleTime + 1;
         }
         fullTime = fullTime + 1;
     }
 
-    void ResetForm() {
+    void ResetForm()
+    {
         tick = 0;
         idleTime = 0;
         fullTime = 0;
@@ -280,7 +292,8 @@ public class ReportGenerator : MonoBehaviour {
         keyPresses = new List<string>();
     }
 
-    void CompressPackage() {
+    void CompressPackage()
+    {
         form.AddField("epoch", ReturnEpochStamp());
         form.AddField("timeStamp", Time.realtimeSinceStartup.ToString());
         form.AddField("tick", tick.ToString());
@@ -342,8 +355,10 @@ public class ReportGenerator : MonoBehaviour {
         form.AddField("onScreenBullets", onScreenBullets.DefaultIfEmpty(0).Average().ToString());
     }
 
-    IEnumerator UpdatePackage(float period) {
-        while (recordGameplay) {
+    IEnumerator UpdatePackage(float period)
+    {
+        while (recordGameplay)
+        {
             yield return new WaitForSeconds(period);
             CompressPackage();
             StartCoroutine(SendPackage(url, form));
@@ -352,22 +367,28 @@ public class ReportGenerator : MonoBehaviour {
         }
     }
 
-    private string ReturnEpochStamp() {
+    private string ReturnEpochStamp()
+    {
         DateTime epochStart = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         string currentEpochTime = ((long)(DateTime.UtcNow - epochStart).TotalMilliseconds).ToString();
         return currentEpochTime;
     }
 
-    IEnumerator SendPackage(string destination, WWWForm package) {
-        if (package.data.Count() > 0) {
+    IEnumerator SendPackage(string destination, WWWForm package)
+    {
+        if (package.data.Count() > 0)
+        {
             UnityWebRequest www = UnityWebRequest.Post(destination, package);
             yield return www.SendWebRequest();
-        } else {
+        }
+        else
+        {
             yield return null;
         }
     }
 
-    IEnumerator LateStart() {
+    IEnumerator LateStart()
+    {
         yield return new WaitForFixedUpdate();
         player = GameObject.Find("PlayerController");
         cursor = GameObject.Find("GunControls");

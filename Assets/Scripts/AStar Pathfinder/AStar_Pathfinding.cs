@@ -1,35 +1,43 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using System;
 using UnityEngine;
 
-public class AStar_Pathfinding : MonoBehaviour {
+public class AStar_Pathfinding : MonoBehaviour
+{
 
     //PathRequestManager pathRequestManager; //it no longer uses the pathRequestManager 
     Grid grid;
 
-    int GetDistance(Node nodeA, Node nodeB) {
+    int GetDistance(Node nodeA, Node nodeB)
+    {
         int dstX = Mathf.Abs(nodeA.gridX - nodeB.gridX);
         int dstY = Mathf.Abs(nodeA.gridY - nodeB.gridY);
 
-        if (dstX > dstY) {
+        if (dstX > dstY)
+        {
             return 14 * dstY + 10 * (dstX - dstY);
-        } else {
+        }
+        else
+        {
             return 14 * dstX + 10 * (dstY - dstX);
         }
     }
 
-    void Awake() {
+    void Awake()
+    {
         //pathRequestManager = GetComponent<PathRequestManager>();
         grid = GetComponent<Grid>();
     }
 
-    public void StartFindPath(Vector3 startPos, Vector3 targetPos, PathController controller) {
+    public void StartFindPath(Vector3 startPos, Vector3 targetPos, PathController controller)
+    {
         StartCoroutine(FindPath(startPos, targetPos, controller));
     }
 
-    IEnumerator FindPath(Vector3 startPosition, Vector3 targetPosition, PathController controller) {
-        
+    IEnumerator FindPath(Vector3 startPosition, Vector3 targetPosition, PathController controller)
+    {
+
         Vector3[] waypoints = new Vector3[0];
         Vector3[] riskyWaypoints = new Vector3[0];
 
@@ -38,37 +46,44 @@ public class AStar_Pathfinding : MonoBehaviour {
         Node startNode = grid.NodeFromWorldPoint(startPosition);
         Node targetNode = grid.NodeFromWorldPoint(targetPosition);
 
-        if (startNode.walkable && targetNode.walkable) {
+        if (startNode.walkable && targetNode.walkable)
+        {
             Heap<Node> openSet = new Heap<Node>(grid.MaxSize);
             HashSet<Node> closedSet = new HashSet<Node>();
 
             openSet.Add(startNode);
 
-            while (openSet.Count > 0) {
+            while (openSet.Count > 0)
+            {
                 Node currentNode = openSet.RemoveFirst();
                 closedSet.Add(currentNode);
 
-                if (currentNode == targetNode) {
+                if (currentNode == targetNode)
+                {
                     pathSuccess = true;
                     waypoints = RetracePath(startNode, targetNode);
                     break;
                 }
 
-                foreach (Node neighbourNode in grid.GetNeighbourNodes(currentNode)) {
-                    if (!neighbourNode.walkable || closedSet.Contains(neighbourNode)) {
+                foreach (Node neighbourNode in grid.GetNeighbourNodes(currentNode))
+                {
+                    if (!neighbourNode.walkable || closedSet.Contains(neighbourNode))
+                    {
                         continue;
                     }
 
                     int newMovementCostToNeighbour = currentNode.gCost + GetDistance(currentNode, neighbourNode) + neighbourNode.weight;
 
-                    if (newMovementCostToNeighbour < neighbourNode.gCost || !openSet.Contains(neighbourNode)) {
+                    if (newMovementCostToNeighbour < neighbourNode.gCost || !openSet.Contains(neighbourNode))
+                    {
                         neighbourNode.gCost = newMovementCostToNeighbour;
                         neighbourNode.hCost = GetDistance(neighbourNode, targetNode);
                         neighbourNode.parent = currentNode;
 
                         if (!openSet.Contains(neighbourNode))
                             openSet.Add(neighbourNode);
-                        else {
+                        else
+                        {
                             openSet.UpdateItem(neighbourNode);
                         }
                     }
@@ -80,35 +95,42 @@ public class AStar_Pathfinding : MonoBehaviour {
 
             riskyOpenSet.Add(startNode);
 
-            while (riskyOpenSet.Count > 0) {
+            while (riskyOpenSet.Count > 0)
+            {
                 Node currentNode = riskyOpenSet.RemoveFirst();
                 riskyClosedSet.Add(currentNode);
 
-                if (currentNode == targetNode) {
+                if (currentNode == targetNode)
+                {
                     pathSuccess = true;
                     riskyWaypoints = RetracePath(startNode, targetNode);
                     break;
                 }
 
-                foreach (Node neighbourNode in grid.GetNeighbourNodes(currentNode)) {
-                    if (!neighbourNode.walkable || riskyClosedSet.Contains(neighbourNode)) {
+                foreach (Node neighbourNode in grid.GetNeighbourNodes(currentNode))
+                {
+                    if (!neighbourNode.walkable || riskyClosedSet.Contains(neighbourNode))
+                    {
                         continue;
                     }
-                    
-                    if (neighbourNode.weight >= 1000) {
+
+                    if (neighbourNode.weight >= 1000)
+                    {
                         neighbourNode.weight -= 1000;
                     }
 
                     int newMovementCostToNeighbour = currentNode.gCost + GetDistance(currentNode, neighbourNode) + neighbourNode.weight;
 
-                    if (newMovementCostToNeighbour < neighbourNode.gCost || !riskyOpenSet.Contains(neighbourNode)) {
+                    if (newMovementCostToNeighbour < neighbourNode.gCost || !riskyOpenSet.Contains(neighbourNode))
+                    {
                         neighbourNode.gCost = newMovementCostToNeighbour;
                         neighbourNode.hCost = GetDistance(neighbourNode, targetNode);
                         neighbourNode.parent = currentNode;
 
                         if (!riskyOpenSet.Contains(neighbourNode))
                             riskyOpenSet.Add(neighbourNode);
-                        else {
+                        else
+                        {
                             riskyOpenSet.UpdateItem(neighbourNode);
                         }
                     }
@@ -117,7 +139,8 @@ public class AStar_Pathfinding : MonoBehaviour {
 
         }
         yield return null;
-        if (pathSuccess) {
+        if (pathSuccess)
+        {
             //waypoints = RetracePath(startNode, targetNode);
 
             //Debug Code for displaying path per frame
@@ -132,11 +155,13 @@ public class AStar_Pathfinding : MonoBehaviour {
         controller.FinishedProcessingPath(waypoints, riskyWaypoints, pathSuccess);
     }
 
-    Vector3[] RetracePath (Node startNode, Node targetNode) {
+    Vector3[] RetracePath(Node startNode, Node targetNode)
+    {
         List<Node> path = new List<Node>();
         Node currentNode = targetNode;
 
-        while (currentNode != startNode) {
+        while (currentNode != startNode)
+        {
             path.Add(currentNode);
             currentNode = currentNode.parent;
         }
@@ -145,17 +170,19 @@ public class AStar_Pathfinding : MonoBehaviour {
         return waypoints;
     }
 
-    Vector3[] SimplifyPath(List<Node> path) {
+    Vector3[] SimplifyPath(List<Node> path)
+    {
         List<Vector3> waypoints = new List<Vector3>();
         Vector2 directionOld = Vector2.zero;
 
-        for (int i = 0; i < path.Count; i++) {
-           //Vector2 directionNew = new Vector2(path[i - 1].gridX - path[i].gridX, path[i - 1].gridY - path[i].gridY);
+        for (int i = 0; i < path.Count; i++)
+        {
+            //Vector2 directionNew = new Vector2(path[i - 1].gridX - path[i].gridX, path[i - 1].gridY - path[i].gridY);
             //if (directionNew != directionOld) {
-             //   waypoints.Add(path[i - 1].worldPosition);
-                waypoints.Add(path[i].worldPosition);
-           //}
-           //directionOld = directionNew;
+            //   waypoints.Add(path[i - 1].worldPosition);
+            waypoints.Add(path[i].worldPosition);
+            //}
+            //directionOld = directionNew;
         }
         return waypoints.ToArray();
     }

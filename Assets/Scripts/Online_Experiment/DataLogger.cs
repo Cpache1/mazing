@@ -279,7 +279,7 @@
 //            }
 //            botPlayerDistance.Add(Vector2.Distance(bot.transform.position, player.transform.position));
 //        }
-        
+
 //        pickUpsVisible.Add(visiblePickUpList.Count);
 //        for (int i = 0; i < visiblePickUpList.Count; i++) {
 //            GameObject pickup = visiblePickUpList[i];
@@ -330,7 +330,7 @@
 //        form.AddField("playerHasPowerup", playerHasPowerup.DefaultIfEmpty(0).Average().ToString());
 //        form.AddField("playerKillCount", playerKillCount.ToString());
 //        form.AddField("playerDeath", playerDeath.ToString());
-        
+
 //        form.AddField("botsVisible", botsVisible.DefaultIfEmpty(0).Average().ToString());
 //        form.AddField("botTypes", String.Join("|", botName.DefaultIfEmpty("NONE").Distinct()));
 //        form.AddField("botHasCollisions", botHasCollisions.DefaultIfEmpty(0).Average().ToString());

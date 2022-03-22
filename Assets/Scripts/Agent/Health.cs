@@ -1,8 +1,8 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class Health : MonoBehaviour {
+public class Health : MonoBehaviour
+{
     //ReportGenerator reportGenerator;
     LevelManager levelManager;
 
@@ -39,7 +39,8 @@ public class Health : MonoBehaviour {
     //quitting from Unity Editor scene play
     private bool isQuitting = false;
 
-    private void Awake() {
+    private void Awake()
+    {
         renderMaterial = GetComponent<Renderer>();
         originalColor = renderMaterial.material.color;
         dmgf = damageFrequency;
@@ -50,38 +51,45 @@ public class Health : MonoBehaviour {
         lastHealth = health;
     }
 
-    private void Update() {
+    private void Update()
+    {
         deltaHealth = health - lastHealth;
         lastHealth = health;
 
         bulletColliding = false;
 
         DetectFire();
-        if (health <= 0) {
+        if (health <= 0)
+        {
             botDied = true;
             levelManager.ResetStage(15);
             //reportGenerator.currentPlaySession.agentDied++;
             //Destroy(gameObject);
         }
 
-        if (isBurning && !renderingDamage) {
+        if (isBurning && !renderingDamage)
+        {
             renderingDamage = true;
             StartCoroutine("RenderTakeDamage");
         }
 
-        if (!isBurning && renderingDamage) {
+        if (!isBurning && renderingDamage)
+        {
             renderingDamage = false;
             StopCoroutine("RenderTakeDamage");
             renderMaterial.material.color = originalColor;
         }
     }
 
-    private void LateUpdate() {
+    private void LateUpdate()
+    {
         botDied = false;
     }
 
-    IEnumerator RenderTakeDamage() {
-        while (true) {
+    IEnumerator RenderTakeDamage()
+    {
+        while (true)
+        {
             renderMaterial.material.color = Color.white;
             yield return new WaitForSeconds(0.1f);
             renderMaterial.material.color = originalColor;
@@ -89,7 +97,8 @@ public class Health : MonoBehaviour {
         }
     }
 
-    IEnumerator RenderHitDamage() {
+    IEnumerator RenderHitDamage()
+    {
         renderMaterial.material.color = Color.white;
         yield return new WaitForSeconds(0.1f);
         renderMaterial.material.color = originalColor;
@@ -101,7 +110,8 @@ public class Health : MonoBehaviour {
         isQuitting = true;
     }
 
-    void OnDestroy() {
+    void OnDestroy()
+    {
         if (!isQuitting) //making sure if scene is quit through editor to not call any of this
         {
             Destroy(GameObject.Find("HealthBar"));
@@ -110,10 +120,13 @@ public class Health : MonoBehaviour {
         }
     }
 
-    private void DetectFire() {
-        if (Physics2D.OverlapCircle(transform.position, 1f, fireMask)) {
+    private void DetectFire()
+    {
+        if (Physics2D.OverlapCircle(transform.position, 1f, fireMask))
+        {
             timer += Time.deltaTime;
-            if (timer > dmgf) {
+            if (timer > dmgf)
+            {
                 health -= fireDamage;
 
                 //reportGenerator.currentPlaySession.agentHealthLost += fireDamage;
@@ -121,16 +134,23 @@ public class Health : MonoBehaviour {
                 dmgf = timer + delay;
             }
             isBurning = true;
-        } else {
+        }
+        else
+        {
             isBurning = false;
         }
     }
 
-    void OnTriggerEnter(Collider collision) {
-        if (collision.gameObject.CompareTag("projectile")) {
-            if (bulletColliding) {
+    void OnTriggerEnter(Collider collision)
+    {
+        if (collision.gameObject.CompareTag("projectile"))
+        {
+            if (bulletColliding)
+            {
                 return;
-            } else {
+            }
+            else
+            {
                 bulletColliding = true;
                 Debug.Log("Hit");
                 StartCoroutine("RenderHitDamage");

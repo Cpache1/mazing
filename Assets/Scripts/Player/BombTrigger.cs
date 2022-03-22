@@ -1,8 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class BombTrigger : MonoBehaviour {
+public class BombTrigger : MonoBehaviour
+{
     private float timeStamp;
 
     void OnTriggerEnter(Collider trigger)

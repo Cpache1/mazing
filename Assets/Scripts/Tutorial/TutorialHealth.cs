@@ -1,8 +1,8 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class TutorialHealth : MonoBehaviour {
+public class TutorialHealth : MonoBehaviour
+{
 
     public GameObject destroyEffect;
     public LayerMask fireMask;
@@ -15,28 +15,34 @@ public class TutorialHealth : MonoBehaviour {
 
     Color originalColor;
 
-    private void Awake() {
+    private void Awake()
+    {
         renderMaterial = GetComponent<Renderer>();
         originalColor = renderMaterial.material.color;
     }
 
-    private void Update() {
+    private void Update()
+    {
         DetectFire();
 
-        if (isBurning && !renderingDamage) {
+        if (isBurning && !renderingDamage)
+        {
             renderingDamage = true;
             StartCoroutine("RenderTakeDamage");
         }
 
-        if (!isBurning && renderingDamage) {
+        if (!isBurning && renderingDamage)
+        {
             renderingDamage = false;
             StopCoroutine("RenderTakeDamage");
             renderMaterial.material.color = originalColor;
         }
     }
 
-    IEnumerator RenderTakeDamage() {
-        while (true) {
+    IEnumerator RenderTakeDamage()
+    {
+        while (true)
+        {
             renderMaterial.material.color = Color.white;
             yield return new WaitForSeconds(0.1f);
             renderMaterial.material.color = originalColor;
@@ -44,23 +50,30 @@ public class TutorialHealth : MonoBehaviour {
         }
     }
 
-    IEnumerator RenderHitDamage() {
+    IEnumerator RenderHitDamage()
+    {
         renderMaterial.material.color = Color.white;
         yield return new WaitForSeconds(0.1f);
         renderMaterial.material.color = originalColor;
         yield break;
     }
 
-    private void DetectFire() {
-        if (Physics2D.OverlapCircle(transform.position, 1f, fireMask)) {
+    private void DetectFire()
+    {
+        if (Physics2D.OverlapCircle(transform.position, 1f, fireMask))
+        {
             isBurning = true;
-        } else {
+        }
+        else
+        {
             isBurning = false;
         }
     }
 
-    void OnTriggerEnter(Collider collision) {
-        if (collision.gameObject.CompareTag("projectile")) {
+    void OnTriggerEnter(Collider collision)
+    {
+        if (collision.gameObject.CompareTag("projectile"))
+        {
             StartCoroutine("RenderHitDamage");
         }
     }

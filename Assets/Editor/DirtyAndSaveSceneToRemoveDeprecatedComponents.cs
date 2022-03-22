@@ -1,7 +1,7 @@
-﻿using UnityEngine;
+﻿using System.Linq;
 using UnityEditor;
 using UnityEditor.SceneManagement;
-using System.Linq;
+using UnityEngine;
 
 public class DirtyAndSaveSceneToRemoveDeprecatedComponents : MonoBehaviour
 {
@@ -17,8 +17,8 @@ public class DirtyAndSaveSceneToRemoveDeprecatedComponents : MonoBehaviour
 
             EditorSceneManager.MarkSceneDirty(scene);
             EditorSceneManager.SaveScene(scene);
-            
-            if(scene != EditorSceneManager.GetActiveScene())
+
+            if (scene != EditorSceneManager.GetActiveScene())
                 EditorSceneManager.UnloadSceneAsync(scene);
         }
     }
