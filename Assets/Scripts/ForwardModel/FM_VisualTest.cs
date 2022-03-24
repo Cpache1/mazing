@@ -14,6 +14,7 @@ public class FM_VisualTest : MonoBehaviour
 {
     FM_Grid grid;
     FM_Player player;
+    FM_Monster monster;
 
     public float padding = 50.0f;
 
@@ -22,8 +23,13 @@ public class FM_VisualTest : MonoBehaviour
     {
         grid = new FM_Grid(GameObject.FindGameObjectsWithTag("wall"));
         
-        Vector3 playerPos = GameObject.Find("PlayerController").transform.position;
-        player = new FM_Player(playerPos, 0.5f);
+        Vector3 playerPos = GameObject.FindGameObjectWithTag("Player").transform.position;
+        Vector2 playerVel = new Vector2(0.0f, 0.0f);
+        player = new FM_Player(playerPos, playerVel, 1.0f, FM_GameObjectType.Player, true);
+
+        Vector3 monsterPos = GameObject.FindGameObjectWithTag("AI").transform.position;
+        Vector2 monsterVel = new Vector2(0.0f, 0.0f);
+        monster = new FM_Monster(monsterPos, monsterVel, 1.0f, FM_GameObjectType.Monster, true);
     }
 
     // Update is called once per frame
@@ -36,18 +42,19 @@ public class FM_VisualTest : MonoBehaviour
     {
         DrawWalls();
         DrawPlayer();
+        DrawMonster();
     }
 
     private void DrawWalls()
     {
         for (int i = 0; i < grid.walls.Length; i++)
         {
-            FM_Collider box = grid.walls[i].GetBox();
-            FM_Rectangle rec = box.GetBox();
+            FM_Collider wallCollider = grid.walls[i].GetRecCollider();
+            FM_Rectangle rec = wallCollider.GetBox();
             //it converts to Vector3 and keeps z = 0
             Vector3 topLeft = rec.GetTopLeft();
             Vector3 botRight = rec.GetBottomRight();
-            Vector3 sz = box.GetSize();
+            Vector3 sz = wallCollider.GetSize();
 
             // Draws a green line from a point to another
             // This can be done as boxes directly, but this 
@@ -63,15 +70,18 @@ public class FM_VisualTest : MonoBehaviour
 
     private void DrawPlayer()
     {
-        Vector3 c = player.GetCircleCollider().GetCircle().GetCenter();
+        Vector3 c = player.GetCollider().GetCircle().GetCenter();
         Gizmos.color = Color.blue;
         Gizmos.DrawSphere( c + new Vector3(padding, 0, 0), 
-            player.GetCircleCollider().GetCircle().GetRadius());
+            player.GetCollider().GetCircle().GetRadius());
     }
 
     private void DrawMonster()
     {
-
+        Vector3 c = monster.GetCollider().GetCircle().GetCenter();
+        Gizmos.color = Color.red;
+        Gizmos.DrawSphere(c + new Vector3(padding, 0, 0),
+            monster.GetCollider().GetCircle().GetRadius());
     }
 
     private void DrawBullets()

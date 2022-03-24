@@ -7,6 +7,7 @@ public class FM_Game
 {
     public AIState state;
     //public FM_Player player;
+    //float playerSize = 0.5f;
     //public FM_Monster monster;
     //public FM_Grid grid;
 

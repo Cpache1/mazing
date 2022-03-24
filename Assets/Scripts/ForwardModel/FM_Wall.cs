@@ -1,9 +1,16 @@
 ﻿using UnityEngine;
 
+/*Possible Improvement: FM_Wall is a game object as well,
+ *just not a moving one...one can always have a super class
+ *'FM_MovingGameObject' or something, which inherits from 
+ *'FM_GameObject' but has all the velocity/direction code. 
+ *Player, monster, bullets, bombs would inherit
+ *from 'moving objects' and wall would simply inherit from
+ *game object.*/
 public class FM_Wall
 {
     Vector2 position, size;
-    FM_Collider box;
+    FM_Collider collider;
 
     public FM_Wall(Vector2 pos, Vector2 sz)
     {
@@ -14,10 +21,10 @@ public class FM_Wall
         Vector2 tL = new Vector2(position.x - size.x, position.y + size.y);
         Vector2 bR = new Vector2(position.x + size.x, position.y - size.y);
 
-        box = new FM_Collider(new FM_Rectangle(tL, bR), size);        
+        collider = new FM_Collider(new FM_Rectangle(tL, bR), size);        
     }
 
-    public FM_Collider GetBox() { return box; }
+    public FM_Collider GetRecCollider() { return collider; }
     public Vector2 GetPosition() { return position; }
     public Vector2 GetSize() { return size; }
 

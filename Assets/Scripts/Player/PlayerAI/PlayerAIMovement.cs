@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class PlayerAIMovement : MonoBehaviour
 {
+    public static int NUM_ACTIONS = 5;
+
     public LayerMask unwalkableMask;
     public LayerMask fireMask;
     public Transform target; /*-----ALSO ADDED BY ME-----*/
@@ -105,7 +107,7 @@ public class PlayerAIMovement : MonoBehaviour
         {
             //shoot = true;
             fleeing = true;
-            if(!hasTarget)
+            if (!hasTarget)
             {
                 hasTarget = true;
                 Debug.Log("(Player) Getting new target");
@@ -279,5 +281,5 @@ public class PlayerAIMovement : MonoBehaviour
         }
     }
 
-  
+
 }

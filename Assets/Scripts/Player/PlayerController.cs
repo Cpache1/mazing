@@ -1,8 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class PlayerController : MonoBehaviour {
+public class PlayerController : MonoBehaviour
+{
     ReportGenerator reportGenerator;
     public GameObject dashReloadAnimation;
 
@@ -44,9 +43,11 @@ public class PlayerController : MonoBehaviour {
         playerAIMovement = GetComponent<PlayerAIMovement>();
     }
 
-    void FixedUpdate() {
+    void FixedUpdate()
+    {
 
-        if (isAI) {
+        if (isAI)
+        {
             AIControl();
         }
         else

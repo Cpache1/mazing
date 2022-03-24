@@ -1,9 +1,8 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using System.Linq;
 
-public class PlayerHealth : MonoBehaviour {
+public class PlayerHealth : MonoBehaviour
+{
     //ReportGenerator reportGenerator;
     GameObject agent;
     LevelManager levelManager;
@@ -43,7 +42,8 @@ public class PlayerHealth : MonoBehaviour {
 
     private bool isQuitting = false;
 
-    private void Awake() {
+    private void Awake()
+    {
         renderMaterial = GetComponent<Renderer>();
         originalColor = renderMaterial.material.color;
         dmgf = damageFrequency;
@@ -59,15 +59,18 @@ public class PlayerHealth : MonoBehaviour {
         lastHealth = health;
     }
 
-    private void OnCollisionEnter(Collision collision) {
-        if (collision.gameObject.tag == "AI") {
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.tag == "AI")
+        {
             levelManager.ResetStage(-25);
 
             //GameObject.Find("Player Indicators").GetComponent<CanvasGroup>().alpha = 0;
 
             //Subtract 8 from the Agent's frustration and the number of player lost to counter the last frame of the game
             //Otherwise if the player is destroyed, the agent registers it as "player lost"
-            if (GameObject.Find("Monster").GetComponent<Movement>().targetLastSeen) {
+            if (GameObject.Find("Monster").GetComponent<Movement>().targetLastSeen)
+            {
                 //int playerLost = reportGenerator.currentPlaySession.agentLostPlayer--;
                 //playerLost = Mathf.Clamp(playerLost, 0, reportGenerator.currentPlaySession.agentLostPlayer);
                 GameObject.Find("Monster").GetComponent<FrustrationComponent>().levelOfFrustration -= 8;
@@ -77,12 +80,14 @@ public class PlayerHealth : MonoBehaviour {
         }
     }
 
-    private void Update() {
+    private void Update()
+    {
         deltaHealth = health - lastHealth;
         lastHealth = health;
 
         DetectFire();
-        if (health <= 0) {
+        if (health <= 0)
+        {
             playerDied = true;
             levelManager.ResetStage(-25);
             //reportGenerator.currentPlaySession.playerDied++;
@@ -91,26 +96,31 @@ public class PlayerHealth : MonoBehaviour {
 
         RepelishHealth();
 
-        if (isBurning && !renderingDamage) {
+        if (isBurning && !renderingDamage)
+        {
             renderingDamage = true;
             StartCoroutine("RenderTakeDamage");
         }
 
-        if (!isBurning && renderingDamage) {
+        if (!isBurning && renderingDamage)
+        {
             renderingDamage = false;
             StopCoroutine("RenderTakeDamage");
             renderMaterial.material.color = originalColor;
         }
     }
 
-    private void LateUpdate() {
+    private void LateUpdate()
+    {
         isHealing = false;
         playerDied = false;
     }
 
-    IEnumerator RenderTakeDamage() {
+    IEnumerator RenderTakeDamage()
+    {
 
-        while (true) {
+        while (true)
+        {
             renderMaterial.material.color = Color.white;
             yield return new WaitForSeconds(0.1f);
             renderMaterial.material.color = originalColor;
@@ -123,34 +133,43 @@ public class PlayerHealth : MonoBehaviour {
         isQuitting = true;
     }
 
-    void OnDestroy() {
+    void OnDestroy()
+    {
         if (!isQuitting)
         {
             GameObject.Find("Player Indicators").GetComponent<CanvasGroup>().alpha = 0;
             Destroy(GameObject.Find("PlayerHealthBar"));
             Instantiate(destroyEffect, new Vector3(transform.position.x, transform.position.y, -1), transform.rotation);
         }
-        
+
     }
 
-    private void DetectFire() {
-        if (Physics2D.OverlapCircle(transform.position, 0.5f, fireMask)) {
+    private void DetectFire()
+    {
+        if (Physics2D.OverlapCircle(transform.position, 0.5f, fireMask))
+        {
             timer += Time.deltaTime;
-            if (timer > dmgf) {
+            if (timer > dmgf)
+            {
                 health -= fireDamage;
                 //reportGenerator.currentPlaySession.healthLost += fireDamage;
                 dmgf = timer + delay;
             }
             isBurning = true;
-        } else {
+        }
+        else
+        {
             isBurning = false;
         }
     }
 
-    private void RepelishHealth() {
-        if (!isBurning) {
+    private void RepelishHealth()
+    {
+        if (!isBurning)
+        {
             healthTimer += Time.deltaTime;
-            if (healthTimer > hfrq) {
+            if (healthTimer > hfrq)
+            {
                 health++;
                 hfrq = healthTimer + healthDelay;
                 isHealing = true;

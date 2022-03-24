@@ -1,11 +1,11 @@
 ﻿using UnityEngine;
 
-public class FM_Player : FM_GameObject
+public class FM_Monster : FM_GameObject
 {
     float size = 0.5f; //radius
 
-    public FM_Player(Vector2 _position, Vector2 _velocity, float _speed, FM_GameObjectType _type, bool _alive) :
-        base(_position, _velocity, _speed, _type, _alive) 
+    public FM_Monster(Vector2 _position, Vector2 _velocity, float _speed, FM_GameObjectType _type, bool _alive) :
+        base(_position, _velocity, _speed, _type, _alive)
     {
         collider = new FM_Collider(new FM_Circle(position, size), size);
     }
@@ -15,4 +15,5 @@ public class FM_Player : FM_GameObject
     {
         throw new System.NotImplementedException();
     }
+
 }
