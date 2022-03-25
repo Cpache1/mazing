@@ -24,12 +24,12 @@ public abstract class FM_GameObject
 
     //Getting and setting variables
     void SetType(FM_GameObjectType tp) { type = tp; }
-    FM_GameObjectType GetType() { return type; }
-    void SetPosition(Vector2 pos) { position.x = pos.x; position.y = pos.y; }
+    public FM_GameObjectType GetType() { return type; }
+    public void SetPosition(Vector2 pos) { position.x = pos.x; position.y = pos.y; }
     public Vector2 GetPosition() { return position; }
-    void SetVelocity(Vector2 v) { velocity.x = v.x; velocity.y = v.y; }
-	Vector2 getVelocity() { return velocity; }
-    float GetSpeed() { return speed; }
+    public void SetVelocity(Vector2 v) { velocity.x = v.x; velocity.y = v.y; }
+	public Vector2 GetVelocity() { return velocity; }
+    public float GetSpeed() { return speed; }
     public FM_Collider GetCollider() { return collider; }
 
 

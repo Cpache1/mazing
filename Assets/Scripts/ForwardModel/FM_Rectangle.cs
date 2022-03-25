@@ -2,39 +2,39 @@
 
 public class FM_Rectangle
 {
-    private Vector2 topLeft;
-    private Vector2 bottomRight;
+    private Vector2 bottomLeft;
+    private Vector2 topRight;
 
     public FM_Rectangle()
     {
-        topLeft = new Vector2(0.0f, 0.0f);
-        bottomRight = new Vector2(0.0f, 0.0f);
+        bottomLeft = new Vector2(0.0f, 0.0f);
+        topRight = new Vector2(0.0f, 0.0f);
     }
 
-    public FM_Rectangle(Vector2 tL, Vector2 bR)
+    public FM_Rectangle(Vector2 bL, Vector2 tR)
     {
-        topLeft = tL;
-        bottomRight = bR;
+        bottomLeft = bL;
+        topRight = tR;
     }
 
-    public void SetTopLeft(Vector2 tL) { topLeft = tL; }
-    public Vector2 GetTopLeft() { return topLeft; }
-    public void SetBottomRight(Vector2 bR) { bottomRight = bR; }
-    public Vector2 GetBottomRight() { return bottomRight; }
+    public void SetTopRight(Vector2 tR) { topRight = tR; }
+    public Vector2 GetTopRight() { return topRight; }
+    public void SetBottomLeft(Vector2 bL) { bottomLeft = bL; }
+    public Vector2 GetBottomLeft() { return bottomLeft; }
 
     bool IsInside(double x, double y)
     {
-        return (x >= topLeft.x && x <= bottomRight.x && y >= topLeft.y && y <= bottomRight.y); ;
+        return (x >= bottomLeft.x && x <= topRight.x && y >= bottomLeft.y && y <= topRight.y);
     }
 
-    bool IsInside(Vector2 point) { return IsInside(point.x, point.y); }
+    //bool IsInside(Vector2 point) { return IsInside(point.x, point.y); } //TODO: Delete?
 
     public bool Intersects(FM_Rectangle rectangle)
     {
-        if (IsInside(rectangle.topLeft.x, rectangle.topLeft.y)) return true;
-        if (IsInside(rectangle.topLeft.x, rectangle.bottomRight.y)) return true;
-        if (IsInside(rectangle.bottomRight.x, rectangle.topLeft.y)) return true;
-        if (IsInside(rectangle.bottomRight.x, rectangle.bottomRight.y)) return true;
+        if (IsInside(rectangle.topRight.x, rectangle.topRight.y)) return true;
+        if (IsInside(rectangle.topRight.x, rectangle.bottomLeft.y)) return true;
+        if (IsInside(rectangle.bottomLeft.x, rectangle.topRight.y)) return true;
+        if (IsInside(rectangle.bottomLeft.x, rectangle.bottomLeft.y)) return true;
 
         return false;
     }

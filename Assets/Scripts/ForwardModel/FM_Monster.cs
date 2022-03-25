@@ -13,7 +13,12 @@ public class FM_Monster : FM_GameObject
 
     public override void Update(FM_Game game, float elapsed = 1)
     {
-        throw new System.NotImplementedException();
+        UpdateMovement(game, elapsed);
+    }
+
+    private void UpdateMovement(FM_Game game, float elapsed = 1.0f)
+    {
+
     }
 
 }

@@ -30,9 +30,9 @@ public class FM_Collider
     {
         if (shape == FM_Collider_Shape.Rectangle)
         {
-            Vector2 tL = new Vector2(gameObject.GetPosition().x - size.x, gameObject.GetPosition().y + size.y);
-            Vector2 bR = new Vector2(gameObject.GetPosition().x + size.x, gameObject.GetPosition().y - size.y);
-            SetBox(tL, bR);
+            Vector2 bL = new Vector2(gameObject.GetPosition().x - size.x, gameObject.GetPosition().y - size.y);
+            Vector2 tR = new Vector2(gameObject.GetPosition().x + size.x, gameObject.GetPosition().y + size.y);
+            SetBox(bL, tR);
         }
         else
         {
@@ -45,10 +45,10 @@ public class FM_Collider
     public FM_Collider_Shape GetShape() { return shape; }
 
     public FM_Rectangle GetBox() { return box; }
-    public void SetBox(Vector2 topLeft, Vector2 bottomRight)
+    public void SetBox(Vector2 bottomLeft, Vector2 topRight)
     {
-        box.SetTopLeft(topLeft);
-        box.SetBottomRight(bottomRight);
+        box.SetBottomLeft(bottomLeft);
+        box.SetTopRight(topRight);
     }
 
     public FM_Circle GetCircle() { return circle; }

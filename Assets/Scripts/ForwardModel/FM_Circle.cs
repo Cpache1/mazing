@@ -47,12 +47,18 @@ public class FM_Circle
 
     public bool Intersects(FM_Rectangle rectangle)
     {
-        double recX1 = rectangle.GetTopLeft().x;
-        double recX2 = rectangle.GetBottomRight().x;
-        double recY1 = rectangle.GetTopLeft().y;
-        double recY2 = rectangle.GetTopLeft().y;
+        double recX1 = rectangle.GetBottomLeft().x;
+        double recX2 = rectangle.GetTopRight().x;
+        double recY1 = rectangle.GetBottomLeft().y;
+        double recY2 = rectangle.GetTopRight().y;
 
-        // Getting the nearest point of the rectangle to the center of the circle
+        double RecWidth = Math.Abs(recX2 - recX1);
+        double RecHeight = Math.Abs(recY2 - recY1);
+
+        double DeltaX = center.x - Math.Max(recX1, Math.Min(center.x, recX1 + RecWidth));
+        double DeltaY = center.y - Math.Max(recY1, Math.Min(center.y, recY1 + RecHeight));
+
+        /*// Getting the nearest point of the rectangle to the center of the circle
         double nX = Math.Max(recX1, Math.Min(center.x, recX2));
         double nY = Math.Max(recY1, Math.Min(center.y, recY2));
 
@@ -60,6 +66,12 @@ public class FM_Circle
         // Get the distance between the nearest point and the center
         double distanceX = nX - center.x;
         double distanceY = nY - center.y;
-        return (distanceX * distanceX + distanceY * distanceY) <= radius * radius;
+        return (distanceX * distanceX + distanceY * distanceY) <= radius * radius;*/
+
+
+        //DeltaX = CircleX - Max(RectX, Min(CircleX, RectX + RectWidth));
+        //DeltaY = CircleY - Max(RectY, Min(CircleY, RectY + RectHeight));
+        return (DeltaX * DeltaX + DeltaY * DeltaY) <= (radius * radius);
+
     }
 }

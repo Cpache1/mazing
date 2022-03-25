@@ -18,10 +18,10 @@ public class FM_Wall
         size = sz;
 
         //Make the rectangle box (collider)
-        Vector2 tL = new Vector2(position.x - size.x, position.y + size.y);
-        Vector2 bR = new Vector2(position.x + size.x, position.y - size.y);
+        Vector2 bL = new Vector2(position.x - size.x, position.y - size.y);
+        Vector2 tR = new Vector2(position.x + size.x, position.y + size.y);
 
-        collider = new FM_Collider(new FM_Rectangle(tL, bR), size);        
+        collider = new FM_Collider(new FM_Rectangle(bL, tR), size);        
     }
 
     public FM_Collider GetRecCollider() { return collider; }
