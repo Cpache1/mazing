@@ -36,11 +36,11 @@ public class FM_Game
     {
         if (providedState.playerIndex == 0) //player has more things it can do
         {
-            player.SetVelocity(new Vector2(action[0], action[1]));
+            player.GetMovementComponent().SetVel(action[0], action[1]);
         }
         else if (providedState.playerIndex == 1)
         {
-            monster.SetVelocity(new Vector2(action[0], action[1]));
+            monster.GetMovementComponent().SetVel(action[0], action[1]);
         }
 
         return providedState.stateRep;
@@ -51,11 +51,11 @@ public class FM_Game
     {
         if (agent.GetType() == FM_GameObjectType.Player) //player has more things it can do
         {
-            player.SetVelocity(new Vector2(action[0], action[1]));
+            player.GetMovementComponent().SetVel(action[0], action[1]);
         }
         else if (agent.GetType() == FM_GameObjectType.Monster)
         {
-            monster.SetVelocity(new Vector2(action[0], action[1]));
+            monster.GetMovementComponent().SetVel(action[0], action[1]);
         }
 
     }

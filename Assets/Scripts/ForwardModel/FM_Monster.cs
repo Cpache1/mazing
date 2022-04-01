@@ -4,21 +4,15 @@ public class FM_Monster : FM_GameObject
 {
     float size = 0.5f; //radius
 
-    public FM_Monster(Vector2 _position, Vector2 _velocity, float _speed, FM_GameObjectType _type, bool _alive) :
-        base(_position, _velocity, _speed, _type, _alive)
+    public FM_Monster(Vector2 _position, float _speed, float _rotationSpeed, FM_GameObjectType _type, bool _alive) :
+        base(_position, _speed, _rotationSpeed, _type, _alive)
     {
         collider = new FM_Collider(new FM_Circle(position, size), size);
     }
 
-
-    public override void Update(FM_Game game, float elapsed = 1)
+    public override void Update(FM_Game game, float elapsed = 1.0f)
     {
-        UpdateMovement(game, elapsed);
+        movement.Update(this, game);
+        collider.Update(this);
     }
-
-    private void UpdateMovement(FM_Game game, float elapsed = 1.0f)
-    {
-
-    }
-
 }

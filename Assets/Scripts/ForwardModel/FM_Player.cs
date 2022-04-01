@@ -6,8 +6,8 @@ public class FM_Player : FM_GameObject
     int maxHealth;
     float size = 0.5f; //radius
 
-    public FM_Player(Vector2 _position, Vector2 _velocity, float _speed, FM_GameObjectType _type, bool _alive) :
-        base(_position, _velocity, _speed, _type, _alive) 
+    public FM_Player(Vector2 _position, float _speed, float _rotationSpeed, FM_GameObjectType _type, bool _alive) :
+        base(_position, _speed, _rotationSpeed, _type, _alive) 
     {
         collider = new FM_Collider(new FM_Circle(position, size), size);
     }
@@ -16,17 +16,12 @@ public class FM_Player : FM_GameObject
 
     public override void Update(FM_Game game, float elapsed = 1.0f)
     {
-        UpdateMovement(game, elapsed);
+        movement.Update(this, game);
         collider.Update(this);
-
     }
 
-    private void UpdateMovement(FM_Game game, float elapsed = 1.0f)
+    /*private void UpdateMovement(FM_Game game, float elapsed = 1.0f)
     {
-        //float x = GetPosition().x + GetVelocity().x * speed * elapsed;
-        //float y = GetPosition().y + GetVelocity().y * speed * elapsed;
-
-        //transform.position = Vector3.MoveTowards(transform.position, new Vector3(transform.position.x + inputX, transform.position.y + inputY, 1), movementSpeed * Time.deltaTime);
         Vector2 oldPos = new Vector2(GetPosition().x, GetPosition().y);
 
         Vector3 newPos = Vector3.MoveTowards(new Vector3(GetPosition().x, GetPosition().y, 0.0f),
@@ -53,6 +48,6 @@ public class FM_Player : FM_GameObject
             }
         }
         return true;
-    }
+    }*/
 
 }

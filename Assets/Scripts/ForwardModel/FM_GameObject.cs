@@ -7,19 +7,21 @@ public abstract class FM_GameObject
     protected bool alive;
 
     //position and movement related
-    protected Vector2 position, velocity;
-    protected float speed;
+    protected Vector2 position;
+    protected FM_MovementComponent movement;
+    protected float speed, rotationSpeed;
 
     //collision related
     protected FM_Collider collider;
-
-    protected FM_GameObject(Vector2 pos, Vector2 vel, float sp, FM_GameObjectType tp, bool a)
+    
+    protected FM_GameObject(Vector2 pos, float sp, float r_sp, FM_GameObjectType tp, bool a)
     {
         position = pos;
-        velocity = vel;
         speed = sp;
+        rotationSpeed = r_sp;
         type = tp;
         alive = a;
+        movement = new FM_MovementComponent(speed, rotationSpeed);
     }
 
     //Getting and setting variables
@@ -27,9 +29,7 @@ public abstract class FM_GameObject
     public FM_GameObjectType GetType() { return type; }
     public void SetPosition(Vector2 pos) { position.x = pos.x; position.y = pos.y; }
     public Vector2 GetPosition() { return position; }
-    public void SetVelocity(Vector2 v) { velocity.x = v.x; velocity.y = v.y; }
-	public Vector2 GetVelocity() { return velocity; }
-    public float GetSpeed() { return speed; }
+    public FM_MovementComponent GetMovementComponent() { return movement; }
     public FM_Collider GetCollider() { return collider; }
 
 

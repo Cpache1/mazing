@@ -13,6 +13,9 @@ using UnityEngine;
 public class FM_VisualTest : MonoBehaviour
 {
     public bool moveLeft = false;
+    public bool moveRight = false;
+    public bool moveUp = false;
+    public bool moveDown = false;
 
     FM_Game game;
     //FM_Grid grid;
@@ -27,13 +30,18 @@ public class FM_VisualTest : MonoBehaviour
         FM_Grid grid = new FM_Grid(GameObject.FindGameObjectsWithTag("wall"));
 
         Vector3 playerPos = GameObject.FindGameObjectWithTag("Player").transform.position;
-        Vector2 playerVel = new Vector2(0.0f, 0.0f);
         float speed = GameObject.Find("PlayerController").GetComponent<PlayerController>().movementSpeed;
-        FM_Player player = new FM_Player(playerPos, playerVel, speed, FM_GameObjectType.Player, true);
+        float rotationSpeed = GameObject.Find("PlayerController").GetComponent<PlayerController>().rotationSpeed;
+        FM_Player player = new FM_Player(playerPos, speed, rotationSpeed, FM_GameObjectType.Player, true);
+        player.GetMovementComponent().SetVel(0, 0);
+        player.GetMovementComponent().SetDir(-1, 0);
 
         Vector3 monsterPos = GameObject.FindGameObjectWithTag("AI").transform.position;
-        Vector2 monsterVel = new Vector2(0.0f, 0.0f);
-        FM_Monster monster = new FM_Monster(monsterPos, monsterVel, 1.0f, FM_GameObjectType.Monster, true);
+        float mSpeed = GameObject.Find("Monster").GetComponent<Movement>().speed;
+        float mRotationSpeed = GameObject.Find("Monster").GetComponent<Movement>().rotationSpeed;
+        FM_Monster monster = new FM_Monster(monsterPos, mSpeed, mRotationSpeed, FM_GameObjectType.Monster, true);
+        monster.GetMovementComponent().SetVel(0, 0);
+        monster.GetMovementComponent().SetDir(0, 1);
 
         game = new FM_Game(player, monster, grid);
     }
@@ -41,12 +49,28 @@ public class FM_VisualTest : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        float x = 0.0f;
+        float y = 0.0f;
+
         if (moveLeft)
         {
-            float[] action = { 0.0f, -1.0f };
-            game.Apply(action, game.player);
+            x = -1.0f;
         }
-  
+        if (moveRight)
+        {
+            x = 1.0f;
+        }
+        if (moveDown)
+        {
+            y = -1.0f;
+        }
+        if (moveUp)
+        {
+            y = 1.0f;
+        }
+
+        float[] action = { x, y };
+        game.Apply(action, game.monster);
 
         game.UpdateGame();
     }
@@ -96,6 +120,11 @@ public class FM_VisualTest : MonoBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawSphere(c + new Vector3(padding, 0, 0),
             game.monster.GetCollider().GetCircle().GetRadius());
+
+        Vector3 d = game.monster.GetMovementComponent().GetDir();
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawLine(c + new Vector3(padding, 0, 0),
+            c + d + new Vector3(padding, 0, 0));
     }
 
     private void DrawBullets()
