@@ -70,6 +70,7 @@ public class FM_Game
     {
         gameObjects.Add(obj);
     }
+    public List<FM_GameObject> GetGameObjects() { return gameObjects; }
 
     public void HandleInput()
     {
