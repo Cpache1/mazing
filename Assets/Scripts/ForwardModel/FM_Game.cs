@@ -12,22 +12,22 @@ public class FM_Game
     public FM_Monster monster;
     public FM_Grid grid;
 
-    List<FM_GameObject> gameObjects;
+    FM_GameObject[] gameObjects;
 
     //we must keep track of where the bullets and bombs are as these are not fully part of staterep
     //only their existence.
 
-    public FM_Game(FM_Player p, FM_Monster m, FM_Grid g/*, AIState currentState*/)
+    public FM_Game(FM_Player p, FM_Monster m, FM_Grid g, FM_GameObject[] gameObjs/*, AIState currentState*/)
     {
-        grid = g;
-        gameObjects = new List<FM_GameObject>();
-        
         player = p;
-        gameObjects.Add(player);
         monster = m;
-        gameObjects.Add(monster);
+
+        grid = g;
+        gameObjects = gameObjs;
+        
         //state = currentState;
     }
+
 
     //action[0] = x, horizontal input
     //action[1] = y, vertical input
@@ -60,17 +60,26 @@ public class FM_Game
 
     }
 
+    public void GiveInputs(bool shooting, bool bomb)
+    {
+        if (shooting)
+        {
+            shooting = false;
+            player.GetGunControl().shoot = true;
+        }
+    }
+
 
     public void CreateGameObjectAt(Vector2 pos)
     {
         
     }
 
-    public void AddGameObject(FM_GameObject obj)
+    /*public void AddGameObject(FM_GameObject obj)
     {
         gameObjects.Add(obj);
-    }
-    public List<FM_GameObject> GetGameObjects() { return gameObjects; }
+    }*/
+    public FM_GameObject[] GetGameObjects() { return gameObjects; }
 
     public void HandleInput()
     {
@@ -81,19 +90,37 @@ public class FM_Game
     public void UpdateGame()
     {
         //Updates all entities
+        player.Update(this, 1); //it would be better to have all in one list/array
+        monster.Update(this, 1);
         foreach (FM_GameObject obj in gameObjects)
         {
             obj.Update(this, 1.0f);
         }
 
-        //Checks on collisions (mostly if things are colliding with bullets and bombs to delete them
-        //and add stuff to player
 
-        //Checks if something is deleted and eliminates it
-
-
-        //graphics update
-
+        //COLLISIONS (between moving objects)
+        //player and monster first
+        if (player.IntersectsWith(monster))
+        {
+            player.OnCollisionEnter(monster);
+        }
+        //bullets, bombs and walls after
+        for (int j = 0; j < gameObjects.Length; j++)
+        {
+            if (gameObjects[j].IsAlive()) //if not alive don't bother
+            {
+                //intersecting with player
+                if(gameObjects[j].IntersectsWith(player))
+                {
+                    gameObjects[j].OnCollisionEnter(player);
+                }
+                //intersecting with monster (remember bombs can intersect both at the same time)
+                if(gameObjects[j].IntersectsWith(monster))
+                {
+                    gameObjects[j].OnCollisionEnter(monster);
+                }
+            }
+        }
     }
 
     //public FM_GameObject GetEntity to get an entity with a specific index.

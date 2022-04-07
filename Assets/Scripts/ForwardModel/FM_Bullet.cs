@@ -14,11 +14,20 @@ public class FM_Bullet : FM_GameObject
         collider = new FM_Collider(new FM_Rectangle(bL, tR), size);
     }
 
-    //public int GetHealth() { return health; }
+    public override void OnCollisionEnter(FM_GameObject other)
+    {
+        if (other.GetType() == FM_GameObjectType.Monster)
+        {
+            DeleteGameObject();
+        }
+    }
 
     public override void Update(FM_Game game, float elapsed = 1.0f)
     {
-        movement.Update(this, game);
-        collider.Update(this);
+        if (alive)
+        {
+            movement.Update(this, game);
+            collider.Update(this);
+        }
     }
 }

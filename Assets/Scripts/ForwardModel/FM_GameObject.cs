@@ -34,10 +34,13 @@ public abstract class FM_GameObject
 
 
     //Helping functions
-    bool IsAlive() { return alive; }
-    void DeleteGameObject() { alive = false; }
+    public bool IsAlive() { return alive; }
+    public void DeleteGameObject() { alive = false; }
+    public void Revive() { alive = true; }
 
-    public abstract void Update(FM_Game game, float elapsed = 1.0f);
+    public abstract void Update(FM_Game game, float elapsed = 1.0f); //TODO, remove elapsed?
+    public bool IntersectsWith(FM_GameObject other) { return GetCollider().Intersects(other.GetCollider()); }
+    public abstract void OnCollisionEnter(FM_GameObject other);
 }
 
 public enum FM_GameObjectType

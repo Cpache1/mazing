@@ -30,11 +30,20 @@ public class FM_MovementComponent
         obj.SetPosition(new Vector2(newPos.x, newPos.y));
 
         //This is a bit of a hack...
-        //collisions with walls as it would be the only one that doesn't "go over"
+        //collisions with walls... 
         obj.GetCollider();
         if (!CanMakeMove(obj, game.grid))
         {
-            obj.SetPosition(oldPos);
+            //... as a player or monster it goes "back" so they don't "go over"
+            if (obj.GetType() == FM_GameObjectType.Player || obj.GetType() == FM_GameObjectType.Monster)
+            {
+                obj.SetPosition(oldPos);
+            }
+            //... as bullets or bombs they get destroyed 
+            else
+            {
+                obj.DeleteGameObject();
+            }
         }
 
         //Updating rotation

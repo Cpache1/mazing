@@ -27,6 +27,7 @@ public class FM_GunControlComponent
     public int bulletSpeed;// = 500;
     public float firingRate;// = 0.5f;
     public float reloadTime;// = 2.5f;
+    public bool shoot;
 
     //Private variables for the primary weapon cooldown
     public bool reloading = false;
@@ -47,7 +48,7 @@ public class FM_GunControlComponent
 
     //Private variables for aiming
     //private Vector3 mousePosition;
-    //private float rotationSpeed;
+    private float rotationSpeed;
 
 
     public FM_GunControlComponent()
@@ -57,7 +58,39 @@ public class FM_GunControlComponent
 
     private void SetupGunControls()
     {
+        shoot = false;
+        startingBullets = 5;
 
+        bulletSpeed = 1000;
+        rotationSpeed = 0.0f;
     }
 
+    public void Update(FM_Player p, FM_Game game)
+    {
+        if (shoot)
+        {
+            shoot = false;
+            Shoot(p, game);
+        }
+    }
+
+    public void Shoot(FM_Player _player, FM_Game _game)
+    {
+        //get positions and velocities/direction
+        Vector2 compDir = _player.GetMovementComponent().GetDir();
+        Vector2 pos = _player.GetPosition() + compDir;
+
+        //find a "dead" bullet and revive it
+        FM_GameObject[] projectiles = _game.GetGameObjects();
+        for (int i = 0; i < startingBullets; i++)
+        {
+            if(!projectiles[i].IsAlive())
+            {
+                projectiles[i].SetPosition(pos);
+                projectiles[i].GetMovementComponent().SetVel(compDir.x, compDir.y);
+                projectiles[i].Revive();
+                break;
+            }
+        }
+    }
 }

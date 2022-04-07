@@ -10,6 +10,14 @@ public class FM_Monster : FM_GameObject
         collider = new FM_Collider(new FM_Circle(position, size), size);
     }
 
+    public override void OnCollisionEnter(FM_GameObject other)
+    {
+        if (other.GetType() == FM_GameObjectType.Player)
+        {
+            DeleteGameObject();
+        }
+    }
+
     public override void Update(FM_Game game, float elapsed = 1.0f)
     {
         movement.Update(this, game);

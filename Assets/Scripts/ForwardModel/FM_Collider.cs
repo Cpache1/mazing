@@ -63,7 +63,7 @@ public class FM_Collider
     {
         if (shape == FM_Collider_Shape.Rectangle && other.GetShape() == FM_Collider_Shape.Rectangle)
         {
-            return box.Intersects(other.GetBox());
+            return other.GetBox().Intersects(GetBox());
         }
         else if (shape == FM_Collider_Shape.Rectangle && other.GetShape() == FM_Collider_Shape.Circle)
         {

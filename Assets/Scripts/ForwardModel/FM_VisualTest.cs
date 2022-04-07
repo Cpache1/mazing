@@ -37,6 +37,7 @@ public class FM_VisualTest : MonoBehaviour
         FM_Player player = new FM_Player(playerPos, speed, rotationSpeed, FM_GameObjectType.Player, true);
         player.GetMovementComponent().SetVel(0, 0);
         player.GetMovementComponent().SetDir(-1, 0);
+        //player.GetMovementComponent().SetDir(0, -1);
 
         Vector3 monsterPos = GameObject.FindGameObjectWithTag("AI").transform.position;
         float mSpeed = GameObject.Find("Monster").GetComponent<Movement>().speed;
@@ -45,7 +46,9 @@ public class FM_VisualTest : MonoBehaviour
         monster.GetMovementComponent().SetVel(0, 0);
         monster.GetMovementComponent().SetDir(0, 1);
 
-        game = new FM_Game(player, monster, grid);
+        FM_GameObject[] projectiles = CreateProjectiles();
+
+        game = new FM_Game(player, monster, grid, projectiles);
     }
 
     // Update is called once per frame
@@ -74,7 +77,7 @@ public class FM_VisualTest : MonoBehaviour
         if(shoot)
         {
             shoot = false;
-            game.player.Shoot(game);
+            game.GiveInputs(true, false);
         }
 
         float[] action = { x, y };
@@ -138,9 +141,10 @@ public class FM_VisualTest : MonoBehaviour
 
     private void DrawBullets()
     {
-        for (int i = 0; i < game.GetGameObjects().Count; i++)
+        for (int i = 0; i < game.GetGameObjects().Length; i++)
         {
-            if (game.GetGameObjects()[i].GetType() == FM_GameObjectType.Bullet)
+            if (game.GetGameObjects()[i].GetType() == FM_GameObjectType.Bullet &&
+                game.GetGameObjects()[i].IsAlive())
             {
                 FM_Collider collider = game.GetGameObjects()[i].GetCollider();
                 FM_Rectangle rec = collider.GetBox();
@@ -165,6 +169,30 @@ public class FM_VisualTest : MonoBehaviour
 
     private void DrawBombs()
     {
+
+    }
+
+    private FM_GameObject[] CreateProjectiles()
+    {
+        Vector2 vec = new Vector2(0.0f, 0.0f);
+
+        int startingBullets = 5;
+        float bulletSpeed = 1000.0f;
+
+        float rotationSpeed = 0.0f;
+
+        float bulletSize_x = 0.275f;
+        float bulletSize_y = 0.1f;
+
+        FM_GameObject[] objs = new FM_GameObject[startingBullets];
+
+        for (int i = 0; i < objs.Length; i++)
+        {
+            objs[i] = new FM_Bullet(vec, bulletSpeed, rotationSpeed, FM_GameObjectType.Bullet,
+                false, new Vector2(bulletSize_x, bulletSize_y));
+        }
+
+        return objs;
 
     }
 }

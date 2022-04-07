@@ -16,19 +16,20 @@ public class FM_Player : FM_GameObject
     
     //public int GetHealth() { return health; }
 
+    public override void OnCollisionEnter(FM_GameObject other)
+    {
+        if(other.GetType()==FM_GameObjectType.Monster)
+        {
+
+        }
+    }
+
     public override void Update(FM_Game game, float elapsed = 1.0f)
     {
+        gunControl.Update(this, game);
         movement.Update(this, game);
         collider.Update(this);
     }
 
-    public void Shoot(FM_Game game)
-    {
-        Vector2 pos = GetPosition() + GetMovementComponent().GetDir();
-        FM_Bullet bullet = new FM_Bullet(pos, 1000.0f, 0.0f, FM_GameObjectType.Bullet, true, new Vector2(0.275f, 0.1f));
-        //bullet.GetMovementComponent().SetDir(GetMovementComponent().GetDir());
-        bullet.GetMovementComponent().SetVel(GetMovementComponent().GetDir().x, GetMovementComponent().GetDir().y);
-        game.AddGameObject(bullet);
-    }
-
+    public FM_GunControlComponent GetGunControl() { return gunControl; }
 }
