@@ -2,17 +2,23 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FM_HealthComponent : MonoBehaviour
+public class FM_HealthComponent
 {
-    // Start is called before the first frame update
-    void Start()
+    int health;
+    int maxHealth;
+
+    public FM_HealthComponent(int h, int maxH)
     {
-        
+        health = h;
+        maxHealth = maxH;
     }
 
-    // Update is called once per frame
-    void Update()
+    public int GetHealth() { return health; }
+    public void AddHealth(int h)
     {
-        
+        health += h;
+        if (health > maxHealth) health = maxHealth;
+        if (health < 0) health = 0;
     }
+   
 }

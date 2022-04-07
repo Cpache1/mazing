@@ -2,8 +2,10 @@
 
 public class FM_Player : FM_GameObject
 {
-    int health;
+    int startingHealth;
     int maxHealth;
+    FM_HealthComponent health;
+
     float size = 0.5f; //radius
     FM_GunControlComponent gunControl;
 
@@ -11,6 +13,7 @@ public class FM_Player : FM_GameObject
         base(_position, _speed, _rotationSpeed, _type, _alive) 
     {
         collider = new FM_Collider(new FM_Circle(position, size), size);
+        health = new FM_HealthComponent(startingHealth, maxHealth);
         gunControl = new FM_GunControlComponent();
     }
     
@@ -20,7 +23,8 @@ public class FM_Player : FM_GameObject
     {
         if(other.GetType()==FM_GameObjectType.Monster)
         {
-
+            GetHealthComponent().AddHealth(-500);
+            //Die
         }
     }
 
@@ -32,4 +36,13 @@ public class FM_Player : FM_GameObject
     }
 
     public FM_GunControlComponent GetGunControl() { return gunControl; }
+    public FM_HealthComponent GetHealthComponent() { return health; }
+
+    public void CheckState()
+    {
+        if (GetHealthComponent().GetHealth() == 0)
+        {
+            alive = false;
+        }
+    }
 }

@@ -82,7 +82,7 @@ public class FM_GunControlComponent
 
         //find a "dead" bullet and revive it
         FM_GameObject[] projectiles = _game.GetGameObjects();
-        for (int i = 0; i < startingBullets; i++)
+        for (int i = 2; i < startingBullets + 2; i++)
         {
             if(!projectiles[i].IsAlive())
             {

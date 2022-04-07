@@ -4,6 +4,8 @@ public class FM_Bullet : FM_GameObject
 {
     Vector2 size;
 
+    int bulletDamage = 5;
+
     public FM_Bullet(Vector2 _position, float _speed, float _rotationSpeed, FM_GameObjectType _type, bool _alive, Vector2 _size) :
         base(_position, _speed, _rotationSpeed, _type, _alive)
     {
@@ -19,6 +21,8 @@ public class FM_Bullet : FM_GameObject
         if (other.GetType() == FM_GameObjectType.Monster)
         {
             DeleteGameObject();
+            FM_Monster monster = (FM_Monster)other;
+            monster.GetHealthComponent().AddHealth(-bulletDamage);
         }
     }
 

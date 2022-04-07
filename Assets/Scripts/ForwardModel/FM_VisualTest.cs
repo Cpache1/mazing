@@ -23,6 +23,8 @@ public class FM_VisualTest : MonoBehaviour
     //FM_Grid grid;
     //FM_Player player;
     //FM_Monster monster;
+    //List<FM_GameObject> gameObjs;
+
 
     public float padding = 50.0f;
 
@@ -38,6 +40,7 @@ public class FM_VisualTest : MonoBehaviour
         player.GetMovementComponent().SetVel(0, 0);
         player.GetMovementComponent().SetDir(-1, 0);
         //player.GetMovementComponent().SetDir(0, -1);
+        //gameObjs.Add(player);
 
         Vector3 monsterPos = GameObject.FindGameObjectWithTag("AI").transform.position;
         float mSpeed = GameObject.Find("Monster").GetComponent<Movement>().speed;
@@ -45,10 +48,13 @@ public class FM_VisualTest : MonoBehaviour
         FM_Monster monster = new FM_Monster(monsterPos, mSpeed, mRotationSpeed, FM_GameObjectType.Monster, true);
         monster.GetMovementComponent().SetVel(0, 0);
         monster.GetMovementComponent().SetDir(0, 1);
+        //gameObjs.Add(monster);
 
-        FM_GameObject[] projectiles = CreateProjectiles();
+        //CreateGameObjs(player, monster);
 
-        game = new FM_Game(player, monster, grid, projectiles);
+        
+        FM_GameObject[] gameObjs = CreateGameObjs(player, monster);
+        game = new FM_Game(grid, gameObjs);
     }
 
     // Update is called once per frame
@@ -79,11 +85,14 @@ public class FM_VisualTest : MonoBehaviour
             shoot = false;
             game.GiveInputs(true, false);
         }
+        if (game != null)
+        {
+            float[] action = { x, y };
+            game.Apply(action, game.monster);
 
-        float[] action = { x, y };
-        game.Apply(action, game.monster);
 
-        game.UpdateGame();
+            game.UpdateGame();
+        }
     }
 
     private void OnDrawGizmosSelected()
@@ -120,23 +129,29 @@ public class FM_VisualTest : MonoBehaviour
 
     private void DrawPlayer()
     {
-        Vector3 c = game.player.GetCollider().GetCircle().GetCenter();
-        Gizmos.color = Color.blue;
-        Gizmos.DrawSphere( c + new Vector3(padding, 0, 0),
-            game.player.GetCollider().GetCircle().GetRadius());
+        if (game.player.IsAlive())
+        {
+            Vector3 c = game.player.GetCollider().GetCircle().GetCenter();
+            Gizmos.color = Color.blue;
+            Gizmos.DrawSphere(c + new Vector3(padding, 0, 0),
+                game.player.GetCollider().GetCircle().GetRadius());
+        }
     }
 
     private void DrawMonster()
     {
-        Vector3 c = game.monster.GetCollider().GetCircle().GetCenter();
-        Gizmos.color = Color.red;
-        Gizmos.DrawSphere(c + new Vector3(padding, 0, 0),
-            game.monster.GetCollider().GetCircle().GetRadius());
+        if (game.monster.IsAlive())
+        {
+            Vector3 c = game.monster.GetCollider().GetCircle().GetCenter();
+            Gizmos.color = Color.red;
+            Gizmos.DrawSphere(c + new Vector3(padding, 0, 0),
+                game.monster.GetCollider().GetCircle().GetRadius());
 
-        Vector3 d = game.monster.GetMovementComponent().GetDir();
-        Gizmos.color = Color.cyan;
-        Gizmos.DrawLine(c + new Vector3(padding, 0, 0),
-            c + d + new Vector3(padding, 0, 0));
+            Vector3 d = game.monster.GetMovementComponent().GetDir();
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawLine(c + new Vector3(padding, 0, 0),
+                c + d + new Vector3(padding, 0, 0));
+        }
     }
 
     private void DrawBullets()
@@ -172,7 +187,7 @@ public class FM_VisualTest : MonoBehaviour
 
     }
 
-    private FM_GameObject[] CreateProjectiles()
+    private FM_GameObject[] CreateGameObjs(FM_Player p, FM_Monster m)
     {
         Vector2 vec = new Vector2(0.0f, 0.0f);
 
@@ -184,9 +199,11 @@ public class FM_VisualTest : MonoBehaviour
         float bulletSize_x = 0.275f;
         float bulletSize_y = 0.1f;
 
-        FM_GameObject[] objs = new FM_GameObject[startingBullets];
+        FM_GameObject[] objs = new FM_GameObject[2 + startingBullets];
+        objs[0] = p;
+        objs[1] = m;
 
-        for (int i = 0; i < objs.Length; i++)
+        for (int i = 2; i < objs.Length; i++)
         {
             objs[i] = new FM_Bullet(vec, bulletSpeed, rotationSpeed, FM_GameObjectType.Bullet,
                 false, new Vector2(bulletSize_x, bulletSize_y));
@@ -195,4 +212,30 @@ public class FM_VisualTest : MonoBehaviour
         return objs;
 
     }
+
+    /*private void CreateGameObjs()
+    {
+        Vector2 vec = new Vector2(0.0f, 0.0f);
+
+        int startingBullets = 5;
+        float bulletSpeed = 1000.0f;
+
+        float rotationSpeed = 0.0f;
+
+        float bulletSize_x = 0.275f;
+        float bulletSize_y = 0.1f;
+
+        //FM_GameObject[] objs = new FM_GameObject[2 + startingBullets];
+        //objs[0] = p;
+        //objs[1] = (FM_GameObject)m;
+
+        for (int i = 2; i < startingBullets+2; i++)
+        {
+            gameObjs.Add(new FM_Bullet(vec, bulletSpeed, rotationSpeed, FM_GameObjectType.Bullet,
+                false, new Vector2(bulletSize_x, bulletSize_y)));
+        }
+
+        
+
+    }*/
 }

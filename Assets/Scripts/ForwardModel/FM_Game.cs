@@ -13,18 +13,20 @@ public class FM_Game
     public FM_Grid grid;
 
     FM_GameObject[] gameObjects;
+    //List<FM_GameObject> gameObjects;
+    int startProjectileIndex = 2;
 
     //we must keep track of where the bullets and bombs are as these are not fully part of staterep
     //only their existence.
 
-    public FM_Game(FM_Player p, FM_Monster m, FM_Grid g, FM_GameObject[] gameObjs/*, AIState currentState*/)
+    public FM_Game(FM_Grid g, FM_GameObject[] gameObjs/*, AIState currentState*/)
     {
-        player = p;
-        monster = m;
-
         grid = g;
+
         gameObjects = gameObjs;
-        
+        player = (FM_Player)gameObjects[0]; //player is first
+        monster = (FM_Monster)gameObjects[1]; //monster second
+
         //state = currentState;
     }
 
@@ -90,11 +92,15 @@ public class FM_Game
     public void UpdateGame()
     {
         //Updates all entities
-        player.Update(this, 1); //it would be better to have all in one list/array
-        monster.Update(this, 1);
+        //player.Update(this, 1); //it would be better to have all in one list/array
+        //monster.Update(this, 1);
+        
         foreach (FM_GameObject obj in gameObjects)
         {
-            obj.Update(this, 1.0f);
+            if (obj.IsAlive())
+            {
+                obj.Update(this, 1.0f);
+            }
         }
 
 
@@ -105,7 +111,7 @@ public class FM_Game
             player.OnCollisionEnter(monster);
         }
         //bullets, bombs and walls after
-        for (int j = 0; j < gameObjects.Length; j++)
+        for (int j = startProjectileIndex; j < gameObjects.Length; j++)
         {
             if (gameObjects[j].IsAlive()) //if not alive don't bother
             {
