@@ -75,7 +75,7 @@ public class FM_Collider
         }
         else if (shape == FM_Collider_Shape.Circle && other.GetShape() == FM_Collider_Shape.Circle)
         {
-            return circle.Intersects(other.GetCircle());
+            return other.GetCircle().Intersects(GetCircle());
         }
 
         return false;

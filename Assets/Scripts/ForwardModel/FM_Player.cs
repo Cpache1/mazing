@@ -24,8 +24,10 @@ public class FM_Player : FM_GameObject
         if(other.GetType()==FM_GameObjectType.Monster)
         {
             GetHealthComponent().AddHealth(-500);
-            //Die
         }
+
+        //check its state
+        CheckState();
     }
 
     public override void Update(FM_Game game, float elapsed = 1.0f)

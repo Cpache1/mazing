@@ -37,12 +37,11 @@ public class FM_Circle
         double y = circle.center.y;
         float rad = circle.radius;
 
-        double distance = Math.Sqrt(((x - center.x) * (x - center.x) +
-            (y - center.y) * (y - center.y)));
+        double distance = (x - center.x) * (x - center.x) +
+            (y - center.y) * (y - center.y);
+        double radiusSum = (rad + radius) * (rad + radius);
 
-        if (distance + rad <= radius)
-            return true;
-        return false;
+        return (distance <= radiusSum);
     }
 
     public bool Intersects(FM_Rectangle rectangle)

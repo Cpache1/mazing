@@ -91,10 +91,7 @@ public class FM_Game
 
     public void UpdateGame()
     {
-        //Updates all entities
-        //player.Update(this, 1); //it would be better to have all in one list/array
-        //monster.Update(this, 1);
-        
+        //Updates all entities        
         foreach (FM_GameObject obj in gameObjects)
         {
             if (obj.IsAlive())
@@ -105,25 +102,28 @@ public class FM_Game
 
 
         //COLLISIONS (between moving objects)
-        //player and monster first
-        if (player.IntersectsWith(monster))
+        if (player.IsAlive() && monster.IsAlive()) //if they're not, game is over so no point checking collisions
         {
-            player.OnCollisionEnter(monster);
-        }
-        //bullets, bombs and walls after
-        for (int j = startProjectileIndex; j < gameObjects.Length; j++)
-        {
-            if (gameObjects[j].IsAlive()) //if not alive don't bother
+            //player and monster first
+            if (player.IntersectsWith(monster))
             {
-                //intersecting with player
-                if(gameObjects[j].IntersectsWith(player))
+                player.OnCollisionEnter(monster);
+            }
+            //bullets, bombs and walls after
+            for (int j = startProjectileIndex; j < gameObjects.Length; j++)
+            {
+                if (gameObjects[j].IsAlive()) //if not alive don't bother
                 {
-                    gameObjects[j].OnCollisionEnter(player);
-                }
-                //intersecting with monster (remember bombs can intersect both at the same time)
-                if(gameObjects[j].IntersectsWith(monster))
-                {
-                    gameObjects[j].OnCollisionEnter(monster);
+                    //intersecting with player
+                    if (gameObjects[j].IntersectsWith(player))
+                    {
+                        gameObjects[j].OnCollisionEnter(player);
+                    }
+                    //intersecting with monster (remember bombs can intersect both at the same time)
+                    if (gameObjects[j].IntersectsWith(monster))
+                    {
+                        gameObjects[j].OnCollisionEnter(monster);
+                    }
                 }
             }
         }
