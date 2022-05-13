@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerAIMovement : MonoBehaviour
 {
-    public static int NUM_ACTIONS = 5;
+    public static int NUM_ACTIONS = 9;
 
     public LayerMask unwalkableMask;
     public LayerMask fireMask;

@@ -1,14 +1,15 @@
-﻿using System;
+﻿using Monte;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using UnityEngine.Events;
-using Monte;
-using System.Linq;
 
-public class LevelManager : MonoBehaviour {    
+public class LevelManager : MonoBehaviour
+{
     public bool moderatorActive;
     public bool doCountDown;
     public bool silentCountDown;
@@ -29,12 +30,14 @@ public class LevelManager : MonoBehaviour {
     public float agentStartFrustration;
     [HideInInspector]
     public Vector3 playerStartPosition;
-    GameObject agent;
-    GameObject player;
+    [HideInInspector]
+    public GameObject agent;
+    [HideInInspector]
+    public GameObject player;
 
     //For Algorithm stuff
     private GameObject cursor;
-    int algorithmIndx; 
+    int algorithmIndx;
     AIAgent agentType;
     Model model;
     string settings;
@@ -63,38 +66,47 @@ public class LevelManager : MonoBehaviour {
     private Color fpsIndicatorColor;
     private Color fpsWarningColor = new Color(0.9f, 0, 0.2f, 1);
 
-    private void Awake() {
+    private void Awake()
+    {
         keyPresses = new List<string>();
-        if (doCountDown) {
-            if (!silentCountDown) {
+        if (doCountDown)
+        {
+            if (!silentCountDown)
+            {
                 timer = GameObject.Find("Timer").GetComponent<Text>();
             }
             countdown = timeLimit;
         }
-        if (doScore) {
+        if (doScore)
+        {
             scoreBoard = GameObject.Find("Score").GetComponent<Text>();
         }
         agent = GameObject.Find("Monster");
         player = GameObject.Find("PlayerController");
 
-        if (agent != null) {
+        if (agent != null)
+        {
             agentStartFrustration = agent.GetComponent<FrustrationComponent>().levelOfFrustration;
             stateRep = new float[57];
             tick = 0;
         }
 
-        if (player != null) {
+        if (player != null)
+        {
             playerStartPosition = player.transform.position;
         }
     }
 
-    private void Start() {
+    private void Start()
+    {
         fpsIndicatorColor = fpsText.color;
 
-        if (!gameStarted) {
+        if (!gameStarted)
+        {
             gameStarted = true;
             StartCoroutine(LateStart());
-            if (warnStart) {
+            if (warnStart)
+            {
                 StartCoroutine(RemindStart());
             }
         }
@@ -104,13 +116,14 @@ public class LevelManager : MonoBehaviour {
         Cursor.visible = false;
     }
 
-    IEnumerator LateStart() {
+    IEnumerator LateStart()
+    {
         yield return new WaitForFixedUpdate();
         OnGameStart.Invoke();
 
         if (player.GetComponent<PlayerController>().isAI)
         {//CHEAT! When the player is AI the cursor is "always" on the enemy
-            cursor = GameObject.Find("Monster"); 
+            cursor = GameObject.Find("Monster");
         }
         else
         {
@@ -122,7 +135,8 @@ public class LevelManager : MonoBehaviour {
         yield return null;
     }
 
-    IEnumerator RemindStart() {
+    IEnumerator RemindStart()
+    {
         yield return new WaitForSeconds(30);
         Button startButton = GameObject.Find("Start").GetComponent<Button>();
         ColorBlock cb = startButton.colors;
@@ -131,23 +145,29 @@ public class LevelManager : MonoBehaviour {
         yield return null;
     }
 
-    private void Update() {
-        if (Time.unscaledTime > fpsTimer) {
+    private void Update()
+    {
+        if (Time.unscaledTime > fpsTimer)
+        {
             fps = (int)(1f / Time.unscaledDeltaTime);
             fpsText.text = "FPS: " + fps;
             fpsTimer = Time.unscaledTime + fpsRefreshRate;
-            
+
             // Gives 3 seconds for the game to stabilize
-            if (fps < fpsLimit && Time.timeSinceLevelLoad > 3f) {
+            if (fps < fpsLimit && Time.timeSinceLevelLoad > 3f)
+            {
                 fpsText.color = fpsWarningColor;
-            } else {
+            }
+            else
+            {
                 fpsText.color = fpsIndicatorColor;
             }
         }
     }
 
     //TODO: Reset will needs additions for latest AI (MCTS)
-    public void ResetStage(int reward) {
+    public void ResetStage(int reward)
+    {
         //algorithm related
         tick = 0;
         keyPresses.Clear();
@@ -155,17 +175,20 @@ public class LevelManager : MonoBehaviour {
             stateRep[n] = 0.0f;
 
         GameObject[] currentBombs = GameObject.FindGameObjectsWithTag("bomb");
-        for (int i = 0; i < currentBombs.Length; i++) {
+        for (int i = 0; i < currentBombs.Length; i++)
+        {
             //Defusing bombs before destroy prevents them spawing fires
             currentBombs[i].GetComponent<BombBehavior>().fuse = false;
             Destroy(currentBombs[i]);
         }
         GameObject[] currentProjectiles = GameObject.FindGameObjectsWithTag("projectile");
-        for (int i = 0; i < currentProjectiles.Length; i++) {
+        for (int i = 0; i < currentProjectiles.Length; i++)
+        {
             Destroy(currentProjectiles[i]);
         }
         GameObject[] currentFires = GameObject.FindGameObjectsWithTag("fire");
-        for (int i = 0; i < currentFires.Length; i++) {
+        for (int i = 0; i < currentFires.Length; i++)
+        {
             Destroy(currentFires[i]);
         }
 
@@ -173,13 +196,15 @@ public class LevelManager : MonoBehaviour {
         agent.GetComponent<Health>().health = 100;
         agent.GetComponent<FrustrationComponent>().levelOfFrustration = agentStartFrustration;
 
-        if (GameObject.Find("playerDestroyEffect(Clone)") == null) {
+        if (GameObject.Find("playerDestroyEffect(Clone)") == null)
+        {
             Instantiate(player.GetComponent<PlayerHealth>().destroyEffect, new Vector3(player.transform.position.x, player.transform.position.y, -1), player.transform.rotation);
             score += reward;
         }
 
         player.transform.position = playerStartPosition;
-        if (GameObject.Find("agentDestroyEffect(Clone)") == null) {
+        if (GameObject.Find("agentDestroyEffect(Clone)") == null)
+        {
             Instantiate(agent.GetComponent<Health>().destroyEffect, new Vector3(agent.transform.position.x, agent.transform.position.y, -1), agent.transform.rotation);
         }
 
@@ -199,7 +224,7 @@ public class LevelManager : MonoBehaviour {
         agent.GetComponent<FieldOfView>().targetDetected = false;
         agent.GetComponent<ProximityDetector>().playerDetected = false;
         agentStatus.lastVisibleTargetPosition = agentStartPosition;
-        
+
         //Dirty workaround to stop the agent from following the previous path. 
         //For some reason the coroutine started by the same expression was not able to stop, so just call a new path request that instantly exits.
         //PathRequestManager.RequestPath(transform.position, agentStartPosition, agentStatus.OnPathFound);
@@ -216,29 +241,37 @@ public class LevelManager : MonoBehaviour {
         PathController playerPathController = agent.GetComponent<PathController>();
         agentPathController.RequestPath(playerStartPosition, playerStartPosition, playerStatus.OnPathFound);
 
+        agentType = agent.GetComponent<AIManager>().agent;
+        agentType.reset();
     }
 
-    private void FixedUpdate() {
+    private void FixedUpdate()
+    {
         tick++;
 
-        if (doCountDown) {
+        if (doCountDown)
+        {
             countdown -= Time.deltaTime;
-            if (countdown < 0) {
-                if (!gameEnded) {
+            if (countdown < 0)
+            {
+                if (!gameEnded)
+                {
                     gameEnded = true;
                     OnGameEnd.Invoke();
                 }
-                
+
                 //LoadSurvey();
                 //LoadEndScreen();
             }
-            if (!silentCountDown) {
+            if (!silentCountDown)
+            {
                 timer.text = Mathf.RoundToInt(Mathf.Clamp(countdown, 0, timeLimit)) > 9 ?
                              Mathf.RoundToInt(Mathf.Clamp(countdown, 0, timeLimit)).ToString() :
                              "0" + Mathf.RoundToInt(Mathf.Clamp(countdown, 0, timeLimit)).ToString();
             }
         }
-        if (doScore) {
+        if (doScore)
+        {
             score = Mathf.Max(0, score);
             scoreBoard.text = score.ToString() + " SCORE";
 
@@ -265,15 +298,19 @@ public class LevelManager : MonoBehaviour {
         fullTime = fullTime + 1;
     }
 
-    public void LoadLevel(string name) {
+    public void LoadLevel(string name)
+    {
         tick = 0;
         // Moderator is a research assistant who has to hold down Ctrl for key commands to work.
-        if (moderatorActive) {
-            if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) {
+        if (moderatorActive)
+        {
+            if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))
+            {
                 SceneManager.LoadScene(name);
             }
         }
-        if (!moderatorActive || (moderatorActive && name == "Tutorial")) {
+        if (!moderatorActive || (moderatorActive && name == "Tutorial"))
+        {
             SceneManager.LoadScene(name);
         }
     }
@@ -366,9 +403,9 @@ public class LevelManager : MonoBehaviour {
                 Input.GetKeyDown(KeyCode.Space)) ? 1 : 0);
 
             //playerTriesToFireOnCD
-            stateRep[34] =(Input.GetMouseButton(0) &&
-                GameObject.Find("GunControls").GetComponent<GunControls>().projectileCount == 0 ? 1 : 0); 
-            
+            stateRep[34] = (Input.GetMouseButton(0) &&
+                GameObject.Find("GunControls").GetComponent<GunControls>().projectileCount == 0 ? 1 : 0);
+
             //playerTriesToBombOnCD
             stateRep[35] = ((Input.GetMouseButtonUp(1) &&
             cursor.GetComponent<GunControls>().bombCount == 0 ? 1 : 0));
@@ -379,9 +416,9 @@ public class LevelManager : MonoBehaviour {
             stateRep[34] = 0.0f; //playerTriesToFireOnCD
             stateRep[35] = 0.0f; //playerTriesToBombOnCD
         }
-             
-  
-        
+
+
+
         stateRep[31] = (cursor.transform.position - previousCursorPosition).magnitude; //cursorDistanceTraveled
         previousCursorPosition = cursor.transform.position;
 
@@ -396,10 +433,10 @@ public class LevelManager : MonoBehaviour {
         stateRep[37] =
             !GameObject.Find("GunControls").GetComponent<GunControls>().bombReloading ? 1 : 0; //bombDropped
 
-        stateRep[38] = 
+        stateRep[38] =
             GameObject.Find("GunControls").GetComponent<GunControls>().reloading ? 1 : 0; //gunReloading
 
-        stateRep[39] = 
+        stateRep[39] =
             GameObject.Find("GunControls").GetComponent<GunControls>().bombReloading ? 1 : 0; //bombReloading
 
         stateRep[49] = GameObject.FindGameObjectsWithTag("fire").Length; //onScreenFires

@@ -14,6 +14,7 @@ public class FM_HealthComponent
     }
 
     public int GetHealth() { return health; }
+    public void SetHealth(int h) { health = h; } //forward model/state rep update needs this
     public void AddHealth(int h)
     {
         health += h;

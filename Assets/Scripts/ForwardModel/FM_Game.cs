@@ -1,4 +1,4 @@
-﻿//using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Monte;
@@ -8,6 +8,7 @@ public class FM_Game
     Time elapsed;
 
     public AIState state;
+    public float[] stateRep;
     public FM_Player player;
     public FM_Monster monster;
     public FM_Grid grid;
@@ -129,5 +130,52 @@ public class FM_Game
         }
     }
 
-    //public FM_GameObject GetEntity to get an entity with a specific index.
+    //Update game based on the new state representation given by FM
+    public void UpdateStateRep(float[] currentState)
+    {
+        stateRep = currentState;
+
+        //monster
+        monster.SetPosition(new Vector2(stateRep[3], stateRep[4]));
+        float degrees = stateRep[5];
+        monster.GetMovementComponent().SetDir((float)Math.Cos(degrees * Math.PI / 180), (float)Math.Sin(degrees * Math.PI / 180)); // degrees to vector
+        monster.GetHealthComponent().SetHealth((int)stateRep[14]);
+
+        //player
+        player.SetPosition(new Vector2(stateRep[24], stateRep[25]));
+        degrees = stateRep[26];
+        player.GetMovementComponent().SetDir((float)Math.Cos(degrees * Math.PI / 180), (float)Math.Sin(degrees * Math.PI / 180));
+        monster.GetHealthComponent().SetHealth((int)stateRep[27]);
+
+        //bullets + bombs
+        //TODO
+    }
+
+    //Gets the current state based on the state rep
+    //Call this only after UpdateGame().
+    //TODO: the rotation might be wrong because I am considering origin looking at right
+    //the game itself might make it looking at left...
+    //return the new state after updates
+    public float[] GetNextState()
+    {
+        //game has been updated, update state representation
+
+
+
+        Vector2 origin = new Vector2(0.0f, 0.0f);
+        
+        //monster
+        stateRep[3] = monster.GetPosition().x;
+        stateRep[4] = monster.GetPosition().y;
+        stateRep[5] = Vector2.SignedAngle(origin, monster.GetMovementComponent().GetDir());
+        stateRep[14] = monster.GetHealthComponent().GetHealth();
+
+        //player
+        stateRep[24] = player.GetPosition().x;
+        stateRep[25] = player.GetPosition().y;
+        stateRep[26] = Vector2.SignedAngle(origin, player.GetMovementComponent().GetDir());
+        stateRep[27] = player.GetHealthComponent().GetHealth();
+
+        return stateRep;
+    }
 }

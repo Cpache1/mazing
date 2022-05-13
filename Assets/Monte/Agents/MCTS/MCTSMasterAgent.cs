@@ -3,9 +3,9 @@ Author: Charlie Ringer, found at https://github.com/charlieringer/Monte
 Library released under MIT License
 */
 
-using System.Xml;
 using System;
 using System.IO;
+using System.Xml;
 
 namespace Monte
 {
@@ -22,7 +22,7 @@ namespace Monte
         protected int maxRollout;
         //Constructors for the Agent
         protected MCTSMasterAgent() { parseXML("Assets/Monte/DefaultSettings.xml"); }
-        protected MCTSMasterAgent (string fileName) { parseXML(fileName); }
+        protected MCTSMasterAgent(string fileName) { parseXML(fileName); }
         protected MCTSMasterAgent(int _numbSimulations, double _exploreWeight, int _maxRollout, double _drawScore)
         {
             numbSimulations = _numbSimulations;

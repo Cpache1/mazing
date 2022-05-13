@@ -24,7 +24,7 @@ namespace Monte
         private double confThreshold;
         private double drawReward;
         private int numbHiddenLayers;
-        private readonly Random randGen = new Random ();
+        private readonly Random randGen = new Random();
         //this is passed in during training and used to make a new start state for each training game.
         public delegate AIState StateCreator();
         //Used for storing the hidden layer values, to save on allocation.
@@ -44,14 +44,16 @@ namespace Monte
             {
                 //Parse it as an xml settings file
                 parseXML(file);
-            } else if (file.Contains(".model"))
+            }
+            else if (file.Contains(".model"))
             {
                 //Else if it is a model file parse it as a model
                 parseModel(file);
                 //And use the default settings
                 parseXML("Assets/Monte/DefaultSettings.xml");
 
-            } else
+            }
+            else
             {
                 //If the file is neither a model file or an XML file just make an emtpy model with the default settings.
                 parseXML("Assets/Monte/DefaultSettings.xml");
@@ -86,7 +88,7 @@ namespace Monte
                 drawReward = double.Parse(node.Attributes.GetNamedItem("DrawScore").Value);
                 confThreshold = double.Parse(node.Attributes.GetNamedItem("ConfidenceThreshold").Value);
             }
-            catch(FileNotFoundException)
+            catch (FileNotFoundException)
             {
                 //If the file count not be found default values are used
                 alpha = 0.01;
@@ -96,7 +98,8 @@ namespace Monte
                 confThreshold = 0.8;
                 drawReward = 0.5;
                 Console.WriteLine("Monte: Error: Could not find file when constructing Model. Default settings values used (Alpha = 0.01, MaxForwardItters=64, NumbHiddenLayers=1, Normalisation=0.05, DrawSore=0.5, ConfidenceThreshold=0.8). File:" + settingsFile);
-            } catch
+            }
+            catch
             {
                 //Also if parseing fails default values are used
                 alpha = 0.01;
@@ -176,20 +179,20 @@ namespace Monte
                 //NumbHiddenLayers coming from the Settings file used.
                 player0Network = new Network(lengthOfInput, numbHiddenLayers, 0);
                 player1Network = new Network(lengthOfInput, numbHiddenLayers, 1);
-                tempHiddenLayers = new double[numbHiddenLayers,lengthOfInput];
+                tempHiddenLayers = new double[numbHiddenLayers, lengthOfInput];
             }
 
             //For every episode
-            for(int i = 0; i < episodes; i++)
+            for (int i = 0; i < episodes; i++)
             {
                 //Play n games and return the average cost for this episode (or epoch)
                 double avgCost = trainingEpisode(sc, gamesPerEpisode);
                 //Output this cost (so we can see if our cost is reducing
-                Console.WriteLine("Monte: Training Episode " + (i+1) + " of " + episodes +" complete. Avg cost: " + avgCost);
+                Console.WriteLine("Monte: Training Episode " + (i + 1) + " of " + episodes + " complete. Avg cost: " + avgCost);
             }
 
             //Once done we output it to a file which is the time it was made (so it is unique)
-            string dateString = String.Format("{0:HH.mm.ss_dd.MM.yyyy}",DateTime.Now);
+            string dateString = String.Format("{0:HH.mm.ss_dd.MM.yyyy}", DateTime.Now);
             string fileName = "Model_" + dateString + ".model";
             File.Create(fileName).Close();
             StreamWriter writer = new StreamWriter(fileName);
@@ -216,13 +219,13 @@ namespace Monte
             List<int> playerIndxs = new List<int>();
 
             //Play a game = number of times passed in
-            for(int i = 0; i < numbItters; i++)
+            for (int i = 0; i < numbItters; i++)
             {
                 //passing in the tracking lists (which track all the values)
                 playForward(stateCreator, totalInputs, totalHiddenLayers, totalResults, totalRewards, playerIndxs);
             }
             //Once we have compelted an epoch we now backprop and get the average error (used for seeing how well it is training).
-            double avgCost = backpropagate(totalInputs,totalHiddenLayers,totalResults,totalRewards, playerIndxs);
+            double avgCost = backpropagate(totalInputs, totalHiddenLayers, totalResults, totalRewards, playerIndxs);
             //Return this value
             return avgCost;
         }
@@ -235,7 +238,7 @@ namespace Monte
             //Loop count (for detecting drawn games)
             int count = 0;
             //While there is no winner
-            while(currentState.getWinner() < 0)
+            while (currentState.getWinner() < 0)
             {
                 //Increment the move count
                 count++;
@@ -251,7 +254,7 @@ namespace Monte
                         inputs.Add(preprocess(currentState));
                         results.Add(currentState.stateScore.Value);
                         double[,] hiddenLayer = getHiddenLayers(preprocess(currentState), currentState.playerIndex);
-                        hiddenLayers.Add (hiddenLayer);
+                        hiddenLayers.Add(hiddenLayer);
                         playerIndxs.Add(currentState.playerIndex);
                         //Adding the reward to the user defined reward for a draw
                         rewards.Add(drawReward);
@@ -263,15 +266,15 @@ namespace Monte
                 }
 
                 //Evaluate all moves
-                foreach(AIState child in children) child.stateScore = evaluate(child);
+                foreach (AIState child in children) child.stateScore = evaluate(child);
                 //and then sort them
                 children = AIState.mergeSort(children);
 
                 //Move selection:
                 //Default to the best know move is one is not selected.
-                int selectedChild = children.Count-1;
+                int selectedChild = children.Count - 1;
                 //Loop backwards through the children
-                for (int i = children.Count-1; i >= 0; i--)
+                for (int i = children.Count - 1; i >= 0; i--)
                 {
                     double randNum = randGen.NextDouble();
                     //Moves are selected with a probablity = thier score but with a confidence threshold
@@ -285,7 +288,7 @@ namespace Monte
                 }
                 //Once we have selected a move find out if it is a terminal state
                 int endResult = children[selectedChild].getWinner();
-                if(endResult >= 0)
+                if (endResult >= 0)
                 {
                     //if it is we have reased the end of the game
                     //If it is winning add a win (which will add a loss to it's parent etc.)
@@ -333,7 +336,7 @@ namespace Monte
                 //We are always pulling the output slowly towards giving a 'neutral' result (0.5)
                 //This is done to avoid nueron saturation
                 //The difference is then multiplied by alpha and some normalisation value (to keep it really small so it does not affect training too much)
-                double grtLthMidCost =( 2*Math.Abs(0.5-output[i])) * alpha * normVal;
+                double grtLthMidCost = (2 * Math.Abs(0.5 - output[i])) * alpha * normVal;
                 if (output[i] < 0.5) grtLthMidCost = -grtLthMidCost;
                 //Update weights between output layer and hidden layer
                 for (int j = 0; j < thisPlayer.wOut.Length; j++)
@@ -349,7 +352,7 @@ namespace Monte
 
                 //Updates weights between hiddens layer and input layer
                 //For every hidden layer
-                for (int k = numbHiddenLayers-1; k >= 0; k--)
+                for (int k = numbHiddenLayers - 1; k >= 0; k--)
                 {
                     //Create a new list of hidden layers
                     double[] nextHiddenCosts = new double[lengthOfInput];
@@ -360,12 +363,12 @@ namespace Monte
                         double hCost = hiddenCosts[l];
                         //This is the node in the hidden layer whose weights we are updating
                         //(the weights between this node and all nodes in the prev layer)
-                        double hiddenLayerKL = hiddenLayers[i][k,l];
+                        double hiddenLayerKL = hiddenLayers[i][k, l];
                         //Calcualte the dir of the 'output' (the node in the righthand layer)
                         double tanHDir = 1 - hiddenLayerKL * hiddenLayerKL;
                         //tot error = cost * sigdir
                         double grt0HCost = -hiddenLayerKL * alpha * normVal;
-                        double totalErrorH = hCost* tanHDir;
+                        double totalErrorH = hCost * tanHDir;
                         //For ever node in the preceding layer (or, input layer)
                         for (int m = 0; m < lengthOfInput; m++)
                         {
@@ -379,7 +382,7 @@ namespace Monte
                             else
                                 thisPlayer.wH[k, m * lengthOfInput + l] +=
                                     alpha * hCost * totalErrorH * hiddenLayers[i][k - 1, m] + grt0HCost;
-                            nextHiddenCosts[m] += totalErrorH * thisPlayer.wH[k,m * lengthOfInput + l];
+                            nextHiddenCosts[m] += totalErrorH * thisPlayer.wH[k, m * lengthOfInput + l];
                         }
                         //Once we are done updated all of the weights assoiated with this node we update the
                         //cost to the relate to the node (so we can work backwards)
@@ -390,7 +393,7 @@ namespace Monte
                 }
             }
             //Return the total cost / all inputs (to give the avg cost
-            return totalCost/inputs.Count;
+            return totalCost / inputs.Count;
         }
 
         //Evaluate
@@ -422,15 +425,15 @@ namespace Monte
                 //New element
                 double thisElement = 0.0;
                 //Loop through all of the connected weights
-                for(int k = 0; k < lengthOfInput; k++)
+                for (int k = 0; k < lengthOfInput; k++)
                 {
                     //And add the state board * weight to the element.
-                    thisElement += stateBoard[j]*thisPlayer.wH[0, j*lengthOfInput+k];
+                    thisElement += stateBoard[j] * thisPlayer.wH[0, j * lengthOfInput + k];
                 }
                 //Add the bias
-                thisElement += thisPlayer.biasH[0,j];
+                thisElement += thisPlayer.biasH[0, j];
                 //And set the first layer of inputs the tanH(total)
-                tempHiddenLayers[0,j] = tanH(thisElement);
+                tempHiddenLayers[0, j] = tanH(thisElement);
             }
 
             //Then work out the hidden neuron for all of the other hidden layers
@@ -438,7 +441,7 @@ namespace Monte
             {
                 for (int j = 0; j < lengthOfInput; j++)
                 {
-                    tempHiddenLayers[i,j] = getHiddenNeuron(i,j, tempHiddenLayers, thisPlayer);
+                    tempHiddenLayers[i, j] = getHiddenNeuron(i, j, tempHiddenLayers, thisPlayer);
                 }
             }
         }
@@ -455,12 +458,12 @@ namespace Monte
             for (int j = 0; j < lengthOfInput; j++)
             {
                 double thisElement = 0.0;
-                for(int k = 0; k < lengthOfInput; k++)
+                for (int k = 0; k < lengthOfInput; k++)
                 {
-                    thisElement += stateBoard[j]*thisPlayer.wH[0, j*lengthOfInput+k];
+                    thisElement += stateBoard[j] * thisPlayer.wH[0, j * lengthOfInput + k];
                 }
-                thisElement += thisPlayer.biasH[0,j];
-                hiddenLayers[0,j] = tanH(thisElement);
+                thisElement += thisPlayer.biasH[0, j];
+                hiddenLayers[0, j] = tanH(thisElement);
             }
 
             //Then all of the other layers (again, like the other function)
@@ -468,7 +471,7 @@ namespace Monte
             {
                 for (int j = 0; j < lengthOfInput; j++)
                 {
-                    hiddenLayers[i,j] = getHiddenNeuron(i,j, hiddenLayers, thisPlayer);
+                    hiddenLayers[i, j] = getHiddenNeuron(i, j, hiddenLayers, thisPlayer);
                 }
             }
             //Once calculated return it
@@ -481,13 +484,13 @@ namespace Monte
             //Set at 0
             double thisElement = 0.0;
             //Loop through all weights
-            for(int k = 0; k < lengthOfInput; k++)
+            for (int k = 0; k < lengthOfInput; k++)
             {
                 //Add them
-                thisElement += hiddenLayers[i-1,j]*thisPlayer.wH[i, j*lengthOfInput+k];
+                thisElement += hiddenLayers[i - 1, j] * thisPlayer.wH[i, j * lengthOfInput + k];
             }
             //Then add the bias
-            thisElement += thisPlayer.biasH[i,j];
+            thisElement += thisPlayer.biasH[i, j];
             //Finally get the tanH value and return it
             return tanH(thisElement);
         }
@@ -522,7 +525,7 @@ namespace Monte
             for (int i = 0; i < processedInput.Length; i++)
             {
                 //And if the are at a % point update the kind of peice we are looking for
-                if(i%state.stateRep.Length == 0 && i != 0) currentType++;
+                if (i % state.stateRep.Length == 0 && i != 0) currentType++;
                 //If we have a match then set this index to 1
                 if (state.stateRep[i % state.stateRep.Length] == currentType) processedInput[i] = 1;
             }
@@ -541,8 +544,8 @@ namespace Monte
             return false;
         }
         //Sigmoid function (used as output activation function)
-        public static double sig(double x){ return 1.0/(1.0+Math.Exp(-x)); }
+        public static double sig(double x) { return 1.0 / (1.0 + Math.Exp(-x)); }
         //tanH function (used as hidden layer activation function)
-        public static double tanH(double x) { return 2.0/(1.0+Math.Exp(-x*2))-1; }
+        public static double tanH(double x) { return 2.0 / (1.0 + Math.Exp(-x * 2)) - 1; }
     }
 }

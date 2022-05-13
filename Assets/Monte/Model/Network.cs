@@ -25,7 +25,7 @@ namespace Monte
         //indx of player (for debugging)
         private int pIndx;
         //Random number gen
-        private readonly Random randGen = new Random ();
+        private readonly Random randGen = new Random();
 
         //Constructor to make a new, untrained, network
         public Network(int lengthOfInput, int numbHiddenLayers, int _pIndx)
@@ -52,19 +52,19 @@ namespace Monte
             wH = new double[_numbHiddenLayers, _lengthOfInput * _lengthOfInput];
             wOut = new double[_lengthOfInput];
             //And bias weights
-            biasH = new double[_numbHiddenLayers,_lengthOfInput];
+            biasH = new double[_numbHiddenLayers, _lengthOfInput];
             biasOut = 0.0;
             //set the max values for the weight d
             double weightBound = 1 / Math.Sqrt(_lengthOfInput);
             //Loop through all of these newly allocated weights
-            for(int i = 0; i < _numbHiddenLayers; i++)
+            for (int i = 0; i < _numbHiddenLayers; i++)
             {
                 //And init the next weight (between -1/sqrt{inputlength} and 1/sqrt{inputlength}
                 for (int j = 0; j < _lengthOfInput * _lengthOfInput; j++) wH[i, j] = getNextWeight(-weightBound, weightBound);
-                for (int j = 0; j < _lengthOfInput; j++){ biasH[i,j] = getNextWeight(-weightBound, weightBound);}
+                for (int j = 0; j < _lengthOfInput; j++) { biasH[i, j] = getNextWeight(-weightBound, weightBound); }
             }
             //Init the weights for the output layer as well.
-            for (int i = 0; i < _lengthOfInput; i++){ wOut[i] = getNextWeight(-weightBound, weightBound);}
+            for (int i = 0; i < _lengthOfInput; i++) { wOut[i] = getNextWeight(-weightBound, weightBound); }
             biasOut = getNextWeight(-weightBound, weightBound);
         }
 
