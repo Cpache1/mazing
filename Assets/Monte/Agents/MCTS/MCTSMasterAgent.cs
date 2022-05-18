@@ -20,6 +20,9 @@ namespace Monte
         protected double drawScore;
         //How far do we rollout before we call it a draw
         protected int maxRollout;
+        //Epsilon
+        protected double epsilon;
+
         //Constructors for the Agent
         protected MCTSMasterAgent() { parseXML("Assets/Monte/DefaultSettings.xml"); }
         protected MCTSMasterAgent(string fileName) { parseXML(fileName); }
@@ -47,6 +50,7 @@ namespace Monte
                 exploreWeight = double.Parse(node.Attributes.GetNamedItem("ExploreWeight").Value);
                 maxRollout = int.Parse(node.Attributes.GetNamedItem("MaxRollout").Value);
                 drawScore = double.Parse(node.Attributes.GetNamedItem("DrawScore").Value);
+                epsilon = double.Parse(node.Attributes.GetNamedItem("Epsilon").Value);
             }
             //If the file was not found
             catch (FileNotFoundException)

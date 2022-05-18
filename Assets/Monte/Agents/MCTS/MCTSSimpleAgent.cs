@@ -68,15 +68,20 @@ namespace Monte
                         double games = bestNode.children[i].totGames;
                         double score = (games > 0) ? wins / games : 1.0;
 
-                        //UBT (Upper Confidence Bound 1 applied to trees) function balances explore vs exploit.
+                        //UCT (Upper Confidence Bound 1 applied to trees) function balances explore vs exploit.
                         //Because we want to change things the constant is configurable.
-                        double exploreRating = exploreWeight * Math.Sqrt((2 * Math.Log(initialState.totGames + 1) / (games + 0.1)));
-                        //Total score is win score + explore socre
-                        double totalScore = score + exploreRating;
+                        double exploreRating = exploreWeight * Math.Sqrt((Math.Log(initialState.totGames + 1) / (games + 0.1)));
+                        Console.Write(exploreWeight);
+
+                        double noise = randGen.NextDouble() * epsilon;
+                        //Total score is win score + explore score + noise for tie-breaks.
+                        double totalScore = score + exploreRating + noise;
                         //If the score is better update
-                        if (!(totalScore > bestScore)) continue;
-                        bestScore = totalScore;
-                        bestIndex = i;
+                        if (totalScore > bestScore)
+                        { 
+                            bestScore = totalScore;
+                            bestIndex = i;
+                        }
                     }
                     //Set the best child for the next iteration
                     bestNode = bestNode.children[bestIndex];
@@ -95,7 +100,7 @@ namespace Monte
             {
                 //Find the one that was played the most (this is the best move as we are selecting the robust child)
                 int games = initialState.children[i].totGames;
-                if (games >= mostGames)
+                if (games > mostGames)
                 {
                     mostGames = games;
                     bestMove = i;
@@ -132,7 +137,7 @@ namespace Monte
                 //If max roll out is hit or no childern were generated
                 if (loopCount >= maxRollout || children.Count == 0)
                 {
-                    //Record a draw
+                    //Record a draw (this is the BACKPROPAGATION step).
                     rolloutStart.addDraw(drawScore);
                     break;
                 }
