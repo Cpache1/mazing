@@ -16,6 +16,7 @@ namespace Monte
         public bool done;
         public bool started;
         public AIState next;
+        public int nextActionId;
 
         public void reset()
         {
@@ -23,6 +24,7 @@ namespace Monte
             started = false;
             done = false;
             next = null;
+            nextActionId = -1;
         }
 
         //Kicks off the the main algortims on a sperate thread

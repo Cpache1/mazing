@@ -79,7 +79,7 @@ namespace Monte
                 }
             }
             //if no childern are generated
-            if (initialState.children.Count == 0)
+            if (initialState.children.Length == 0)
             {
                 //Report this error and return.
                 Console.WriteLine("Monte: Error: State supplied has no childern.");
@@ -97,13 +97,13 @@ namespace Monte
                 //Start at the inital state
                 AIState bestNode = initialState;
                 //And loop through it's child
-                while (bestNode.children.Count > 0)
+                while (bestNode.children.Length > 0)
                 {
                     //Set the scores as a base line
                     double bestScore = -1;
                     int bestIndex = -1;
                     //Loop thorugh all of the children
-                    for (int i = 0; i < bestNode.children.Count; i++)
+                    for (int i = 0; i < bestNode.children.Length; i++)
                     {
                         //win score is basically just wins/games unless no games have been played, then it is 1
                         double wins = bestNode.children[i].wins;
@@ -131,7 +131,7 @@ namespace Monte
             int mostGames = -1;
             int bestMove = -1;
             //Loop through all childern
-            for (int i = 0; i < initialState.children.Count; i++)
+            for (int i = 0; i < initialState.children.Length; i++)
             {
                 //Find the one that was played the most (this is the best move as we are selecting the robust child)
                 int games = initialState.children[i].totGames;
@@ -148,7 +148,7 @@ namespace Monte
         }
 
         //Rollout function (plays random moves till it hits a termination)
-        protected override void rollout(AIState rolloutStart)
+        protected void rollout(AIState rolloutStart)
         {
             //If the rollout start is a terminal state
             int rolloutStartResult = rolloutStart.getWinner();
@@ -162,7 +162,7 @@ namespace Monte
             }
             bool terminalStateFound = false;
             //Get the children
-            List<AIState> children = rolloutStart.generateChildren();
+            List<AIState> children = null; // rolloutStart.generateChildren();
 
             int loopCount = 0;
             while (!terminalStateFound)
@@ -205,7 +205,7 @@ namespace Monte
                 else
                 {
                     //Otherwise select that nodes as the childern and continue
-                    children = children[selectedChild].generateChildren();
+                    children = null;// children[selectedChild].generateChildren();
                 }
             }
             //Reset the children as these are not 'real' children but just ones for the roll out.

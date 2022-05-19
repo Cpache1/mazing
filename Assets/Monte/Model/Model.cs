@@ -243,7 +243,7 @@ namespace Monte
                 //Increment the move count
                 count++;
                 //And generate all possible moves from this state.
-                List<AIState> children = currentState.generateChildren();
+                List<AIState> children = null; // currentState.generateChildren();
                 //If we have hit the maximum number of moves or there are no children generated
                 if (count == maxForwardIters || children.Count == 0)
                 {
@@ -519,7 +519,7 @@ namespace Monte
         {
             //The length of the processed input is staterep * number of different types of pieces
             //(because the inputs are binary)
-            int[] processedInput = new int[state.stateRep.Length * state.numbPieceTypes];
+            int[] processedInput = new int[state.stateRep.Length * 2];
             int currentType = 1;
             //Loop through the processed input
             for (int i = 0; i < processedInput.Length; i++)
@@ -537,10 +537,10 @@ namespace Monte
         private static bool validateAIState(AIState state)
         {
             //If the state and state rep are not null state and it has more than one piece type it checks out so return true
-            if (state?.stateRep != null && state?.numbPieceTypes > 0) return true;
+            if (state?.stateRep != null && 2 > 0) return true;
             //Otherwise it fails, report this and return false.
             if (state?.stateRep == null) Console.WriteLine("Monte: Error, state or stateRep from State Creator is null, are you instantiating correctly? Terminating");
-            if (state?.numbPieceTypes == 0) Console.WriteLine("Monte: Error, numbPieceTypes from State Creator is 0, are you instantiating correctly? Terminating");
+            if (2 == 0) Console.WriteLine("Monte: Error, numbPieceTypes from State Creator is 0, are you instantiating correctly? Terminating");
             return false;
         }
         //Sigmoid function (used as output activation function)

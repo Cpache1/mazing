@@ -55,10 +55,14 @@ public class MonsterAI : MonoBehaviour
         else if (ai.done)
         {
             //Get the next state (after the AI has moved)
-            MonsterAIState nextAIState = (MonsterAIState)ai.next;
+            //MonsterAIState nextAIState = (MonsterAIState)ai.next;
+            //Get the action resulting from that state and apply the move. 
+            //float[] act = nextAIState.getAction(nextAIState.stateActionId);
 
-			//Get the action resulting from that state and apply the move. 
-			float[] act = nextAIState.stateAction;
+            float[] act = new float[2];
+            act[0] = MonsterAIState.allActions[ai.nextActionId, 0];
+            act[1] = MonsterAIState.allActions[ai.nextActionId, 1];
+
             Apply(act);
 
             //reset MCTS 

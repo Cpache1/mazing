@@ -27,15 +27,14 @@ namespace Monte
         //It's parent
         public AIState parent { get; set; }
         //List of child nodes
-        public List<AIState> children { get; set; }
+        public AIState[] children { get; set; }
         //Interger representation of the game state
         public float[] stateRep { get; set; }
         //The action taken to get to this state
-        public float[] stateAction = { 0, 0 };
+        public int stateActionId;
         //The score which is derived from the learner and represents the score for the state
         public double? stateScore { get; set; }
-        //Number of different piece types
-        public int numbPieceTypes;
+
         //Used so that tree nodes are not remade (which is expensive due to evaluation) for MCTSWithLearning
         public bool treeNode = false;
 
@@ -47,21 +46,22 @@ namespace Monte
             parent = _parent;
             depth = _depth;
             stateRep = null;
-            children = new List<AIState>();
+            //children = new List<AIState>();
             wins = losses = totGames = 0;
+            stateActionId = -1;
             stateScore = null;
         }
 
-        protected AIState(int pIndex, AIState _parent, int _depth, float[] _stateRep, int _numbPieceTypes)
+        protected AIState(int pIndex, AIState _parent, int _depth, float[] _stateRep)
         {
             playerIndex = pIndex;
             parent = _parent;
             depth = _depth;
             stateRep = _stateRep;
-            children = new List<AIState>();
+            //children = new List<AIState>();
             wins = losses = totGames = 0;
             stateScore = null;
-            numbPieceTypes = _numbPieceTypes;
+            stateActionId = -1;
         }
 
         //For adding a win
@@ -88,9 +88,25 @@ namespace Monte
             parent?.addDraw(value);
         }
 
+        public void addResult(double value)
+        {
+            wins += value;
+            totGames++;
+            parent?.addResult(value);
+        }
+
         //These function are needed by the AI so MUST be implemented
         //For making child nodes
-        public abstract List<AIState> generateChildren();
+        public abstract AIState[] generateChildren(int macroActionLength = 1);
+
+        public abstract AIState generateChild(int actionId, int macroActionLength = 1);
+
+        public abstract void ApplyActionToChild(int actionId, int macroActionLength = 1);
+
+        public abstract float[] getAction(int actionId);
+
+        public abstract AIState clone();
+
         //For checking is a node is terminal (and which player won)ss
         public abstract int getWinner();
 

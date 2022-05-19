@@ -18,85 +18,144 @@ namespace Monte
         //Main MCTS algortim
         protected override void mainAlgorithm(AIState initialState, long a_timeDue)
         {
-            //Make the intial children
-            initialState.generateChildren();
-            //Loop through all of them
-            foreach (var child in initialState.children)
+            //nextActionId = runMCTS(initialState, a_timeDue);
+            //return; 
+
+            if (firstDecision)
             {
-                //If any of them are winning moves
-                if (child.getWinner() == child.playerIndex)
+                resetMacro = true;
+                remainingMASteps = macroActionLength - 1;
+                firstDecision = false;
+                lastMADecision = runMCTS(initialState, a_timeDue);
+            }
+            else
+            {
+
+                //Advance the state until the end of the current macroaction in execution.
+                AIState macroActionStartState = rollStateMacroAction(initialState.clone());
+
+
+                if (remainingMASteps > 0)
                 {
-                    //Just make that move and save on all of the computation
-                    next = child;
-                    done = true;
-                    return;
+                    /*if (resetMacro)
+                    {
+                        //Create a new root.
+                        int a = 0;
+                    }*/
+
+                    //Still running a previous macro-action. Continue planning from state in tree
+                    // at the end of that macro-action
+                    runMCTS(macroActionStartState, a_timeDue);
+                    remainingMASteps--;
+                    resetMacro = false;
+
+                } else if (remainingMASteps == 0) //Last iteration for this decision.
+                {
+                    resetMacro = true;
+                    remainingMASteps = macroActionLength - 1;
+                    lastMADecision = runMCTS(macroActionStartState, a_timeDue); 
                 }
+
             }
-            //If no childern are generated
-            if (initialState.children.Count == 0)
+
+            // Set the action to execute by the MCTS agent
+            nextActionId = lastMADecision;
+        }
+
+        private AIState rollStateMacroAction(AIState state)
+        {
+            int first = macroActionLength - remainingMASteps - 1;
+            for (int i = first; i < macroActionLength; ++i)
             {
-                //Report this error and return.
-                Console.WriteLine("Monte: Error: State supplied has no children.");
-                next = null;
-                done = true;
-                return;
+                //make the moves to advance the game state.
+                state.ApplyActionToChild(lastMADecision, macroActionLength);
             }
+            return state;
+        }
+
+        private int runMCTS(AIState initialState, long timeDue)
+        {
             //Start a count
-            int count = 0;
-
-            long remaining = a_timeDue - LevelManager.CurrentTimeMillis();
-
-            //Whilst time allows
-            //while (count < numbSimulations) //uncomment this for number of simulations instead.
-            while (remaining > 0)
+            int numIterations = 0;
+            long remaining = timeDue - LevelManager.CurrentTimeMillis();
+            //numbSimulations = 100;
+            //while (numIterations < numbSimulations) //uncomment this for number of simulations instead.
+            while (remaining > 0)   //Whilst time allows
             {
                 //Increment the count
-                count++;
+                numIterations++;
                 //Start at the inital state
                 AIState bestNode = initialState;
+                int nextToExpand = -1;
                 //And loop through its child
-                while (bestNode.children.Count > 0)
+                while (bestNode != null)
                 {
-                    //Set the scores as a base line
-                    double bestScore = -1;
-                    int bestIndex = -1;
-                    //Loop thorugh all of the children
-                    for (int i = 0; i < bestNode.children.Count; i++)
+                    AIState nextNode = ucb(bestNode, out nextToExpand); //Goes down the tree selecting the best next node with UCB.
+                    if (nextNode == null)
                     {
-                        //win score is basically just wins/games unless no games have been played, then it is 1
-                        double wins = bestNode.children[i].wins;
-                        double games = bestNode.children[i].totGames;
-                        double score = (games > 0) ? wins / games : 1.0;
-
-                        //UCT (Upper Confidence Bound 1 applied to trees) function balances explore vs exploit.
-                        //Because we want to change things the constant is configurable.
-                        double exploreRating = exploreWeight * Math.Sqrt((Math.Log(initialState.totGames + 1) / (games + 0.1)));
-                        Console.Write(exploreWeight);
-
-                        double noise = randGen.NextDouble() * epsilon;
-                        //Total score is win score + explore score + noise for tie-breaks.
-                        double totalScore = score + exploreRating + noise;
-                        //If the score is better update
-                        if (totalScore > bestScore)
-                        { 
-                            bestScore = totalScore;
-                            bestIndex = i;
-                        }
+                        nextNode = bestNode;
+                        break;
                     }
-                    //Set the best child for the next iteration
-                    bestNode = bestNode.children[bestIndex];
+                    bestNode = nextNode;
                 }
-                //Finally roll out this node.
-                rollout(bestNode);
 
-                remaining = a_timeDue - LevelManager.CurrentTimeMillis();
+                //Finally roll out this node. Includes Back-prop.
+                rollout(bestNode, nextToExpand);
+                remaining = timeDue - LevelManager.CurrentTimeMillis();
             }
 
+            //UnityEngine.MonoBehaviour.print(numIterations);
+
+            return recommendation(initialState);
+        }
+
+
+        private AIState ucb(AIState node, out int childIdx)
+        {
+            //Set the scores as a base line
+            double bestScore = -1;
+            int bestIndex = -1;
+
+            //Loop thorugh all of the children
+            for (int i = 0; i < node.children.Length; i++)
+            {
+                if (node.children[i] == null)
+                {
+                    childIdx = i;
+                    return null; // Expansion phase
+                }
+
+                //win score is basically just wins/games unless no games have been played, then it is 1
+                double wins = node.children[i].wins;
+                double games = node.children[i].totGames;
+                double score = (games > 0) ? wins / games : 1.0;
+
+                //UCT (Upper Confidence Bound 1 applied to trees) function balances explore vs exploit.
+                //Because we want to change things the constant is configurable.
+                double exploreRating = exploreWeight * Math.Sqrt((Math.Log(node.totGames + 1) / (games + 0.1)));
+                double noise = randGen.NextDouble() * epsilon;
+                //Total score is win score + explore score + noise for tie-breaks.
+                double totalScore = score + exploreRating + noise;
+                //If the score is better update
+                if (totalScore > bestScore)
+                {
+                    bestScore = totalScore;
+                    bestIndex = i;
+                }
+            }
+
+            //Set the best child for the next iteration
+            childIdx = bestIndex;
+            return node.children[bestIndex];
+        }
+
+        private int recommendation(AIState initialState)
+        {
             //Onces all the simulations have taken place we select the best move...
             int mostGames = -1;
             int bestMove = -1;
             //Loop through all children
-            for (int i = 0; i < initialState.children.Count; i++)
+            for (int i = 0; i < initialState.children.Length; i++)
             {
                 //Find the one that was played the most (this is the best move as we are selecting the robust child)
                 int games = initialState.children[i].totGames;
@@ -106,65 +165,50 @@ namespace Monte
                     bestMove = i;
                 }
             }
-            //Set that child to the next move
-            next = initialState.children[bestMove];
+
             //And we are done
             done = true;
+            return bestMove;
         }
 
-        //Rollout function (plays random moves till it hits a termination)
-        protected override void rollout(AIState rolloutStart)
-        {
-            //If the rollout start is a terminal state
-            int rolloutStartResult = rolloutStart.getWinner();
-            if (rolloutStartResult >= 0)
-            {
-                //Add a win is it is a win, or a loss is a loss or otherwise a draw
-                if (rolloutStartResult == rolloutStart.playerIndex) rolloutStart.addWin();
-                else if (rolloutStartResult == (rolloutStart.playerIndex + 1) % 2) rolloutStart.addLoss();
-                else rolloutStart.addDraw(drawScore);
-                return;
-            }
-            bool terminalStateFound = false;
-            //Get the children
-            List<AIState> children = rolloutStart.generateChildren();
 
-            int loopCount = 0;
-            while (!terminalStateFound)//==============TODO:WRONG===============
+        //Rollout function (plays random moves till it hits a termination)
+        protected void rollout(AIState rolloutStart, int nodeToExpand)
+        {
+            //First, advance node with action. This will belong to the tree.
+            AIState nextState = rolloutStart.generateChild(nodeToExpand, macroActionLength);
+            bool terminalStateFound = (nextState.getWinner() > -1);
+            int rolloutCount = 0;
+
+            AIState rolloutState = nextState.clone();
+            while (!terminalStateFound && rolloutCount < maxRollout)
             {
-                //Loop through till a terminal state is found
-                loopCount++;
-                //If max roll out is hit or no childern were generated
-                if (loopCount >= maxRollout || children.Count == 0)
-                {
-                    //Record a draw (this is the BACKPROPAGATION step).
-                    rolloutStart.addDraw(drawScore);
-                    break;
-                }
-                //Get a random child index
-                int index = randGen.Next(children.Count);
-                //and see if that node is terminal
-                int endResult = children[index].getWinner();
-                if (endResult >= 0)
-                {
-                    terminalStateFound = true;
-                    if (endResult == 2) rolloutStart.addDraw(drawScore);
-                    //If it is a win add a win
-                    else if (endResult == rolloutStart.playerIndex) rolloutStart.addWin();
-                    //Else add a loss
-                    else rolloutStart.addLoss();
-                }
-                else
-                {
-                    //Otherwise select that nodes as the childern and continue
-                    children = children[index].generateChildren();
-                }
+                rolloutCount++;
+                int indexAct = randGen.Next(rolloutState.children.Length);
+                rolloutState.ApplyActionToChild(indexAct, macroActionLength);
+                terminalStateFound = (rolloutState.getWinner() > -1);
             }
-            //Reset the children as these are not 'real' children but just ones for the roll out.
-            foreach (AIState child in rolloutStart.children)
-            {
-                child.children = new List<AIState>();
-            }
+
+            float value = rolloutState.getWinner();
+            if (!terminalStateFound)
+                value = evalState(rolloutState); 
+            
+            nextState.addResult(value);
+
+        }
+
+        private float evalState(AIState state)
+        {
+            // This function needs to evaluate how "good" a state is for the monster,
+            // where "good" means closer to win the game.
+            // Values close to 0 mean a bad state, and close to 1 mean good state.
+
+            // Things that we can consider:
+            //   * Distance to the player (using A* if possible). The closer the better.
+            //   * Other things? health of the monster, burning, cursor distance from bot.
+            //   * Other game state player attributes that could be useful?
+
+            return 0.5f;
         }
     }
 }

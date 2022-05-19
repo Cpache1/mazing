@@ -2,10 +2,11 @@
 <Settings>
 	<MCTSSettings
 		NumberOfSimulations="-1"
-		Itterations="500" 
+		Iterations="500" 
 		ExploreWeight="2" 
-		MaxRollout="64"
+		MaxRollout="10"
 		DrawScore="0.5"
+		MacroActionLength="10"
 		Epsilon="1E-6">
 	</MCTSSettings>
 
