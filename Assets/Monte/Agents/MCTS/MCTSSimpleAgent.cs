@@ -75,6 +75,13 @@ namespace Monte
 
         private int runMCTS(AIState initialState, long timeDue)
         {
+            //if you're supposed to interrupt don't provide a state or say it's done
+            if (interrupt)
+            {
+                Interrupt();
+                return -1;
+            }
+
             //Start a count
             int numIterations = 0;
             long remaining = timeDue - LevelManager.CurrentTimeMillis();
@@ -164,6 +171,13 @@ namespace Monte
                     mostGames = games;
                     bestMove = i;
                 }
+            }
+
+            //if you're supposed to interrupt don't provide a state or say it's done
+            if (interrupt)
+            {
+                Interrupt();
+                return -1;
             }
 
             //And we are done

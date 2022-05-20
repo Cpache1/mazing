@@ -15,10 +15,13 @@ public class MonsterAIState : AIState
 {
     FM fm;
 
+
     const int numActions = 9;
     public static float[,] allActions = new float[numActions, 2] { {-1,-1}, { -1, 0}, { -1, 1 },
                                                                     {0,-1},  { 0, 0},  { 0, 1 },
                                                                     {1,-1},  { 1, 0},  { 1, 1 } };
+    List<ProjectileStruct> projectilesStates;
+
 
     //New State
     public MonsterAIState()
@@ -29,13 +32,17 @@ public class MonsterAIState : AIState
         parent = null;
         depth = 0;
         fm = GameObject.Find("LevelManager").GetComponent<FM>();
+        projectilesStates = new List<ProjectileStruct>();
     }
 
     //New Child State (of another).
-    public MonsterAIState(int pIndex, AIState _parent, int _depth, float[] _stateRep) : base(pIndex, _parent, _depth, _stateRep)
+
+    public MonsterAIState(int pIndex, AIState _parent, int _depth, float[] _stateRep, List<ProjectileStruct> _projectiles) : 
+        base(pIndex, _parent, _depth, _stateRep)
     {
         children = new AIState[numActions];
         fm = GameObject.Find("LevelManager").GetComponent<FM>();
+        projectilesStates = _projectiles;
     }
 
 
@@ -63,7 +70,8 @@ public class MonsterAIState : AIState
         if (getWinner() >= 0) return null;
 
         float[] newState = ApplyMacroAction(actionId, macroActionLength, (float[])stateRep.Clone());
-        MonsterAIState childState = new MonsterAIState(playerIndex, this, depth + 1, newState);
+        List<ProjectileStruct> newProjectilesStates = fm.GetProjectileStructs();
+        MonsterAIState childState = new MonsterAIState(playerIndex, this, depth + 1, newState, newProjectilesStates);
         childState.stateActionId = actionId;
         children[actionId] = childState;
 
@@ -124,7 +132,6 @@ public class MonsterAIState : AIState
         {
             return 1; //1, enemy (bot) wins
         }
-        //2 draw ?
 
         //Game is still going
         return -1;
@@ -133,7 +140,7 @@ public class MonsterAIState : AIState
     private float[] ApplySingleAction(float[] action, float[] providedState, int idx)
     {
         //go to the forward model and change the game with this state (including player and other gameobjects)
-        return fm.UpdateGameState(action, providedState, idx);
+        return fm.UpdateGameState(action, providedState, projectilesStates, idx);
     }
 
 }

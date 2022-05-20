@@ -15,16 +15,23 @@ namespace Monte
         //private Thread aiTask;
         public bool done;
         public bool started;
+        public bool interrupt = false;
         public AIState next;
         public int nextActionId;
 
         public void reset()
         {
-            //Resets the flags (for threading purposes)
+            //Resets the flags
             started = false;
             done = false;
             next = null;
             nextActionId = -1;
+        }
+
+        public void Interrupt()
+        {
+            interrupt = false;
+            reset();
         }
 
         //Kicks off the the main algortims on a sperate thread
