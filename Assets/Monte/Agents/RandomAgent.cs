@@ -13,12 +13,12 @@ namespace Monte
         protected override void mainAlgorithm(AIState initialState, long a_timeDue)
         {
             //Generate all possible moves
-            /*List<AIState> children = initialState.generateChildren();
+            AIState[] children = initialState.generateChildren();
             //Select a random one
-            int index = randGen.Next(children.Count);
+            int index = randGen.Next(children.Length);
             //And set next to it(unless no children were generated
-            next = children.Count > 0 ? children[index] : null;
-            done = true;*/
+            next = children.Length > 0 ? children[index] : null;
+            done = true;
         }
     }
 }

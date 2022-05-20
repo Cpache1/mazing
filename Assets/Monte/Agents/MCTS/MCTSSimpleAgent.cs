@@ -205,8 +205,9 @@ namespace Monte
 
             // Things that we can consider:
             //   * Distance to the player (using A* if possible). The closer the better.
-            //   * Other things? health of the monster, burning, cursor distance from bot.
+            //   * Other things? health of the monster, burning, cursor distance from bot (this could offer safely approaching).
             //   * Other game state player attributes that could be useful?
+            //   * Penalize collisions.
 
             return 0.5f;
         }
