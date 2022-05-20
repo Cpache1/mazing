@@ -12,6 +12,8 @@ using UnityEngine;
 public class MonsterAIState : AIState
 {
     FM fm;
+    List<ProjectileStruct> projectilesStates;
+
     //New State
     public MonsterAIState()
     {
@@ -21,14 +23,16 @@ public class MonsterAIState : AIState
         depth = 0;
         numbPieceTypes = 2; //TODO: This needs understanding. Some of the Model.cs functions depend on this.
         fm = GameObject.Find("LevelManager").GetComponent<FM>();
+        projectilesStates = new List<ProjectileStruct>();
     }
 
     //New Child State (of another).
-    public MonsterAIState(int pIndex, AIState _parent, int _depth, float[] _stateRep) : base(pIndex, _parent, _depth,
-        _stateRep, 2)
+    public MonsterAIState(int pIndex, AIState _parent, int _depth, float[] _stateRep, List<ProjectileStruct> _projectiles) : 
+        base(pIndex, _parent, _depth, _stateRep, 2)
     {
         numbPieceTypes = 2; //TODO: Once number is figured out you need to change it here as well.
         fm = GameObject.Find("LevelManager").GetComponent<FM>();
+        projectilesStates = _projectiles;
     }
 
     public override List<AIState> generateChildren()
@@ -52,7 +56,8 @@ public class MonsterAIState : AIState
             {
                 float[] act = { h, v };
                 float[] newState = Apply(act, (float[])stateRep.Clone(), newPIndx);
-                MonsterAIState childState = new MonsterAIState(newPIndx, this, depth + 1, newState);
+                List<ProjectileStruct> newProjectilesStates = fm.GetProjectileStructs();
+                MonsterAIState childState = new MonsterAIState(newPIndx, this, depth + 1, newState, newProjectilesStates);
                 childState.stateAction = act;
                 children.Add(childState);
             }
@@ -73,7 +78,6 @@ public class MonsterAIState : AIState
         {
             return 1; //1, enemy wins
         }
-        //2 draw ?
 
         //Game is still going
         return -1;
@@ -82,6 +86,6 @@ public class MonsterAIState : AIState
     private float[] Apply(float[] action, float[] providedState, int idx)
     {
         //go to the forward model and change the game with this state (including player and other gameobjects)
-        return fm.UpdateGameState(action, providedState, idx);
+        return fm.UpdateGameState(action, providedState, projectilesStates, idx);
     }
 }

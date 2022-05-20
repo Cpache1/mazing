@@ -20,11 +20,6 @@ public class FM_VisualTest : MonoBehaviour
     public bool shoot = false;
 
     FM_Game game;
-    //FM_Grid grid;
-    //FM_Player player;
-    //FM_Monster monster;
-    //List<FM_GameObject> gameObjs;
-
 
     public float padding = 50.0f;
 
@@ -39,8 +34,6 @@ public class FM_VisualTest : MonoBehaviour
         FM_Player player = new FM_Player(playerPos, speed, rotationSpeed, FM_GameObjectType.Player, true);
         player.GetMovementComponent().SetVel(0, 0);
         player.GetMovementComponent().SetDir(-1, 0);
-        //player.GetMovementComponent().SetDir(0, -1);
-        //gameObjs.Add(player);
 
         Vector3 monsterPos = GameObject.FindGameObjectWithTag("AI").transform.position;
         float mSpeed = GameObject.Find("Monster").GetComponent<Movement>().speed;
@@ -48,9 +41,6 @@ public class FM_VisualTest : MonoBehaviour
         FM_Monster monster = new FM_Monster(monsterPos, mSpeed, mRotationSpeed, FM_GameObjectType.Monster, true);
         monster.GetMovementComponent().SetVel(0, 0);
         monster.GetMovementComponent().SetDir(0, 1);
-        //gameObjs.Add(monster);
-
-        //CreateGameObjs(player, monster);
 
         
         FM_GameObject[] gameObjs = CreateGameObjs(player, monster);
@@ -97,11 +87,8 @@ public class FM_VisualTest : MonoBehaviour
 
     private void OnDrawGizmosSelected()
     {
-        //CheckInput();
         DrawWalls();
-        DrawPlayer();
-        DrawMonster();
-        DrawBullets();
+        DrawGameObjects();
     }
 
     private void DrawWalls()
@@ -127,64 +114,47 @@ public class FM_VisualTest : MonoBehaviour
         }
     }
 
-    private void DrawPlayer()
-    {
-        if (game.player.IsAlive())
-        {
-            Vector3 c = game.player.GetCollider().GetCircle().GetCenter();
-            Gizmos.color = Color.blue;
-            Gizmos.DrawSphere(c + new Vector3(padding, 0, 0),
-                game.player.GetCollider().GetCircle().GetRadius());
-        }
-    }
-
-    private void DrawMonster()
-    {
-        if (game.monster.IsAlive())
-        {
-            Vector3 c = game.monster.GetCollider().GetCircle().GetCenter();
-            Gizmos.color = Color.red;
-            Gizmos.DrawSphere(c + new Vector3(padding, 0, 0),
-                game.monster.GetCollider().GetCircle().GetRadius());
-
-            Vector3 d = game.monster.GetMovementComponent().GetDir();
-            Gizmos.color = Color.cyan;
-            Gizmos.DrawLine(c + new Vector3(padding, 0, 0),
-                c + d + new Vector3(padding, 0, 0));
-        }
-    }
-
-    private void DrawBullets()
+    private void DrawGameObjects()
     {
         for (int i = 0; i < game.GetGameObjects().Length; i++)
         {
-            if (game.GetGameObjects()[i].GetType() == FM_GameObjectType.Bullet &&
-                game.GetGameObjects()[i].IsAlive())
-            {
-                FM_Collider collider = game.GetGameObjects()[i].GetCollider();
-                FM_Rectangle rec = collider.GetBox();
-                //it converts to Vector3 and keeps z = 0
-                Vector3 bottomLeft = rec.GetBottomLeft();
-                Vector3 topRight = rec.GetTopRight();
-                Vector3 sz = collider.GetSize();
+            FM_GameObject obj = game.GetGameObjects()[i];
 
-                // Draws a green line from a point to another
-                // This can be done as boxes directly, but this 
-                // way tests that topLeft and bottomRight points 
-                // are correct and properly translated.
-                Gizmos.color = Color.yellow;
-                Gizmos.DrawLine(bottomLeft + new Vector3(padding, 0, 0), bottomLeft + new Vector3(sz.x * 2 + padding, 0, 0)); //bL to bR
-                Gizmos.DrawLine(bottomLeft + new Vector3(padding, 0, 0), bottomLeft + new Vector3(padding, sz.y * 2, 0));// bL to tL
-                Gizmos.DrawLine(bottomLeft + new Vector3(padding, sz.y * 2, 0), topRight + new Vector3(padding, 0, 0)); // tL to tR
-                Gizmos.DrawLine(topRight + new Vector3(padding, 0, 0), bottomLeft + new Vector3(sz.x * 2 + padding, 0, 0)); //tR to bR
+            if (obj.IsAlive())
+            {
+                if (obj.GetType() == FM_GameObjectType.Player || obj.GetType() == FM_GameObjectType.Monster)
+                {
+                    Vector3 c = obj.GetCollider().GetCircle().GetCenter();
+                    Gizmos.color = obj.GetType() == FM_GameObjectType.Player ? Color.blue : Color.red;
+                    Gizmos.DrawSphere(c + new Vector3(padding, 0, 0),
+                        obj.GetCollider().GetCircle().GetRadius());
+
+                    Vector3 d = obj.GetMovementComponent().GetDir();
+                    Gizmos.color = Color.cyan;
+                    Gizmos.DrawLine(c + new Vector3(padding, 0, 0),
+                        c + d + new Vector3(padding, 0, 0));
+                }
+                else
+                {
+                    FM_Collider collider = obj.GetCollider();
+                    FM_Rectangle rec = collider.GetBox();
+                    //it converts to Vector3 and keeps z = 0
+                    Vector3 bottomLeft = rec.GetBottomLeft();
+                    Vector3 topRight = rec.GetTopRight();
+                    Vector3 sz = collider.GetSize();
+
+                    // Draws a green line from a point to another
+                    // This can be done as boxes directly, but this 
+                    // way tests that topLeft and bottomRight points 
+                    // are correct and properly translated.
+                    Gizmos.color = Color.yellow;
+                    Gizmos.DrawLine(bottomLeft + new Vector3(padding, 0, 0), bottomLeft + new Vector3(sz.x * 2 + padding, 0, 0)); //bL to bR
+                    Gizmos.DrawLine(bottomLeft + new Vector3(padding, 0, 0), bottomLeft + new Vector3(padding, sz.y * 2, 0));// bL to tL
+                    Gizmos.DrawLine(bottomLeft + new Vector3(padding, sz.y * 2, 0), topRight + new Vector3(padding, 0, 0)); // tL to tR
+                    Gizmos.DrawLine(topRight + new Vector3(padding, 0, 0), bottomLeft + new Vector3(sz.x * 2 + padding, 0, 0)); //tR to bR
+                }
             }
         }
-
-    }
-
-    private void DrawBombs()
-    {
-
     }
 
     private FM_GameObject[] CreateGameObjs(FM_Player p, FM_Monster m)
@@ -196,8 +166,8 @@ public class FM_VisualTest : MonoBehaviour
 
         float rotationSpeed = 0.0f;
 
-        float bulletSize_x = 0.275f;
-        float bulletSize_y = 0.1f;
+        float bulletSize_x = 0.125f; //0.275f;
+        float bulletSize_y = 0.125f; // 0.1f;
 
         FM_GameObject[] objs = new FM_GameObject[2 + startingBullets];
         objs[0] = p;
@@ -213,29 +183,4 @@ public class FM_VisualTest : MonoBehaviour
 
     }
 
-    /*private void CreateGameObjs()
-    {
-        Vector2 vec = new Vector2(0.0f, 0.0f);
-
-        int startingBullets = 5;
-        float bulletSpeed = 1000.0f;
-
-        float rotationSpeed = 0.0f;
-
-        float bulletSize_x = 0.275f;
-        float bulletSize_y = 0.1f;
-
-        //FM_GameObject[] objs = new FM_GameObject[2 + startingBullets];
-        //objs[0] = p;
-        //objs[1] = (FM_GameObject)m;
-
-        for (int i = 2; i < startingBullets+2; i++)
-        {
-            gameObjs.Add(new FM_Bullet(vec, bulletSpeed, rotationSpeed, FM_GameObjectType.Bullet,
-                false, new Vector2(bulletSize_x, bulletSize_y)));
-        }
-
-        
-
-    }*/
 }

@@ -38,7 +38,7 @@ public class LevelManager : MonoBehaviour
     //For Algorithm stuff
     private GameObject cursor;
     int algorithmIndx;
-    AIAgent agentType;
+    AIAgent agentAI;
     Model model;
     string settings;
     float[] stateRep;
@@ -174,6 +174,8 @@ public class LevelManager : MonoBehaviour
         for (int n = 0; n < stateRep.Length; n++)
             stateRep[n] = 0.0f;
 
+        //TODO: clear bullets/bombs as well for MCTS/FM not the game
+
         GameObject[] currentBombs = GameObject.FindGameObjectsWithTag("bomb");
         for (int i = 0; i < currentBombs.Length; i++)
         {
@@ -240,9 +242,19 @@ public class LevelManager : MonoBehaviour
 
         PathController playerPathController = agent.GetComponent<PathController>();
         agentPathController.RequestPath(playerStartPosition, playerStartPosition, playerStatus.OnPathFound);
-
-        agentType = agent.GetComponent<AIManager>().agent;
-        agentType.reset();
+        
+        //TODO: probably check first which type of AI is running, Movement or MonsterAI
+        //reset MCTS
+        agentAI = agent.GetComponent<MonsterAI>().ai;
+        if (!agentAI.done)
+        {
+            agentAI.interrupt = true;
+            Debug.Log("This happens.");
+        }
+        else
+        {
+            agentAI.reset();
+        }
     }
 
     private void FixedUpdate()

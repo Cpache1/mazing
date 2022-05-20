@@ -8,7 +8,6 @@ public class FM : MonoBehaviour
     //Forward Model
     FM_Game game; 
     FM_GameObject[] gameObjs;
-    
     LevelManager levelManager; //to retrieve live game info
 
     // Start is called before the first frame update
@@ -47,8 +46,8 @@ public class FM : MonoBehaviour
 
         float rotationSpeed = 0.0f;
 
-        float bulletSize_x = 0.275f;
-        float bulletSize_y = 0.1f;
+        float bulletSize_x = 0.125f; // 0.275f;
+        float bulletSize_y = 0.125f; // 0.1f;
 
         gameObjs = new FM_GameObject[2 + startingBullets];
         gameObjs[0] = p;
@@ -64,10 +63,10 @@ public class FM : MonoBehaviour
 
     }
 
-    public float[] UpdateGameState(float[] action, float[] currentState, int idx)
+    public float[] UpdateGameState(float[] action, float[] currentState, List<ProjectileStruct> projectiles, int idx)
     {
         //change FM_Game with new state representation
-        game.UpdateStateRep(currentState);
+        game.UpdateStateRep(currentState, projectiles);
 
         //apply an action to it
         if (idx == 0)
@@ -86,14 +85,8 @@ public class FM : MonoBehaviour
         return game.GetNextState();
     }
 
-    private void UpdateFMProjectiles(List<GameObject> projectiles)
+    public List<ProjectileStruct> GetProjectileStructs()
     {
-        //see what needs to be updated: positions, alive/dead (their velocity and direction should remain the same)
-        for (int i = 0; i < projectiles.Count; i++)
-        {
-
-        }
+        return game.GetProjectileStructs(); 
     }
-
-    
 }

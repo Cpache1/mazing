@@ -41,6 +41,14 @@ namespace Monte
                 done = true;
                 return;
             }
+
+            //if you're supposed to interrupt don't provide a state or say it's done
+            if (interrupt)
+            {
+                Interrupt();
+                return;
+            }
+
             //Start a count
             int count = 0;
 
@@ -101,6 +109,14 @@ namespace Monte
                     bestMove = i;
                 }
             }
+
+            //if you're supposed to interrupt don't provide a state or say it's done
+            if (interrupt)
+            {
+                Interrupt();
+                return;
+            }
+
             //Set that child to the next move
             next = initialState.children[bestMove];
             //And we are done

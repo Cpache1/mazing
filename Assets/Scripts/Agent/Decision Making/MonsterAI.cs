@@ -1,4 +1,6 @@
 ﻿using Monte;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class MonsterAI : MonoBehaviour
@@ -15,6 +17,7 @@ public class MonsterAI : MonoBehaviour
 
     //State related
     private AIState latestAIState = null;
+    private List<ProjectileStruct> latestProjectilesStates = new List<ProjectileStruct>();
     private float[] latestStateRep;
     private long decisionTimer = 40; //milliseconds
     private LevelManager levelManager;
@@ -59,7 +62,7 @@ public class MonsterAI : MonoBehaviour
 
 			//Get the action resulting from that state and apply the move. 
 			float[] act = nextAIState.stateAction;
-            Apply(act);
+            ApplyAction(act);
 
             //reset MCTS 
             ai.reset();
@@ -67,12 +70,9 @@ public class MonsterAI : MonoBehaviour
             //And increment the number of decisions
             numbMovesPlayed++;
         }
-
-        //check if someone wins? //TODO: ?
-
     }
 
-    private void Apply(float[] action)
+    private void ApplyAction(float[] action)
     {
         Vector3 waypoint = new Vector3(transform.position.x + action[0], transform.position.y + action[1], transform.position.z);
 
@@ -87,49 +87,34 @@ public class MonsterAI : MonoBehaviour
 
     private void getLatestState()
     {
+        latestProjectilesStates.Clear();
+
         //get current state info from level manager
         latestStateRep = levelManager.GetCurrentState();
+        //get current info from bullets and fires
+        GameObject[] bullets = GameObject.FindGameObjectsWithTag("projectile");
+        for (int i = 0; i < bullets.Length; i++)
+        {
+            ProjectileStruct fmBullet = new ProjectileStruct();
+            GameObject unityBullet = bullets[i];
+            fmBullet.x = unityBullet.transform.position.x;
+            fmBullet.y = unityBullet.transform.position.y;
+
+            float degrees = unityBullet.transform.eulerAngles.z;
+            fmBullet.dirX = (float)Math.Cos(degrees * Math.PI / 180);
+            fmBullet.dirY = (float)Math.Sin(degrees * Math.PI / 180);
+            latestProjectilesStates.Add(fmBullet);
+        }
+        GameObject[] bombs = GameObject.FindGameObjectsWithTag("fire");
+        for (int i = 0; i < bullets.Length; i++)
+        {
+            //TODO: Similar here.
+            //latestProjectilesStates.Add(bomb);
+        }
 
         //create the state based on that.
-        latestAIState = new MonsterAIState(monsterIndx, null, 0, latestStateRep);
+        latestAIState = new MonsterAIState(monsterIndx, null, 0, latestStateRep, latestProjectilesStates);
     }
 
 
-    //Fro when games are run
-    /*public void runGame()
-	{
-	//TODO: instead of some "turn" it will be "time" in our case. So, how often is it supposed to make a decision? Every second? Twice per 60FPS?
-		//If it is not the human player's turn and the game is playing
-		if (!(currentPlayersTurn == playerIndx) && gamePlaying)
-		{
-			
-			//Check the AI
-			int result = checkAI();
-			//If it is >= 0 the game is over
-			if (result >= 0)
-			{
-				//If 2 then a draw
-				if (result == 2)
-				{
-					winlose.text = "You drew!";
-					//If playerIndx then win
-				}
-				else if (result == playerIndx)
-				{
-					winlose.text = "You won!";
-					//Otherwise loss
-				}
-				else
-				{
-					winlose.text = "You lost!";
-				}
-
-				//Game is over
-				gamePlaying = false;
-				//TODO : some reset needed? Check in Movement.cs what happens when dead
-			}
-			//Otherwise turn the AI thinking pop up off (and wait for the player to make a move)
-		}
-	}
-*/
 }
