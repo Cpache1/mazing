@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Settings>
-	<MCTSSettings 
-		Itterations="500" 
-		ExploreWeight="1.45" 
-		MaxRollout="64" 
-		DrawScore="0.5">
+	<MCTSSettings
+		NumberOfSimulations="-1"
+		Itterations="500"
+		ExploreWeight="3"
+		MaxRollout="64"
+		DrawScore="0.5"
+		Epsilon="10E-6">
 	</MCTSSettings>
 
 	<PruningSettings 

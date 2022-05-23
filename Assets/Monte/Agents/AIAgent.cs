@@ -17,6 +17,7 @@ namespace Monte
         public bool started;
         public bool interrupt = false;
         public AIState next;
+        public int nextActionId;
 
         public void reset()
         {
@@ -24,6 +25,7 @@ namespace Monte
             started = false;
             done = false;
             next = null;
+            nextActionId = -1;
         }
 
         public void Interrupt()

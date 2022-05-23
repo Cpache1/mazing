@@ -29,7 +29,7 @@ namespace Monte
         protected override void mainAlgorithm(AIState initialState, long a_timeDue)
         {
             //Create the children
-            List<AIState> children = initialState.generateChildren();
+            List<AIState> children = null; // initialState.generateChildren();
             //If no childern are generated
             if (children.Count == 0)
             {

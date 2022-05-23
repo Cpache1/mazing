@@ -75,7 +75,7 @@ namespace Monte
                 }
             }
             //If no childern are generated
-            if (initialState.children.Count == 0)
+            if (initialState.children.Length == 0)
             {
                 //Report this error and return.
                 Console.WriteLine("Monte Error: State supplied has no children.");
@@ -93,14 +93,14 @@ namespace Monte
                 //Start at the inital state
                 AIState bestNode = initialState;
                 //And loop through it's child
-                while (bestNode.children.Count > 0)
+                while (bestNode.children.Length > 0)
                 {
                     //Prune the children
                     if (bestNode.unpruned) prune(bestNode);
                     //Set the scores as a base line
                     double bestScore = -1;
                     int bestIndex = -1;
-                    for (int i = 0; i < bestNode.children.Count; i++)
+                    for (int i = 0; i < bestNode.children.Length; i++)
                     {
                         //win score is basically just wins/games unless no games have been played, then it is 1
                         double wins = bestNode.children[i].wins;
@@ -128,7 +128,7 @@ namespace Monte
             int mostGames = -1;
             int bestMove = -1;
             //Loop through all childern
-            for (int i = 0; i < initialState.children.Count; i++)
+            for (int i = 0; i < initialState.children.Length; i++)
             {
                 //Find the one that was played the most (this is the best move as we are selecting the robust child)
                 int games = initialState.children[i].totGames;
@@ -145,7 +145,7 @@ namespace Monte
         }
 
         //Rollout function (plays random moves till it hits a termination)
-        protected override void rollout(AIState rolloutStart)
+        protected void rollout(AIState rolloutStart)
         {
             //If the rollout start is a terminal state
             int rolloutStartResult = rolloutStart.getWinner();
@@ -159,7 +159,7 @@ namespace Monte
             }
             bool terminalStateFound = false;
             //Get the children
-            List<AIState> children = rolloutStart.generateChildren();
+            List<AIState> children = null; // rolloutStart.generateChildren();
 
             int loopCount = 0;
             while (!terminalStateFound)
@@ -189,13 +189,13 @@ namespace Monte
                 else
                 {
                     //Otherwise select that nodes as the childern and continue
-                    children = children[index].generateChildren();
+                    children = null;
                 }
             }
             //Reset the children as these are not 'real' children but just ones for the roll out.
             foreach (AIState child in rolloutStart.children)
             {
-                child.children = new List<AIState>();
+                child.children = null ;
             }
         }
 
@@ -205,7 +205,7 @@ namespace Monte
             //If we are pruning nothing then return
             if (pruningFactor == 0) return;
             //Get the children
-            List<AIState> children = initState.children;
+            List<AIState> children = null; // initState.children;
             if (children.Count < stopPruningAt) return;
             //evaluate
             foreach (AIState state in children) state.stateScore = model.evaluate(state);
@@ -216,7 +216,7 @@ namespace Monte
             //Remove them from 0 onwards (the worse end)
             children.RemoveRange(0, numbNodesToRemove);
             //Update the children and set unpruned to false.
-            initState.children = children;
+            initState.children = null; // children;
             initState.unpruned = false;
         }
     }

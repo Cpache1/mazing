@@ -1,0 +1,63 @@
+﻿stateRep[0] = //idleTime
+stateRep[1] = //score
+
+stateRep[2]  //botDistanceTraveled
+stateRep[3]  //botPositionX
+stateRep[4]  //botPositionY
+stateRep[5]  //botRotation
+stateRep[6]  //botSpeed
+stateRep[7]  //botRotationSpeed
+stateRep[8]  //botViewAngle
+stateRep[9]  //botViewRadius
+stateRep[10] //botSearching
+stateRep[11] //botSearchTurns
+stateRep[12] //botHearingRadius
+stateRep[13] //botHearingProbability
+stateRep[14] //botHealth
+stateRep[15] //botFrustration
+stateRep[16] //botRiskTakingFactor
+stateRep[17] //botTakingRiskyPath
+stateRep[18] //botSeeingPlayer
+stateRep[19] //botChasingPlayer
+
+stateRep[46] //botBurning
+stateRep[47] //botDeltaHealth
+stateRep[48] //botDied
+stateRep[22] //cursorDistanceFromBot
+
+stateRep[20] //botDistanceFromPlayer
+
+stateRep[23] //playerDistanceTravelled
+stateRep[24] //playerPositionX
+stateRep[25] //playerPositionY
+stateRep[26] //playerRotation
+stateRep[27] //playerHealth
+stateRep[28] //playerIsDashing
+stateRep[29] //playerTriesDashOnCD
+stateRep[21] //cursorDistanceFromPlayer
+stateRep[40] //playerBurning
+stateRep[41] //playerHealing
+stateRep[42] //playerDeltaHealth
+stateRep[43] //playerDied
+
+stateRep[30] //dashPressed
+stateRep[34] //playerTriesToFireOnCD
+stateRep[35] //playerTriesToBombOnCD    
+
+stateRep[31] //cursorDistanceTraveled
+stateRep[32] //cursorPositionX
+stateRep[33] //cursorPositionY
+stateRep[36] //shotsFired
+stateRep[37] //bombDropped
+stateRep[38] //gunReloading
+stateRep[39] //bombReloading
+stateRep[49] //onScreenFires
+stateRep[50] //onScreenBullets
+stateRep[44] //botLostPlayer
+stateRep[45] //botSpottedPlayer
+stateRep[51] //keyPressCount
+stateRep[52] //[general]timePassed
+stateRep[53] //[general]inputIntensity
+stateRep[54] //[general]inputDiversity
+stateRep[55] //[general]activity
+stateRep[56] //[general]score    
