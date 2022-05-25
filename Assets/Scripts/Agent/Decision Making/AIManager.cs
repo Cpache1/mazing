@@ -40,18 +40,14 @@ public class AIManager : MonoBehaviour
             }
 
             //Model and settings
-            Model model = new Model(AlgorithmInfo.modelFiles[configIndx]);
+            //Model model = new Model(AlgorithmInfo.modelFiles[configIndx]);
             string settings = AlgorithmInfo.settingsFiles[configIndx];
 
             //Initialise the right agent with the model and settings.
             if (AlgorithmInfo.selectedAgent == 0) agent = new RandomAgent();
-            else if (AlgorithmInfo.selectedAgent == 1) agent = new ModelBasedAgent(model);
+            //else if (AlgorithmInfo.selectedAgent == 1) agent = new ModelBasedAgent(model);
             else if (AlgorithmInfo.selectedAgent == 2) agent = new MCTSSimpleAgent(settings);
-            else if (AlgorithmInfo.selectedAgent == 3) agent = new MCTSWithPruning(model, settings);
-            else if (AlgorithmInfo.selectedAgent == 4) agent = new MCTSWithSoftPruning(model, settings);
-            else if (AlgorithmInfo.selectedAgent == 5) agent = new MCTSWithLearning(model, settings);
             else agent = new MCTSSimpleAgent(settings);
-            //TODO: Add Pareto in the previous clauses
 
 
             //Once the game has been made set the rest of the game up

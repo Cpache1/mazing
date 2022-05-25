@@ -39,7 +39,6 @@ public class LevelManager : MonoBehaviour
     private GameObject cursor;
     int algorithmIndx;
     AIAgent agentAI;
-    Model model;
     string settings;
     float[] stateRep;
     private int tick;
