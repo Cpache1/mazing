@@ -40,7 +40,7 @@ public abstract class FM_GameObject
 
     public abstract void Update(FM_Game game, float elapsed = 1.0f); //TODO, remove elapsed?
     public bool IntersectsWith(FM_GameObject other) { return GetCollider().Intersects(other.GetCollider()); }
-    public abstract void OnCollisionEnter(FM_GameObject other);
+    public abstract void OnCollisionEnter(FM_GameObject other, FM_Game currentGame);
 }
 
 public enum FM_GameObjectType

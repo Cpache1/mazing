@@ -88,18 +88,14 @@ public class FM_MovementComponent
         SetDir(newDir.x, newDir.y);
     }
 
-    //Rotates left or right by 90 degrees
+    //Rotates left by 90 degrees
     Vector2 RotateLeft(Vector2 v)
     {
-
-        return new Vector2(v.y * -1.0f, v.x);
-
+        return new Vector2(v.y * -1.0f, v.x); //or left
     }
-
+    //Rotates right by 90 degress 
     Vector2 RotateRight(Vector2 v)
     {
-
         return new Vector2(v.y, v.x * -1.0f);
-
     }
 }

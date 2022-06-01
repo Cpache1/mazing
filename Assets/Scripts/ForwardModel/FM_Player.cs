@@ -19,7 +19,7 @@ public class FM_Player : FM_GameObject
     
     //public int GetHealth() { return health; }
 
-    public override void OnCollisionEnter(FM_GameObject other)
+    public override void OnCollisionEnter(FM_GameObject other, FM_Game game)
     {
         if(other.GetType()==FM_GameObjectType.Monster)
         {
@@ -35,6 +35,7 @@ public class FM_Player : FM_GameObject
         gunControl.Update(this, game);
         movement.Update(this, game);
         collider.Update(this);
+        CheckState();
     }
 
     public FM_GunControlComponent GetGunControl() { return gunControl; }

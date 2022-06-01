@@ -16,13 +16,14 @@ public class FM_Bullet : FM_GameObject
         collider = new FM_Collider(new FM_Rectangle(bL, tR), size);
     }
 
-    public override void OnCollisionEnter(FM_GameObject other)
+    public override void OnCollisionEnter(FM_GameObject other, FM_Game game)
     {
         if (other.GetType() == FM_GameObjectType.Monster)
         {
             DeleteGameObject();
             FM_Monster monster = (FM_Monster)other;
             monster.GetHealthComponent().AddHealth(-bulletDamage);
+            game.AddScore(bulletDamage);
         }
     }
 

@@ -33,7 +33,7 @@ public class FM_VisualTest : MonoBehaviour
         float rotationSpeed = GameObject.Find("PlayerController").GetComponent<PlayerController>().rotationSpeed;
         FM_Player player = new FM_Player(playerPos, speed, rotationSpeed, FM_GameObjectType.Player, true);
         player.GetMovementComponent().SetVel(0, 0);
-        player.GetMovementComponent().SetDir(-1, 0);
+        player.GetMovementComponent().SetDir(-1.0f, 0.0f);
 
         Vector3 monsterPos = GameObject.FindGameObjectWithTag("AI").transform.position;
         float mSpeed = GameObject.Find("Monster").GetComponent<Movement>().speed;

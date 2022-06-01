@@ -15,7 +15,7 @@ public class FM_Monster : FM_GameObject
         health = new FM_HealthComponent(startingHealth, maxHealth);
     }
 
-    public override void OnCollisionEnter(FM_GameObject other)
+    public override void OnCollisionEnter(FM_GameObject other, FM_Game game)
     {
         /*if (other.GetType() == FM_GameObjectType.Player)
         {
@@ -25,9 +25,9 @@ public class FM_Monster : FM_GameObject
 
     public override void Update(FM_Game game, float elapsed = 1.0f)
     {
-        CheckState();
         movement.Update(this, game);
         collider.Update(this);
+        CheckState();
     }
 
     public FM_HealthComponent GetHealthComponent() { return health; }

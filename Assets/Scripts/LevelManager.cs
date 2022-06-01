@@ -43,7 +43,8 @@ public class LevelManager : MonoBehaviour
     float[] stateRep;
     private int tick;
     private int idleTime;
-    private int fullTime;
+    [HideInInspector]
+    public int fullTime;
     private List<string> keyPresses;
 
     private Vector3 previousPlayerPosition;

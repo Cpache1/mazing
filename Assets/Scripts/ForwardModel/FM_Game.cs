@@ -6,6 +6,10 @@ using Monte;
 public class FM_Game
 {
     Time elapsed;
+    private int idleTime;
+    public int fullTime;
+
+    private int score;
 
     public AIState state;
     public float[] stateRep;
@@ -28,6 +32,8 @@ public class FM_Game
 
         //state = currentState;
     }
+
+    public void AddScore(int s) { score += s; }
 
 
     //action[0] = x, horizontal input
@@ -90,6 +96,14 @@ public class FM_Game
 
     public void UpdateGame()
     {
+        if (player.GetMovementComponent().GetVel()==new Vector2(0.0f, 0.0f) &&
+            !player.GetGunControl().shoot)
+        {
+            //Starts counting when no button is being pressed
+            idleTime = idleTime + 1;
+        }
+        fullTime = fullTime + 1;
+
         //Updates all entities        
         foreach (FM_GameObject obj in gameObjects)
         {
@@ -106,7 +120,7 @@ public class FM_Game
             //player and monster first
             if (player.IntersectsWith(monster))
             {
-                player.OnCollisionEnter(monster);
+                player.OnCollisionEnter(monster, this);
             }
             //bullets, bombs and walls after
             for (int j = startProjectileIndex; j < gameObjects.Length; j++)
@@ -116,22 +130,35 @@ public class FM_Game
                     //intersecting with player
                     if (gameObjects[j].IntersectsWith(player))
                     {
-                        gameObjects[j].OnCollisionEnter(player);
+                        gameObjects[j].OnCollisionEnter(player, this);
                     }
                     //intersecting with monster (remember bombs can intersect both at the same time)
                     if (gameObjects[j].IntersectsWith(monster))
                     {
-                        gameObjects[j].OnCollisionEnter(monster);
+                        gameObjects[j].OnCollisionEnter(monster, this);
                     }
                 }
             }
         }
+        else if (!player.IsAlive())
+        {
+            AddScore(-25);
+        }
+        else if (!monster.IsAlive())
+        {
+            AddScore(15);
+        }
+
     }
 
     //Update game based on the new state representation given by FM
     public void UpdateStateRep(float[] currentState, List<ProjectileStruct> projectiles)
     {
         stateRep = currentState;
+
+        //time and score
+        idleTime = (int)stateRep[0];
+        score = (int)stateRep[1];
 
         //monster
         monster.SetPosition(new Vector2(stateRep[3], stateRep[4]));
@@ -197,8 +224,10 @@ public class FM_Game
     public float[] GetNextState()
     {
         //game has been updated, update state representation
-
-
+        stateRep[0] = ((float)idleTime / (float)fullTime); //idleTime
+        stateRep[55] = 1 - ((float)idleTime / (float)fullTime); //[general]activity
+        stateRep[1] = score; //score
+        stateRep[56] = score; //[general]score
 
         Vector2 origin = new Vector2(0.0f, 0.0f);
         
@@ -237,6 +266,10 @@ public class FM_Game
         }
         stateRep[49] = noFires;
         stateRep[50] = noBullets;
+
+        //cursor
+        stateRep[32] = monster.GetPosition().x; //cursorPositionX
+        stateRep[33] = monster.GetPosition().y; //cursorPositionY
 
         return stateRep;
     }
