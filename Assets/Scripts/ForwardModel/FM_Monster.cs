@@ -27,6 +27,7 @@ public class FM_Monster : FM_GameObject
     {
         movement.Update(this, game);
         collider.Update(this);
+        health.Update();
         CheckState();
     }
 

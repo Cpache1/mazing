@@ -8,6 +8,8 @@ public class FM_Game
     Time elapsed;
     private int idleTime;
     public int fullTime;
+    private Vector2 previousPlayerPosition;
+    private Vector2 previousBotPosition;
 
     private int score;
 
@@ -33,7 +35,12 @@ public class FM_Game
         //state = currentState;
     }
 
-    public void AddScore(int s) { score += s; }
+    public void AddScore(int s) 
+    { 
+        score += s;
+        if (score < 0) 
+            score = 0;
+    }
 
 
     //action[0] = x, horizontal input
@@ -161,16 +168,30 @@ public class FM_Game
         score = (int)stateRep[1];
 
         //monster
+        previousBotPosition = new Vector2(stateRep[3], stateRep[4]);        
         monster.SetPosition(new Vector2(stateRep[3], stateRep[4]));
         float degrees = stateRep[5];
         monster.GetMovementComponent().SetDir((float)Math.Cos(degrees * Math.PI / 180), (float)Math.Sin(degrees * Math.PI / 180)); // degrees to vector
+        
         monster.GetHealthComponent().SetHealth((int)stateRep[14]);
+        monster.GetHealthComponent().SetDeltaHealth((int)stateRep[47]); //botDeltaHealth
+        if (stateRep[48] == 0)
+            monster.Revive();
+        else
+            monster.DeleteGameObject();
 
         //player
+        previousPlayerPosition = new Vector2(stateRep[24], stateRep[25]);
         player.SetPosition(new Vector2(stateRep[24], stateRep[25]));
         degrees = stateRep[26];
         player.GetMovementComponent().SetDir((float)Math.Cos(degrees * Math.PI / 180), (float)Math.Sin(degrees * Math.PI / 180));
-        monster.GetHealthComponent().SetHealth((int)stateRep[27]);
+        
+        player.GetHealthComponent().SetHealth((int)stateRep[27]);
+        player.GetHealthComponent().SetDeltaHealth((int)stateRep[42]);
+        if (stateRep[43] == 0)
+            player.Revive();
+        else
+            player.DeleteGameObject();
 
         //bullets + bombs
         int projectileIdx = 0; //in list
@@ -230,18 +251,25 @@ public class FM_Game
         stateRep[56] = score; //[general]score
 
         Vector2 origin = new Vector2(0.0f, 0.0f);
-        
+
         //monster
+        stateRep[2] = (monster.GetPosition() - previousBotPosition).magnitude; //botDistanceTraveled
         stateRep[3] = monster.GetPosition().x;
         stateRep[4] = monster.GetPosition().y;
         stateRep[5] = Vector2.SignedAngle(origin, monster.GetMovementComponent().GetDir());
         stateRep[14] = monster.GetHealthComponent().GetHealth();
+        stateRep[47] = monster.GetHealthComponent().GetDeltaHealth();
+        stateRep[48] = monster.IsAlive() ? 0 : 1; //botDied
+
 
         //player
+        stateRep[23] = (player.GetPosition() - previousPlayerPosition).magnitude;//playerDistanceTravelled
         stateRep[24] = player.GetPosition().x;
         stateRep[25] = player.GetPosition().y;
         stateRep[26] = Vector2.SignedAngle(origin, player.GetMovementComponent().GetDir());
         stateRep[27] = player.GetHealthComponent().GetHealth();
+        stateRep[42] = player.GetHealthComponent().GetDeltaHealth();
+        stateRep[43] = player.IsAlive() ? 0 : 1; //playerDied
 
         //bullets + bombs
         int noBullets = 0;
@@ -267,9 +295,10 @@ public class FM_Game
         stateRep[49] = noFires;
         stateRep[50] = noBullets;
 
-        //cursor
-        stateRep[32] = monster.GetPosition().x; //cursorPositionX
-        stateRep[33] = monster.GetPosition().y; //cursorPositionY
+        //cursor TODO: currently you are only counting with the option of cursor being "AI" not a human player.
+        stateRep[31] = stateRep[2]; //cursorDistanceTraveled
+        stateRep[32] = stateRep[3]; //cursorPositionX
+        stateRep[33] = stateRep[4]; //cursorPositionY
 
         return stateRep;
     }
