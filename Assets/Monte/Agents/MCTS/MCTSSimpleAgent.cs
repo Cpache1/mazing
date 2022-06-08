@@ -241,6 +241,12 @@ namespace Monte
             //   * Other game state player attributes that could be useful?
             //   * Penalize collisions.
 
+            //Default win/lose conditions.
+            if (endState.getWinner() == 0) // Player wins
+                return 0;
+            else if (endState.getWinner() == 1) // Bot wins.
+                return 1;
+
             // We want distance to go down.
             float initialDistance = rootState.stateRep[20];
             float finalDistance = endState.stateRep[20];
