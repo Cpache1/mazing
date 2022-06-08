@@ -172,7 +172,9 @@ public class FM_Game
         monster.SetPosition(new Vector2(stateRep[3], stateRep[4]));
         float degrees = stateRep[5];
         monster.GetMovementComponent().SetDir((float)Math.Cos(degrees * Math.PI / 180), (float)Math.Sin(degrees * Math.PI / 180)); // degrees to vector
-        
+        monster.GetMovementComponent().SetSpeed(stateRep[6]);
+        monster.GetMovementComponent().SetRotationSpeed(stateRep[7]);
+
         monster.GetHealthComponent().SetHealth((int)stateRep[14]);
         monster.GetHealthComponent().SetDeltaHealth((int)stateRep[47]); //botDeltaHealth
         if (stateRep[48] == 0)
@@ -180,12 +182,15 @@ public class FM_Game
         else
             monster.DeleteGameObject();
 
+        monster.GetFrustrationComponent().SetFrustration(stateRep[15]);
+        monster.GetFrustrationComponent().SetActive(true); //TODO: When do we turn it off?
+
         //player
         previousPlayerPosition = new Vector2(stateRep[24], stateRep[25]);
         player.SetPosition(new Vector2(stateRep[24], stateRep[25]));
         degrees = stateRep[26];
         player.GetMovementComponent().SetDir((float)Math.Cos(degrees * Math.PI / 180), (float)Math.Sin(degrees * Math.PI / 180));
-        
+
         player.GetHealthComponent().SetHealth((int)stateRep[27]);
         player.GetHealthComponent().SetDeltaHealth((int)stateRep[42]);
         if (stateRep[43] == 0)
@@ -257,9 +262,12 @@ public class FM_Game
         stateRep[3] = monster.GetPosition().x;
         stateRep[4] = monster.GetPosition().y;
         stateRep[5] = Vector2.SignedAngle(origin, monster.GetMovementComponent().GetDir());
+        stateRep[6] = monster.GetMovementComponent().GetSpeed();
+        stateRep[7] = monster.GetMovementComponent().GetRotationSpeed();
         stateRep[14] = monster.GetHealthComponent().GetHealth();
         stateRep[47] = monster.GetHealthComponent().GetDeltaHealth();
         stateRep[48] = monster.IsAlive() ? 0 : 1; //botDied
+        stateRep[15] = monster.GetFrustrationComponent().GetFrustration();
 
 
         //player

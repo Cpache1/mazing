@@ -5,6 +5,7 @@ public class FM_Monster : FM_GameObject
     int startingHealth = 100;
     int maxHealth = 100;
     FM_HealthComponent health;
+    FM_FrustrationComponent frustration;
 
     float size = 0.5f; //radius
 
@@ -13,6 +14,7 @@ public class FM_Monster : FM_GameObject
     {
         collider = new FM_Collider(new FM_Circle(position, size), size);
         health = new FM_HealthComponent(startingHealth, maxHealth);
+        frustration = new FM_FrustrationComponent();
     }
 
     public override void OnCollisionEnter(FM_GameObject other, FM_Game game)
@@ -28,10 +30,12 @@ public class FM_Monster : FM_GameObject
         movement.Update(this, game);
         collider.Update(this);
         health.Update();
+        frustration.Update();
         CheckState();
     }
 
     public FM_HealthComponent GetHealthComponent() { return health; }
+    public FM_FrustrationComponent GetFrustrationComponent() { return frustration; }
 
     void CheckState()
     {

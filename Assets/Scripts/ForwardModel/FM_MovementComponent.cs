@@ -18,6 +18,9 @@ public class FM_MovementComponent
     public Vector2 GetDir() { return direction; }
     public void SetDir(float x, float y) { direction.x = x; direction.y = y; }
     public float GetSpeed() { return speed; }
+    public void SetSpeed(float s) { speed = s; }
+    public float GetRotationSpeed() { return rotationSpeed; }
+    public void SetRotationSpeed(float rS) { rotationSpeed = rS; }
 
 
     public void Update(FM_GameObject obj, FM_Game game)
