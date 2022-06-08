@@ -54,6 +54,7 @@ public class MonsterAIState : AIState
         newState.playerIndex = this.playerIndex;
         newState.parent = this.parent;
         newState.depth = this.depth;
+        newState.numCollisions = this.numCollisions;
         return newState;
     }
 
@@ -139,8 +140,26 @@ public class MonsterAIState : AIState
 
     private float[] ApplySingleAction(float[] action, float[] providedState, int idx)
     {
+        float[] nextState = fm.UpdateGameState(action, providedState, projectilesStates, idx);
+
+        bool collision = fm.GetGame().monster.GetMovementComponent().DidMonsterCollide();
+        if (collision)
+            numCollisions++;
+
+        return nextState;
+
+       /* playerAction = func(providedState);
+        
         //go to the forward model and change the game with this state (including player and other gameobjects)
-        return fm.UpdateGameState(action, providedState, projectilesStates, idx);
+        stateAfterMonsterPlays = fm.UpdateGameState(action, providedState, projectilesStates, idx);
+        stateAfterPlayerPlays = fm.UpdateGameState(playerAction, stateAfterMonsterPlays, projectilesStates, idx);
+        return stateAfterPlayerPlays;*/
     }
+
+    //private ACTION func(float[] state)
+    //{ 
+        //HEURISTIC (what would a good player do in this state?)
+        
+    //}
 
 }

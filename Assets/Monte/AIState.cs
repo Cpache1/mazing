@@ -38,6 +38,8 @@ namespace Monte
         //Used so that tree nodes are not remade (which is expensive due to evaluation) for MCTSWithLearning
         public bool treeNode = false;
 
+        public int numCollisions;
+
         //All of the constructors
         protected AIState() { }
         protected AIState(int pIndex, AIState _parent, int _depth)
@@ -48,6 +50,7 @@ namespace Monte
             stateRep = null;
             //children = new List<AIState>();
             wins = losses = totGames = 0;
+            numCollisions = 0;
             stateActionId = -1;
             stateScore = null;
         }
@@ -61,6 +64,7 @@ namespace Monte
             //children = new List<AIState>();
             wins = losses = totGames = 0;
             stateScore = null;
+            numCollisions = 0;
             stateActionId = -1;
         }
 

@@ -95,4 +95,6 @@ public class FM : MonoBehaviour
     {
         return game.GetProjectileStructs(); 
     }
+
+    public FM_Game GetGame() { return game; }
 }

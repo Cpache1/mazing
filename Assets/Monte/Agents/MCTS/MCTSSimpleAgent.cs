@@ -9,8 +9,14 @@ using System.Collections.Generic;
 namespace Monte
 {
     //The most basic MCTS Agent. Uses a simple UCT move selection policy and light, random, rollouts
+
+
     public class MCTSSimpleAgent : MCTSMasterAgent
     {
+        const float MAX_DISTANCE = 45.0f;
+        const float MAX_HEALTH = 100.0f;
+
+
         //Constructors
         public MCTSSimpleAgent(string file) : base(file) { }
         public MCTSSimpleAgent(int _numbSimulations, double _exploreWeight, int _maxRollout, double _drawScore) : base(_numbSimulations, _exploreWeight, _maxRollout, _drawScore) { }
@@ -107,7 +113,7 @@ namespace Monte
                 }
 
                 //Finally roll out this node. Includes Back-prop.
-                rollout(bestNode, nextToExpand);
+                rollout(initialState, bestNode, nextToExpand);
                 remaining = timeDue - LevelManager.CurrentTimeMillis();
             }
 
@@ -187,7 +193,7 @@ namespace Monte
 
 
         //Rollout function (plays random moves till it hits a termination)
-        protected void rollout(AIState rolloutStart, int nodeToExpand)
+        protected void rollout(AIState initialState, AIState rolloutStart, int nodeToExpand)
         {
             //First, advance node with action. This will belong to the tree.
             AIState nextState = rolloutStart.generateChild(nodeToExpand, macroActionLength);
@@ -205,13 +211,25 @@ namespace Monte
 
             float value = rolloutState.getWinner();
             if (!terminalStateFound)
-                value = evalState(rolloutState); 
+                value = evalState(initialState, rolloutState); 
             
             nextState.addResult(value);
 
         }
 
-        private float evalState(AIState state)
+        private float evalState(AIState rootState, AIState endState)
+        {
+            float w0 = 1.0f; // 0.5f;
+            float a0 = winningScore(rootState, endState);
+
+            float w1 = 0.0f; // 0.5f;
+            float a1 = playerModelScore(rootState, endState);
+
+            return w0 * a0 + w1 * a1;
+
+        }
+
+        private float winningScore(AIState rootState, AIState endState)
         {
             // This function needs to evaluate how "good" a state is for the monster,
             // where "good" means closer to win the game.
@@ -223,7 +241,31 @@ namespace Monte
             //   * Other game state player attributes that could be useful?
             //   * Penalize collisions.
 
-            return 0.5f;
+            // We want distance to go down.
+            float initialDistance = rootState.stateRep[20];
+            float finalDistance = endState.stateRep[20];
+            float diffDist = (initialDistance - finalDistance) / MAX_DISTANCE;
+
+            // Health to be up.
+            float initialHealth = rootState.stateRep[14];
+            float finalHealth = endState.stateRep[14];
+            float diffHealth = (finalHealth - initialHealth) / MAX_HEALTH;
+
+            //Collisions count.
+            float maxCollisions = endState.depth;
+            float actualCollisions = endState.numCollisions;
+            float collisionScore = 1 - (actualCollisions / maxCollisions);
+
+            float totScore = ( diffDist + diffHealth + collisionScore ) / 3.0f;
+
+            return totScore;
+        }
+
+
+
+        private float playerModelScore(AIState rootState, AIState endState)
+        {
+            return 0.0f;
         }
     }
 }
