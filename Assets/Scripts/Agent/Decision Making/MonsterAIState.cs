@@ -188,7 +188,7 @@ public class MonsterAIState : AIState
         //HEURISTIC (determine if player shoots/bombs?)
 
         // shooting:
-        //fm.GetGame().GiveInputs(true, false);
+        fm.GetGame().GiveInputs(true, false);
 
         //bomb
        // fm.GetGame().GiveInputs(false, true);
