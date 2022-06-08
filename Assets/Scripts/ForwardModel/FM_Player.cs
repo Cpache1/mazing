@@ -2,8 +2,8 @@
 
 public class FM_Player : FM_GameObject
 {
-    int startingHealth;
-    int maxHealth;
+    int startingHealth = 100;
+    int maxHealth = 100;
     FM_HealthComponent health;
 
     float size = 0.5f; //radius

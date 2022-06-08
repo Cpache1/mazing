@@ -198,6 +198,10 @@ public class FM_Game
         else
             player.DeleteGameObject();
 
+        //monster/player related
+        
+        
+
         //bullets + bombs
         int projectileIdx = 0; //in list
 
@@ -278,6 +282,9 @@ public class FM_Game
         stateRep[27] = player.GetHealthComponent().GetHealth();
         stateRep[42] = player.GetHealthComponent().GetDeltaHealth();
         stateRep[43] = player.IsAlive() ? 0 : 1; //playerDied
+
+        //player/monster
+        stateRep[20] = (player.GetPosition() - monster.GetPosition()).magnitude;
 
         //bullets + bombs
         int noBullets = 0;
