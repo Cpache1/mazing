@@ -4,6 +4,7 @@ Library released under MIT License
 */
 
 using System;
+using UnityEngine;
 using System.Collections.Generic;
 
 namespace Monte
@@ -24,8 +25,16 @@ namespace Monte
         //Main MCTS algortim
         protected override void mainAlgorithm(AIState initialState, long a_timeDue)
         {
-            //nextActionId = runMCTS(initialState, a_timeDue);
-            //return; 
+            //Generate all possible moves
+            /*AIState[] children = initialState.generateChildren();
+            //Select a random one
+            int index = randGen.Next(children.Length);
+            //And set next to it(unless no children were generated
+            nextActionId = index;
+            done = true;
+            return;*/
+
+
 
             if (firstDecision)
             {
@@ -36,36 +45,32 @@ namespace Monte
             }
             else
             {
-
-                //Advance the state until the end of the current macroaction in execution.
                 AIState macroActionStartState = rollStateMacroAction(initialState.clone());
-
 
                 if (remainingMASteps > 0)
                 {
-                    /*if (resetMacro)
-                    {
-                        //Create a new root.
-                        int a = 0;
-                    }*/
-
+            
                     //Still running a previous macro-action. Continue planning from state in tree
                     // at the end of that macro-action
                     runMCTS(macroActionStartState, a_timeDue);
                     remainingMASteps--;
                     resetMacro = false;
 
-                } else if (remainingMASteps == 0) //Last iteration for this decision.
+                }
+                else if (remainingMASteps == 0) //Last iteration for this decision.
                 {
                     resetMacro = true;
                     remainingMASteps = macroActionLength - 1;
-                    lastMADecision = runMCTS(macroActionStartState, a_timeDue); 
+                    lastMADecision = runMCTS(macroActionStartState, a_timeDue);
                 }
+
 
             }
 
             // Set the action to execute by the MCTS agent
+            if (lastMADecision == -1) lastMADecision = 0;
             nextActionId = lastMADecision;
+
         }
 
         private AIState rollStateMacroAction(AIState state)
@@ -117,7 +122,8 @@ namespace Monte
                 remaining = timeDue - LevelManager.CurrentTimeMillis();
             }
 
-            //UnityEngine.MonoBehaviour.print(numIterations);
+
+            Debug.Log("Iterations: "  + numIterations);
 
             return recommendation(initialState);
         }
@@ -165,18 +171,23 @@ namespace Monte
         private int recommendation(AIState initialState)
         {
             //Onces all the simulations have taken place we select the best move...
-            int mostGames = -1;
+            double mostGames = -1.0;
             int bestMove = -1;
             //Loop through all children
             for (int i = 0; i < initialState.children.Length; i++)
             {
                 //Find the one that was played the most (this is the best move as we are selecting the robust child)
-                int games = initialState.children[i].totGames;
-                if (games > mostGames)
+                if (initialState.children[i] != null)
                 {
-                    mostGames = games;
-                    bestMove = i;
+                    double noise = randGen.NextDouble() * epsilon;
+                    int games = initialState.children[i].totGames;
+                    if (games + noise > mostGames)
+                    {
+                        mostGames = games + noise;
+                        bestMove = i;
+                    }
                 }
+                
             }
 
             //if you're supposed to interrupt don't provide a state or say it's done
@@ -195,9 +206,15 @@ namespace Monte
         //Rollout function (plays random moves till it hits a termination)
         protected void rollout(AIState initialState, AIState rolloutStart, int nodeToExpand)
         {
-            //First, advance node with action. This will belong to the tree.
+            //First, advance node with action. This will belong to the tree (EXPANSION)
             AIState nextState = rolloutStart.generateChild(nodeToExpand, macroActionLength);
-            bool terminalStateFound = (nextState.getWinner() > -1);
+            if (nextState == null)
+            {
+                rolloutStart.addResult(rolloutStart.getWinner());
+                return;
+            }
+
+            bool terminalStateFound = (nextState == null) || (nextState.getWinner() > -1);
             int rolloutCount = 0;
 
             AIState rolloutState = nextState.clone();
@@ -262,7 +279,9 @@ namespace Monte
             float actualCollisions = endState.numCollisions;
             float collisionScore = 1 - (actualCollisions / maxCollisions);
 
-            float totScore = ( diffDist + diffHealth + collisionScore ) / 3.0f;
+            //Debug.Log(diffDist);
+
+            float totScore = diffDist * 0.75f + diffHealth * 0.20f  + collisionScore * 0.05f;
 
             return totScore;
         }

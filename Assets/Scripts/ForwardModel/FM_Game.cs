@@ -209,7 +209,7 @@ public class FM_Game
         for (int i = startProjectileIndex; i < gameObjects.Length - 3; i++)
         {
 
-            if (noBullets != 0)
+            if (projectiles[projectileIdx].alive)
             {
                 gameObjects[i].SetPosition(new Vector2(projectiles[projectileIdx].x, projectiles[projectileIdx].y));
                 gameObjects[i].GetMovementComponent().SetVel(projectiles[projectileIdx].dirX, projectiles[projectileIdx].dirY);
@@ -292,15 +292,18 @@ public class FM_Game
         structures.Clear();
         for (int i = startProjectileIndex; i < gameObjects.Length; i++)
         {
-            if (gameObjects[i].GetType()==FM_GameObjectType.Bullet && gameObjects[i].IsAlive())
+            if (gameObjects[i].GetType()==FM_GameObjectType.Bullet)
             {
-                noBullets++;
                 ProjectileStruct bullet = new ProjectileStruct();
                 bullet.x = gameObjects[i].GetPosition().x;
                 bullet.y = gameObjects[i].GetPosition().y;
                 bullet.dirX = gameObjects[i].GetMovementComponent().GetVel().x; 
                 bullet.dirY = gameObjects[i].GetMovementComponent().GetVel().y;
+                bullet.alive = gameObjects[i].IsAlive();
                 structures.Add(bullet);
+
+                if(gameObjects[i].IsAlive())
+                    noBullets++;
             }
             else if (gameObjects[i].GetType() == FM_GameObjectType.Bomb && gameObjects[i].IsAlive()/*TODO: AND it is in fire state*/)
             {
@@ -329,4 +332,17 @@ public struct ProjectileStruct
     public float x, y;
     public float dirX, dirY;
     public float ttl;
+    public bool alive;
+
+    public ProjectileStruct GetCopy()
+    {
+        ProjectileStruct p;
+        p.x = this.x;
+        p.y = this.y;
+        p.dirX = this.dirX;
+        p.dirY = this.dirY;
+        p.ttl = this.ttl;
+        p.alive = this.alive;
+        return p;
+    }
 }

@@ -109,6 +109,16 @@ public class MonsterAI : MonoBehaviour
             fmBullet.dirY = (float)Math.Sin(degrees * Math.PI / 180);
             latestProjectilesStates.Add(fmBullet);
         }
+
+        for (int i = bullets.Length; i < 5; i++)
+        {
+            ProjectileStruct fmBullet = new ProjectileStruct();
+            fmBullet.alive = false;
+            latestProjectilesStates.Add(fmBullet);
+        }
+
+
+
         GameObject[] bombs = GameObject.FindGameObjectsWithTag("fire");
         for (int i = 0; i < bullets.Length; i++)
         {

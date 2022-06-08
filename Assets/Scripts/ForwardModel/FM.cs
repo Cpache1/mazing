@@ -93,7 +93,13 @@ public class FM : MonoBehaviour
 
     public List<ProjectileStruct> GetProjectileStructs()
     {
-        return game.GetProjectileStructs(); 
+        List<ProjectileStruct> copySt = new List<ProjectileStruct>();
+        foreach (ProjectileStruct ps in game.GetProjectileStructs())
+        {
+            ProjectileStruct psCopy = ps.GetCopy(); 
+            copySt.Add(psCopy);
+        }
+        return copySt;
     }
 
     public FM_Game GetGame() { return game; }
