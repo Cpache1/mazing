@@ -10,6 +10,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
+using System;
 
 public class MonsterAIState : AIState
 {
@@ -20,7 +21,7 @@ public class MonsterAIState : AIState
     public static float[,] allActions = new float[numActions, 2] { {-1,-1}, { -1, 0}, { -1, 1 },
                                                                     {0,-1},  { 0, 0},  { 0, 1 },
                                                                     {1,-1},  { 1, 0},  { 1, 1 } };
-    List<ProjectileStruct> projectilesStates;
+    public List<ProjectileStruct> projectilesStates;
 
 
     //New State
@@ -54,6 +55,15 @@ public class MonsterAIState : AIState
         newState.playerIndex = this.playerIndex;
         newState.parent = this.parent;
         newState.depth = this.depth;
+        newState.numCollisions = this.numCollisions;
+
+        newState.projectilesStates = new List<ProjectileStruct>();
+        foreach (ProjectileStruct ps in this.projectilesStates)
+        {
+            ProjectileStruct psCopy = ps.GetCopy();
+            newState.projectilesStates.Add(psCopy);
+        }
+
         return newState;
     }
 
@@ -102,18 +112,41 @@ public class MonsterAIState : AIState
 
     private float[] ApplyMacroAction(int actionId, int macroActionLength, float[] state)
     {
-        float[] act = getAction(actionId);
-        float[] newState = (float[])stateRep.Clone();
-        //As many actions as the macro action length
-        bool gameOver = isGameOver(newState); //should be false...
-        //As many actions as the macro action length
-        for (int actionIdx = 0; !gameOver && actionIdx < macroActionLength; actionIdx++)
+        try { 
+            float[] act = getAction(actionId);
+            float[] newState = (float[])stateRep.Clone();
+            //As many actions as the macro action length
+            bool gameOver = isGameOver(newState); //should be false...
+                                                  
+            //As many actions as the macro action length
+            for (int actionIdx = 0; !gameOver && actionIdx < macroActionLength; actionIdx++)
+            {
+                newState = ApplySingleAction(act, newState, playerIndex);
+                gameOver = isGameOver(newState);
+            }
+
+            return newState;
+        }
+        catch (Exception e) 
         {
-            newState = ApplySingleAction(act, newState, playerIndex);
-            gameOver = isGameOver(newState);
+            int a = 0;
+
+            float[] act = getAction(actionId);
+            float[] newState = (float[])stateRep.Clone();
+            //As many actions as the macro action length
+            bool gameOver = isGameOver(newState); //should be false...
+
+            //As many actions as the macro action length
+            for (int actionIdx = 0; !gameOver && actionIdx < macroActionLength; actionIdx++)
+            {
+                newState = ApplySingleAction(act, newState, playerIndex);
+                gameOver = isGameOver(newState);
+            }
+
+            return newState;
         }
 
-        return newState;
+        return null;
     }
 
     private bool isGameOver(float[] stateRep)
@@ -139,8 +172,36 @@ public class MonsterAIState : AIState
 
     private float[] ApplySingleAction(float[] action, float[] providedState, int idx)
     {
-        //go to the forward model and change the game with this state (including player and other gameobjects)
-        return fm.UpdateGameState(action, providedState, projectilesStates, idx);
+        float[] nextState = fm.UpdateGameState(action, providedState, projectilesStates, idx);
+
+        bool collision = fm.GetGame().monster.GetMovementComponent().DidMonsterCollide();
+        if (collision)
+            numCollisions++;
+
+      // return nextState;
+
+        return playerAction(nextState, 1 - idx);
+    }
+
+    private float[] playerAction(float[] state, int idx)
+    {
+        //HEURISTIC (determine if player shoots/bombs?)
+
+        // shooting:
+        fm.GetGame().GiveInputs(true, false);
+
+        //bomb
+       // fm.GetGame().GiveInputs(false, true);
+
+
+
+        float[] playerMovement = { 0.0f, 0.0f }; // = //HEURISTIC (what would a good player do in this state?)
+
+        float[] stateAfterPlayerPlays = fm.UpdateGameState(playerMovement, state, projectilesStates, idx);
+
+        projectilesStates = fm.GetProjectileStructs();
+
+        return stateAfterPlayerPlays;
     }
 
 }

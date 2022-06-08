@@ -4,13 +4,20 @@ Library released under MIT License
 */
 
 using System;
+using UnityEngine;
 using System.Collections.Generic;
 
 namespace Monte
 {
     //The most basic MCTS Agent. Uses a simple UCT move selection policy and light, random, rollouts
+
+
     public class MCTSSimpleAgent : MCTSMasterAgent
     {
+        const float MAX_DISTANCE = 45.0f;
+        const float MAX_HEALTH = 100.0f;
+
+
         //Constructors
         public MCTSSimpleAgent(string file) : base(file) { }
         public MCTSSimpleAgent(int _numbSimulations, double _exploreWeight, int _maxRollout, double _drawScore) : base(_numbSimulations, _exploreWeight, _maxRollout, _drawScore) { }
@@ -18,8 +25,16 @@ namespace Monte
         //Main MCTS algortim
         protected override void mainAlgorithm(AIState initialState, long a_timeDue)
         {
-            //nextActionId = runMCTS(initialState, a_timeDue);
-            //return; 
+            //Generate all possible moves
+            /*AIState[] children = initialState.generateChildren();
+            //Select a random one
+            int index = randGen.Next(children.Length);
+            //And set next to it(unless no children were generated
+            nextActionId = index;
+            done = true;
+            return;*/
+
+
 
             if (firstDecision)
             {
@@ -30,36 +45,32 @@ namespace Monte
             }
             else
             {
-
-                //Advance the state until the end of the current macroaction in execution.
                 AIState macroActionStartState = rollStateMacroAction(initialState.clone());
-
 
                 if (remainingMASteps > 0)
                 {
-                    /*if (resetMacro)
-                    {
-                        //Create a new root.
-                        int a = 0;
-                    }*/
-
+            
                     //Still running a previous macro-action. Continue planning from state in tree
                     // at the end of that macro-action
                     runMCTS(macroActionStartState, a_timeDue);
                     remainingMASteps--;
                     resetMacro = false;
 
-                } else if (remainingMASteps == 0) //Last iteration for this decision.
+                }
+                else if (remainingMASteps == 0) //Last iteration for this decision.
                 {
                     resetMacro = true;
                     remainingMASteps = macroActionLength - 1;
-                    lastMADecision = runMCTS(macroActionStartState, a_timeDue); 
+                    lastMADecision = runMCTS(macroActionStartState, a_timeDue);
                 }
+
 
             }
 
             // Set the action to execute by the MCTS agent
+            if (lastMADecision == -1) lastMADecision = 0;
             nextActionId = lastMADecision;
+
         }
 
         private AIState rollStateMacroAction(AIState state)
@@ -107,11 +118,12 @@ namespace Monte
                 }
 
                 //Finally roll out this node. Includes Back-prop.
-                rollout(bestNode, nextToExpand);
+                rollout(initialState, bestNode, nextToExpand);
                 remaining = timeDue - LevelManager.CurrentTimeMillis();
             }
 
-            //UnityEngine.MonoBehaviour.print(numIterations);
+
+            Debug.Log("Iterations: "  + numIterations);
 
             return recommendation(initialState);
         }
@@ -159,18 +171,23 @@ namespace Monte
         private int recommendation(AIState initialState)
         {
             //Onces all the simulations have taken place we select the best move...
-            int mostGames = -1;
+            double mostGames = -1.0;
             int bestMove = -1;
             //Loop through all children
             for (int i = 0; i < initialState.children.Length; i++)
             {
                 //Find the one that was played the most (this is the best move as we are selecting the robust child)
-                int games = initialState.children[i].totGames;
-                if (games > mostGames)
+                if (initialState.children[i] != null)
                 {
-                    mostGames = games;
-                    bestMove = i;
+                    double noise = randGen.NextDouble() * epsilon;
+                    int games = initialState.children[i].totGames;
+                    if (games + noise > mostGames)
+                    {
+                        mostGames = games + noise;
+                        bestMove = i;
+                    }
                 }
+                
             }
 
             //if you're supposed to interrupt don't provide a state or say it's done
@@ -187,11 +204,17 @@ namespace Monte
 
 
         //Rollout function (plays random moves till it hits a termination)
-        protected void rollout(AIState rolloutStart, int nodeToExpand)
+        protected void rollout(AIState initialState, AIState rolloutStart, int nodeToExpand)
         {
-            //First, advance node with action. This will belong to the tree.
+            //First, advance node with action. This will belong to the tree (EXPANSION)
             AIState nextState = rolloutStart.generateChild(nodeToExpand, macroActionLength);
-            bool terminalStateFound = (nextState.getWinner() > -1);
+            if (nextState == null)
+            {
+                rolloutStart.addResult(rolloutStart.getWinner());
+                return;
+            }
+
+            bool terminalStateFound = (nextState == null) || (nextState.getWinner() > -1);
             int rolloutCount = 0;
 
             AIState rolloutState = nextState.clone();
@@ -205,13 +228,25 @@ namespace Monte
 
             float value = rolloutState.getWinner();
             if (!terminalStateFound)
-                value = evalState(rolloutState); 
+                value = evalState(initialState, rolloutState); 
             
             nextState.addResult(value);
 
         }
 
-        private float evalState(AIState state)
+        private float evalState(AIState rootState, AIState endState)
+        {
+            float w0 = 1.0f; // 0.5f;
+            float a0 = winningScore(rootState, endState);
+
+            float w1 = 0.0f; // 0.5f;
+            float a1 = playerModelScore(rootState, endState);
+
+            return w0 * a0 + w1 * a1;
+
+        }
+
+        private float winningScore(AIState rootState, AIState endState)
         {
             // This function needs to evaluate how "good" a state is for the monster,
             // where "good" means closer to win the game.
@@ -223,7 +258,39 @@ namespace Monte
             //   * Other game state player attributes that could be useful?
             //   * Penalize collisions.
 
-            return 0.5f;
+            //Default win/lose conditions.
+            if (endState.getWinner() == 0) // Player wins
+                return 0;
+            else if (endState.getWinner() == 1) // Bot wins.
+                return 1;
+
+            // We want distance to go down.
+            float initialDistance = rootState.stateRep[20];
+            float finalDistance = endState.stateRep[20];
+            float diffDist = (initialDistance - finalDistance) / MAX_DISTANCE;
+
+            // Health to be up.
+            float initialHealth = rootState.stateRep[14];
+            float finalHealth = endState.stateRep[14];
+            float diffHealth = (finalHealth - initialHealth) / MAX_HEALTH;
+
+            //Collisions count.
+            float maxCollisions = endState.depth;
+            float actualCollisions = endState.numCollisions;
+            float collisionScore = 1 - (actualCollisions / maxCollisions);
+
+            //Debug.Log(diffDist);
+
+            float totScore = diffDist * 0.75f + diffHealth * 0.20f  + collisionScore * 0.05f;
+
+            return totScore;
+        }
+
+
+
+        private float playerModelScore(AIState rootState, AIState endState)
+        {
+            return 0.0f;
         }
     }
 }

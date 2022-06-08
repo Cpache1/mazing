@@ -6,11 +6,13 @@ public class FM_MovementComponent
 {
     private Vector2 velocity, direction;
     private float speed, rotationSpeed;
+    private bool monsterCollided;
 
     public FM_MovementComponent(float sp, float r_sp)
     {
         speed = sp;
         rotationSpeed = r_sp;
+        monsterCollided = false;
     }
 
     public Vector2 GetVel() { return velocity; }
@@ -21,10 +23,13 @@ public class FM_MovementComponent
     public void SetSpeed(float s) { speed = s; }
     public float GetRotationSpeed() { return rotationSpeed; }
     public void SetRotationSpeed(float rS) { rotationSpeed = rS; }
+    public bool DidMonsterCollide() { return monsterCollided; }
 
 
     public void Update(FM_GameObject obj, FM_Game game)
     {
+        monsterCollided = false;
+
         //Updating position
         Vector2 oldPos = new Vector2(obj.GetPosition().x, obj.GetPosition().y);
 
@@ -41,6 +46,12 @@ public class FM_MovementComponent
             if (obj.GetType() == FM_GameObjectType.Player || obj.GetType() == FM_GameObjectType.Monster)
             {
                 obj.SetPosition(oldPos);
+
+                if (obj.GetType() == FM_GameObjectType.Monster)
+                {
+                    monsterCollided = true;
+                }
+
             }
             //... as bullets or bombs they get destroyed 
             else

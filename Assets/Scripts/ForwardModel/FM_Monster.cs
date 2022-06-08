@@ -37,6 +37,7 @@ public class FM_Monster : FM_GameObject
     public FM_HealthComponent GetHealthComponent() { return health; }
     public FM_FrustrationComponent GetFrustrationComponent() { return frustration; }
 
+
     void CheckState()
     {
         if (GetHealthComponent().GetHealth() == 0)
