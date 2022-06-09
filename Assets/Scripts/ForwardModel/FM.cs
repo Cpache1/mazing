@@ -44,19 +44,25 @@ public class FM : MonoBehaviour
         int startingBullets = 5;
         float bulletSpeed = 1000.0f;
 
+        int startingBombs = 3;
+        float bombSpeed = 500.0f;
+
         float rotationSpeed = 0.0f;
 
-        float bulletSize_x = 0.125f; // 0.275f;
-        float bulletSize_y = 0.125f; // 0.1f;
-
-        gameObjs = new FM_GameObject[2 + startingBullets];
+        gameObjs = new FM_GameObject[2 + startingBullets + startingBombs];
         gameObjs[0] = p;
         gameObjs[1] = m;
 
         for (int i = 2; i < gameObjs.Length; i++)
         {
-            gameObjs[i] = new FM_Bullet(vec, bulletSpeed, rotationSpeed, FM_GameObjectType.Bullet,
-                false, new Vector2(bulletSize_x, bulletSize_y));
+            if (i < 2 + startingBullets)
+            {
+                gameObjs[i] = new FM_Bullet(vec, bulletSpeed, rotationSpeed, FM_GameObjectType.Bullet, false);
+            }
+            else
+            {
+                gameObjs[i] = new FM_Bomb(vec, bombSpeed, rotationSpeed, FM_GameObjectType.Bomb, false);
+            }
         }
 
         return gameObjs;

@@ -107,6 +107,10 @@ public class MonsterAI : MonoBehaviour
             float degrees = unityBullet.transform.eulerAngles.z;
             fmBullet.dirX = (float)Math.Cos(degrees * Math.PI / 180);
             fmBullet.dirY = (float)Math.Sin(degrees * Math.PI / 180);
+
+            fmBullet.alive = true;
+            fmBullet.ttl = -2; //bullet ttl -2
+
             latestProjectilesStates.Add(fmBullet);
         }
 
@@ -117,13 +121,49 @@ public class MonsterAI : MonoBehaviour
             latestProjectilesStates.Add(fmBullet);
         }
 
-
-
-        GameObject[] bombs = GameObject.FindGameObjectsWithTag("fire");
-        for (int i = 0; i < bullets.Length; i++)
+        //bomb/fire ttl = -1/ttl
+        GameObject[] bombs = GameObject.FindGameObjectsWithTag("bomb"); //alive undetonated bombs
+        GameObject[] fires = GameObject.FindGameObjectsWithTag("fire"); //alive detonated bombs
+        for (int i = 0; i < bombs.Length; i++)
         {
-            //TODO: Similar here.
-            //latestProjectilesStates.Add(bomb);
+            ProjectileStruct fmBomb = new ProjectileStruct();
+            GameObject unityBomb = bombs[i];
+            fmBomb.x = unityBomb.transform.position.x;
+            fmBomb.y = unityBomb.transform.position.y;
+
+            float degrees = unityBomb.transform.eulerAngles.z;
+            fmBomb.dirX = (float)Math.Cos(degrees * Math.PI / 180);
+            fmBomb.dirY = (float)Math.Sin(degrees * Math.PI / 180);
+
+            fmBomb.alive = true;
+            fmBomb.ttl = -1;
+
+            latestProjectilesStates.Add(fmBomb);
+        }
+
+        for (int i = 0; i < fires.Length; i++)
+        {
+            ProjectileStruct fmFire = new ProjectileStruct();
+            GameObject unityFire = fires[i];
+            fmFire.x = unityFire.transform.position.x;
+            fmFire.y = unityFire.transform.position.y;
+
+            float degrees = unityFire.transform.eulerAngles.z;
+            fmFire.dirX = (float)Math.Cos(degrees * Math.PI / 180);
+            fmFire.dirY = (float)Math.Sin(degrees * Math.PI / 180);
+
+            fmFire.alive = true;
+            fmFire.ttl = -1; //TODO: how long left?
+
+            latestProjectilesStates.Add(fmFire);
+        }
+
+        for (int i = fires.Length + bombs.Length; i < 3; i++)
+        {
+            ProjectileStruct fmBomb = new ProjectileStruct();
+            fmBomb.alive = false;
+            fmBomb.ttl = -1;
+            latestProjectilesStates.Add(fmBomb);
         }
 
         //create the state based on that.

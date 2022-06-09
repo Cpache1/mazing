@@ -53,8 +53,12 @@ public class FM_MovementComponent
                 }
 
             }
-            //... as bullets or bombs they get destroyed 
-            else
+            else if (obj.GetType() == FM_GameObjectType.Bomb) //if it is a bomb just detonate it
+            {
+                FM_Bomb bomb = (FM_Bomb)obj;
+                bomb.Detonate();
+            }
+            else //it's a bullet, destroy it
             {
                 obj.DeleteGameObject();
             }

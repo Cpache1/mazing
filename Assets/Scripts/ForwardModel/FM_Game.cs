@@ -81,6 +81,11 @@ public class FM_Game
             shooting = false;
             player.GetGunControl().shoot = true;
         }
+        else if (bomb)
+        {
+            bomb = false;
+            player.GetGunControl().bomb = true;
+        }
     }
 
 
@@ -104,7 +109,7 @@ public class FM_Game
     public void UpdateGame()
     {
         if (player.GetMovementComponent().GetVel()==new Vector2(0.0f, 0.0f) &&
-            !player.GetGunControl().shoot)
+            !player.GetGunControl().shoot && !player.GetGunControl().bomb)
         {
             //Starts counting when no button is being pressed
             idleTime = idleTime + 1;
@@ -203,19 +208,15 @@ public class FM_Game
         
 
         //bullets + bombs
-        int projectileIdx = 0; //in list
-
-        int noBullets = (int)stateRep[50]; //check how many bullets are alive 
-        for (int i = startProjectileIndex; i < gameObjects.Length - 3; i++)
+        //int noBullets = (int)stateRep[50]; //check how many bullets are alive 
+        for (int i = 2; i < gameObjects.Length - 3; i++)
         {
 
-            if (projectiles[projectileIdx].alive)
+            if (projectiles[i].alive)
             {
-                gameObjects[i].SetPosition(new Vector2(projectiles[projectileIdx].x, projectiles[projectileIdx].y));
-                gameObjects[i].GetMovementComponent().SetVel(projectiles[projectileIdx].dirX, projectiles[projectileIdx].dirY);
+                gameObjects[i].SetPosition(new Vector2(projectiles[i].x, projectiles[i].y));
+                gameObjects[i].GetMovementComponent().SetVel(projectiles[i].dirX, projectiles[i].dirY);
                 gameObjects[i].Revive();
-                projectileIdx++;
-                noBullets--;
             }
             else
             {
@@ -223,27 +224,31 @@ public class FM_Game
             }
         }
 
-        int noFires = (int)stateRep[49]; //check how many bombs are ignited 
+        //int noFires = (int)stateRep[49]; //check how many bombs are ignited 
         for (int i = gameObjects.Length - 3; i < gameObjects.Length; i++)
         {
-            if (noFires!=0)
+            FM_Bomb bomb = (FM_Bomb)gameObjects[i];
+            if (projectiles[i].alive)
             {
-                /*gameObjects[i].SetPosition(new Vector2(x, y));
-                gameObjects[i].GetMovementComponent().SetVel(compDir.x, compDir.y); //if not ignited
-                //gameObjects[i].GetMovementComponent().SetDir((float)Math.Cos(degrees * Math.PI / 180), (float)Math.Sin(degrees * Math.PI / 180));
-                //SET TIME TO LIVE IF IGNITED
-                gameObjects[i].Revive();
-                projectileIdx++;
-                noFires--;*/
+                bomb.SetPosition(new Vector2(projectiles[i].x, projectiles[i].y));
+                if (projectiles[i].ttl == -1) //it's an undetonated bomb 'flying'
+                {
+                    bomb.GetMovementComponent().SetVel(projectiles[i].dirX, projectiles[i].dirY);
+                    bomb.ResetBomb();
+                    bomb.Revive();
+                }
+                else if (projectiles[i].ttl > -1) //it's a live fire
+                {
+                    bomb.Revive();
+                    bomb.Detonate();
+                    bomb.ttl = (int)projectiles[i].ttl;
+                }                
             }
             else
             {
-                gameObjects[i].DeleteGameObject();
+                bomb.ResetBomb(); //kills it and puts it back in "bullet form"
             }
         }
-
-        
-        
     }
 
     //Gets the current state based on the state rep
@@ -290,7 +295,7 @@ public class FM_Game
         int noBullets = 0;
         int noFires = 0;
         structures.Clear();
-        for (int i = startProjectileIndex; i < gameObjects.Length; i++)
+        for (int i = 2; i < gameObjects.Length; i++)
         {
             if (gameObjects[i].GetType()==FM_GameObjectType.Bullet)
             {
@@ -300,20 +305,40 @@ public class FM_Game
                 bullet.dirX = gameObjects[i].GetMovementComponent().GetVel().x; 
                 bullet.dirY = gameObjects[i].GetMovementComponent().GetVel().y;
                 bullet.alive = gameObjects[i].IsAlive();
+                bullet.ttl = -2; //bullet ttl is -2
                 structures.Add(bullet);
 
                 if(gameObjects[i].IsAlive())
                     noBullets++;
             }
-            else if (gameObjects[i].GetType() == FM_GameObjectType.Bomb && gameObjects[i].IsAlive()/*TODO: AND it is in fire state*/)
+            else if (gameObjects[i].GetType() == FM_GameObjectType.Bomb)
             {
-                noFires++;
+                FM_Bomb fmBomb = (FM_Bomb)gameObjects[i];
+
+                ProjectileStruct bomb = new ProjectileStruct();
+                bomb.x = fmBomb.GetPosition().x;
+                bomb.y = fmBomb.GetPosition().y;
+                bomb.dirX = fmBomb.GetMovementComponent().GetVel().x;
+                bomb.dirY = fmBomb.GetMovementComponent().GetVel().y;
+                bomb.alive = fmBomb.IsAlive();
+
+                if (fmBomb.hasDetonated()) //fire
+                {
+                    bomb.ttl = fmBomb.ttl;
+                    noFires++;
+                }
+                else if (!fmBomb.hasDetonated() && fmBomb.IsAlive())
+                    bomb.ttl = -1;
+
+                structures.Add(bomb);
             }
         }
         stateRep[49] = noFires;
         stateRep[50] = noBullets;
 
-        //cursor TODO: currently you are only counting with the option of cursor being "AI" not a human player.
+        //cursor
+        stateRep[21] = stateRep[20]; //cursorDistanceFromPlayer
+        stateRep[22] = 0.0f; //cursorDistanceFromBot
         stateRep[31] = stateRep[2]; //cursorDistanceTraveled
         stateRep[32] = stateRep[3]; //cursorPositionX
         stateRep[33] = stateRep[4]; //cursorPositionY
