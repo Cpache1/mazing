@@ -18,6 +18,7 @@ public class FM_VisualTest : MonoBehaviour
     public bool moveDown = false;
 
     public bool shoot = false;
+    public bool bomb = false;
 
     FM_Game game;
 
@@ -75,6 +76,12 @@ public class FM_VisualTest : MonoBehaviour
             shoot = false;
             game.GiveInputs(true, false);
         }
+        if(bomb)
+        {
+            bomb = false;
+            game.GiveInputs(false, true);
+        }
+
         if (game != null)
         {
             float[] action = { x, y };
@@ -152,8 +159,35 @@ public class FM_VisualTest : MonoBehaviour
                     Gizmos.DrawLine(bottomLeft + new Vector3(padding, 0, 0), bottomLeft + new Vector3(padding, sz.y * 2, 0));// bL to tL
                     Gizmos.DrawLine(bottomLeft + new Vector3(padding, sz.y * 2, 0), topRight + new Vector3(padding, 0, 0)); // tL to tR
                     Gizmos.DrawLine(topRight + new Vector3(padding, 0, 0), bottomLeft + new Vector3(sz.x * 2 + padding, 0, 0)); //tR to bR
+
+                    if(obj.GetType() == FM_GameObjectType.Bomb)
+                    {
+                        DrawTargets((FM_Bomb)obj);
+                    }
                 }
             }
+        }
+    }
+
+    private void DrawTargets(FM_Bomb bomb)
+    {
+        if (bomb.hasTarget)
+        {
+            FM_Rectangle rec = bomb.GetTarget().GetBox();
+            //it converts to Vector3 and keeps z = 0
+            Vector3 bottomLeft = rec.GetBottomLeft();
+            Vector3 topRight = rec.GetTopRight();
+            Vector3 sz = bomb.GetTarget().GetSize();
+
+            // Draws a green line from a point to another
+            // This can be done as boxes directly, but this 
+            // way tests that topLeft and bottomRight points 
+            // are correct and properly translated.
+            Gizmos.color = Color.magenta;
+            Gizmos.DrawLine(bottomLeft + new Vector3(padding, 0, 0), bottomLeft + new Vector3(sz.x * 2 + padding, 0, 0)); //bL to bR
+            Gizmos.DrawLine(bottomLeft + new Vector3(padding, 0, 0), bottomLeft + new Vector3(padding, sz.y * 2, 0));// bL to tL
+            Gizmos.DrawLine(bottomLeft + new Vector3(padding, sz.y * 2, 0), topRight + new Vector3(padding, 0, 0)); // tL to tR
+            Gizmos.DrawLine(topRight + new Vector3(padding, 0, 0), bottomLeft + new Vector3(sz.x * 2 + padding, 0, 0)); //tR to bR
         }
     }
 

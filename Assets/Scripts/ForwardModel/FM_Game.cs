@@ -116,6 +116,10 @@ public class FM_Game
         }
         fullTime = fullTime + 1;
 
+        //Some reset
+        player.burning = false; //will be true by the end if colliding with fire
+        monster.burning = false;
+
         //Updates all entities        
         foreach (FM_GameObject obj in gameObjects)
         {
@@ -179,6 +183,7 @@ public class FM_Game
         monster.GetMovementComponent().SetDir((float)Math.Cos(degrees * Math.PI / 180), (float)Math.Sin(degrees * Math.PI / 180)); // degrees to vector
         monster.GetMovementComponent().SetSpeed(stateRep[6]);
         monster.GetMovementComponent().SetRotationSpeed(stateRep[7]);
+        monster.burning = (stateRep[46] == 1.0f) ? true : false;
 
         monster.GetHealthComponent().SetHealth((int)stateRep[14]);
         monster.GetHealthComponent().SetDeltaHealth((int)stateRep[47]); //botDeltaHealth
@@ -195,6 +200,7 @@ public class FM_Game
         player.SetPosition(new Vector2(stateRep[24], stateRep[25]));
         degrees = stateRep[26];
         player.GetMovementComponent().SetDir((float)Math.Cos(degrees * Math.PI / 180), (float)Math.Sin(degrees * Math.PI / 180));
+        player.burning = (stateRep[40] == 1) ? true : false;
 
         player.GetHealthComponent().SetHealth((int)stateRep[27]);
         player.GetHealthComponent().SetDeltaHealth((int)stateRep[42]);
@@ -273,6 +279,7 @@ public class FM_Game
         stateRep[5] = Vector2.SignedAngle(origin, monster.GetMovementComponent().GetDir());
         stateRep[6] = monster.GetMovementComponent().GetSpeed();
         stateRep[7] = monster.GetMovementComponent().GetRotationSpeed();
+        stateRep[46] = monster.burning ? 1 : 0 ;
         stateRep[14] = monster.GetHealthComponent().GetHealth();
         stateRep[47] = monster.GetHealthComponent().GetDeltaHealth();
         stateRep[48] = monster.IsAlive() ? 0 : 1; //botDied
@@ -284,6 +291,7 @@ public class FM_Game
         stateRep[24] = player.GetPosition().x;
         stateRep[25] = player.GetPosition().y;
         stateRep[26] = Vector2.SignedAngle(origin, player.GetMovementComponent().GetDir());
+        stateRep[40] = player.burning ? 1 : 0;
         stateRep[27] = player.GetHealthComponent().GetHealth();
         stateRep[42] = player.GetHealthComponent().GetDeltaHealth();
         stateRep[43] = player.IsAlive() ? 0 : 1; //playerDied

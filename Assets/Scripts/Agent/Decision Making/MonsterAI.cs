@@ -118,6 +118,7 @@ public class MonsterAI : MonoBehaviour
         {
             ProjectileStruct fmBullet = new ProjectileStruct();
             fmBullet.alive = false;
+            fmBullet.ttl = -2;
             latestProjectilesStates.Add(fmBullet);
         }
 
@@ -153,7 +154,9 @@ public class MonsterAI : MonoBehaviour
             fmFire.dirY = (float)Math.Sin(degrees * Math.PI / 180);
 
             fmFire.alive = true;
-            fmFire.ttl = -1; //TODO: how long left?
+            
+            Fire fire = unityFire.GetComponent<Fire>();
+            fmFire.ttl = fire.GetLeftoverTime() * 400 / fire.dieOutTime; //more or less...
 
             latestProjectilesStates.Add(fmFire);
         }

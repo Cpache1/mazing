@@ -72,7 +72,7 @@ public class FM_GunControlComponent
             Shoot(p, game);
         }
 
-        if(bomb)
+        if (bomb)
         {
             bomb = false;
             Bomb(p, game);
@@ -101,6 +101,29 @@ public class FM_GunControlComponent
 
     public void Bomb(FM_Player _player, FM_Game _game)
     {
+        //calculate a "target" (mid point between player and monster)
+        Vector2 target = (_player.GetPosition() + _game.monster.GetPosition()) / 2;
 
+        //get positions and velocities/direction
+        Vector2 compDir = (_game.monster.GetPosition() - _player.GetPosition()).normalized;
+        Vector2 pos = _player.GetPosition() + compDir;
+
+        //find a "dead" bomb and revive it
+        FM_GameObject[] projectiles = _game.GetGameObjects();
+        int start = 2 + startingBullets;
+        int end = start + startingBombs;
+        for (int i = start; i < end; i++)
+        {
+            if (!projectiles[i].IsAlive() && projectiles[i].GetType() == FM_GameObjectType.Bomb)
+            {
+                FM_Bomb bomb = (FM_Bomb)projectiles[i];
+                bomb.ResetBomb();
+                bomb.SetTarget(target);
+                bomb.SetPosition(pos);
+                bomb.GetMovementComponent().SetVel(compDir.x, compDir.y);
+                bomb.Revive();
+                break;
+            }
+        }
     }
 }

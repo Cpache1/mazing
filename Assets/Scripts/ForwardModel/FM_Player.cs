@@ -2,6 +2,7 @@
 
 public class FM_Player : FM_GameObject
 {
+    public bool burning = false;
     int startingHealth = 100;
     int maxHealth = 100;
     FM_HealthComponent health;

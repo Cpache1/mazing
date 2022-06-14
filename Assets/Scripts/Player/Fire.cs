@@ -52,4 +52,6 @@ public class Fire : MonoBehaviour
             }
         }
     }
+
+    public float GetLeftoverTime() { return timeStamp - Time.time; }
 }
