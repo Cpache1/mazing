@@ -5,12 +5,18 @@ using UnityEngine;
 public class FM_MovementComponent
 {
     private Vector2 velocity, direction;
-    private float speed, rotationSpeed;
+    private float speed, originalSpeed, rotationSpeed;
+
+    public bool playerIsDashing = false;
+    private float dashMultiplier = 3f;
+    private float dashDuration = 250f;
+
     private bool monsterCollided;
 
     public FM_MovementComponent(float sp, float r_sp)
     {
         speed = sp;
+        originalSpeed = sp;
         rotationSpeed = r_sp;
         monsterCollided = false;
     }
@@ -29,6 +35,19 @@ public class FM_MovementComponent
     public void Update(FM_GameObject obj, FM_Game game)
     {
         monsterCollided = false;
+
+        //only player related
+        if (playerIsDashing && dashDuration > 0)
+        {
+            dashDuration--;
+            speed *= dashMultiplier;
+        }
+        else 
+        {
+            playerIsDashing = false;
+            speed = originalSpeed;
+            dashDuration = 5;
+        }
 
         //Updating position
         Vector2 oldPos = new Vector2(obj.GetPosition().x, obj.GetPosition().y);

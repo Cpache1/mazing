@@ -117,10 +117,10 @@ public class FM_GunControlComponent
             if (!projectiles[i].IsAlive() && projectiles[i].GetType() == FM_GameObjectType.Bomb)
             {
                 FM_Bomb bomb = (FM_Bomb)projectiles[i];
-                bomb.ResetBomb();
-                bomb.SetTarget(target);
                 bomb.SetPosition(pos);
+                bomb.ResetBomb();
                 bomb.GetMovementComponent().SetVel(compDir.x, compDir.y);
+                bomb.SetTarget(target);
                 bomb.Revive();
                 break;
             }

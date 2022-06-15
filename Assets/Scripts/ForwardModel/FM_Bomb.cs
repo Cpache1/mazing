@@ -10,7 +10,7 @@ public class FM_Bomb : FM_GameObject
     public bool hasTarget = false;
     bool detonated = false;
     public int ttl = 400;
-    int fireDamage = 2;
+    int fireDamage = 1;
 
     public FM_Bomb(Vector2 _position, float _speed, float _rotationSpeed, FM_GameObjectType _type, bool _alive) :
         base(_position, _speed, _rotationSpeed, _type, _alive)
@@ -114,6 +114,7 @@ public class FM_Bomb : FM_GameObject
 
     public void ResetBomb()
     {
+        hasTarget = false;
         DeleteGameObject();
         detonated = false;
         ttl = 400;

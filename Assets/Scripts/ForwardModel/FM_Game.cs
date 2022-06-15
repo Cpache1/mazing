@@ -11,6 +11,8 @@ public class FM_Game
     private Vector2 previousPlayerPosition;
     private Vector2 previousBotPosition;
 
+    private bool dashPressed = false;
+
     private int score;
 
     public AIState state;
@@ -74,7 +76,7 @@ public class FM_Game
 
     }
 
-    public void GiveInputs(bool shooting, bool bomb)
+    public void GiveGunInputs(bool shooting, bool bomb)
     {
         if (shooting)
         {
@@ -88,16 +90,17 @@ public class FM_Game
         }
     }
 
-
-    public void CreateGameObjectAt(Vector2 pos)
+    public void GiveMoveInputs(bool dash)
     {
-        
+        if (dash)
+        {
+            dashPressed = true;
+            dash = false;
+            player.GetMovementComponent().playerIsDashing = true;
+        }
     }
 
-    /*public void AddGameObject(FM_GameObject obj)
-    {
-        gameObjects.Add(obj);
-    }*/
+
     public FM_GameObject[] GetGameObjects() { return gameObjects; }
 
     public void HandleInput()
@@ -200,6 +203,7 @@ public class FM_Game
         player.SetPosition(new Vector2(stateRep[24], stateRep[25]));
         degrees = stateRep[26];
         player.GetMovementComponent().SetDir((float)Math.Cos(degrees * Math.PI / 180), (float)Math.Sin(degrees * Math.PI / 180));
+        player.GetMovementComponent().playerIsDashing = (stateRep[28] == 1.0f) ? true : false;
         player.burning = (stateRep[40] == 1) ? true : false;
 
         player.GetHealthComponent().SetHealth((int)stateRep[27]);
@@ -210,50 +214,56 @@ public class FM_Game
             player.DeleteGameObject();
 
         //monster/player related
-        
-        
+
+
 
         //bullets + bombs
         //int noBullets = (int)stateRep[50]; //check how many bullets are alive 
+        int n = 0;
         for (int i = 2; i < gameObjects.Length - 3; i++)
         {
-
-            if (projectiles[i].alive)
+            if (projectiles[n].alive)
             {
-                gameObjects[i].SetPosition(new Vector2(projectiles[i].x, projectiles[i].y));
-                gameObjects[i].GetMovementComponent().SetVel(projectiles[i].dirX, projectiles[i].dirY);
+                gameObjects[i].SetPosition(new Vector2(projectiles[n].x, projectiles[n].y));
+                gameObjects[i].GetMovementComponent().SetVel(projectiles[n].dirX, projectiles[n].dirY);
                 gameObjects[i].Revive();
             }
             else
             {
                 gameObjects[i].DeleteGameObject();
             }
+            n++;
         }
 
         //int noFires = (int)stateRep[49]; //check how many bombs are ignited 
         for (int i = gameObjects.Length - 3; i < gameObjects.Length; i++)
         {
             FM_Bomb bomb = (FM_Bomb)gameObjects[i];
-            if (projectiles[i].alive)
+            if (projectiles[n].alive)
             {
-                bomb.SetPosition(new Vector2(projectiles[i].x, projectiles[i].y));
-                if (projectiles[i].ttl == -1) //it's an undetonated bomb 'flying'
+                bomb.SetPosition(new Vector2(projectiles[n].x, projectiles[n].y));
+                if (projectiles[n].ttl == -1) //it's an undetonated bomb 'flying'
                 {
-                    bomb.GetMovementComponent().SetVel(projectiles[i].dirX, projectiles[i].dirY);
                     bomb.ResetBomb();
+                    bomb.GetMovementComponent().SetVel(projectiles[n].dirX, projectiles[n].dirY);
+                    
+                    Vector2 target = bomb.GetPosition() + 2 * bomb.GetMovementComponent().GetVel();
+                    bomb.SetTarget(target);
+                    
                     bomb.Revive();
                 }
                 else if (projectiles[i].ttl > -1) //it's a live fire
                 {
                     bomb.Revive();
                     bomb.Detonate();
-                    bomb.ttl = (int)projectiles[i].ttl;
+                    bomb.ttl = (int)projectiles[n].ttl;
                 }                
             }
             else
             {
                 bomb.ResetBomb(); //kills it and puts it back in "bullet form"
             }
+            n++;
         }
     }
 
@@ -279,10 +289,10 @@ public class FM_Game
         stateRep[5] = Vector2.SignedAngle(origin, monster.GetMovementComponent().GetDir());
         stateRep[6] = monster.GetMovementComponent().GetSpeed();
         stateRep[7] = monster.GetMovementComponent().GetRotationSpeed();
-        stateRep[46] = monster.burning ? 1 : 0 ;
+        stateRep[46] = monster.burning ? 1.0f : 0.0f;
         stateRep[14] = monster.GetHealthComponent().GetHealth();
         stateRep[47] = monster.GetHealthComponent().GetDeltaHealth();
-        stateRep[48] = monster.IsAlive() ? 0 : 1; //botDied
+        stateRep[48] = monster.IsAlive() ? 0.0f : 1.0f; //botDied
         stateRep[15] = monster.GetFrustrationComponent().GetFrustration();
 
 
@@ -291,10 +301,11 @@ public class FM_Game
         stateRep[24] = player.GetPosition().x;
         stateRep[25] = player.GetPosition().y;
         stateRep[26] = Vector2.SignedAngle(origin, player.GetMovementComponent().GetDir());
-        stateRep[40] = player.burning ? 1 : 0;
+        stateRep[28] = player.GetMovementComponent().playerIsDashing ? 1.0f : 0.0f;
+        stateRep[40] = player.burning ? 1.0f : 0.0f;
         stateRep[27] = player.GetHealthComponent().GetHealth();
         stateRep[42] = player.GetHealthComponent().GetDeltaHealth();
-        stateRep[43] = player.IsAlive() ? 0 : 1; //playerDied
+        stateRep[43] = player.IsAlive() ? 0.0f : 1.0f; //playerDied
 
         //player/monster
         stateRep[20] = (player.GetPosition() - monster.GetPosition()).magnitude;
@@ -343,6 +354,13 @@ public class FM_Game
         }
         stateRep[49] = noFires;
         stateRep[50] = noBullets;
+
+        //input
+        stateRep[29] = 0.0f;
+        stateRep[30] = dashPressed == true ? 1.0f : 0.0f;
+        dashPressed = false;
+        stateRep[34] = 0.0f;
+        stateRep[35] = 0.0f;
 
         //cursor
         stateRep[21] = stateRep[20]; //cursorDistanceFromPlayer

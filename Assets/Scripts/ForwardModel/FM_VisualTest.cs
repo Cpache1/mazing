@@ -19,6 +19,7 @@ public class FM_VisualTest : MonoBehaviour
 
     public bool shoot = false;
     public bool bomb = false;
+    public bool dash = false;
 
     FM_Game game;
 
@@ -74,18 +75,23 @@ public class FM_VisualTest : MonoBehaviour
         if(shoot)
         {
             shoot = false;
-            game.GiveInputs(true, false);
+            game.GiveGunInputs(true, false);
         }
         if(bomb)
         {
             bomb = false;
-            game.GiveInputs(false, true);
+            game.GiveGunInputs(false, true);
+        }
+        if(dash)
+        {
+            dash = false;
+            game.GiveMoveInputs(true);
         }
 
         if (game != null)
         {
             float[] action = { x, y };
-            game.Apply(action, game.monster);
+            game.Apply(action, game.player);
 
 
             game.UpdateGame();

@@ -50,4 +50,6 @@ public class FM_Player : FM_GameObject
             alive = false;
         }
     }
+
+    public void Dash() { movement.playerIsDashing = true; }
 }
