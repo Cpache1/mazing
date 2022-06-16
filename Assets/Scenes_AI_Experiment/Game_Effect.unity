@@ -3615,6 +3615,8 @@ MonoBehaviour:
   moveUp: 0
   moveDown: 0
   shoot: 0
+  bomb: 0
+  dash: 0
   padding: 50
 --- !u!1001 &1857796603
 PrefabInstance:

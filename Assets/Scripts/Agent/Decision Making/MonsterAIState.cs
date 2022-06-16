@@ -185,18 +185,40 @@ public class MonsterAIState : AIState
 
     private float[] playerAction(float[] state, int idx)
     {
-        //HEURISTIC (determine if player shoots/bombs?)
+        float[] playerMovement = { 0.0f, 0.0f };
 
-        // shooting:
-        if(new System.Random().NextDouble() < 0.1)
-            fm.GetGame().GiveGunInputs(true, false);
-
-        //bomb
-       // fm.GetGame().GiveGunInputs(false, true);
+        Vector2 diff = fm.GetGame().monster.GetPosition() - fm.GetGame().player.GetPosition();
+        Vector2 dir = diff.normalized;
+        float monsterPlayerDistance = diff.magnitude;
+        bool monsterTooClose = monsterPlayerDistance <= 15.0f ? true : false;
 
 
+        //run until another distance is established
+        if (monsterTooClose)
+        {
+            //run to opposite
+            playerMovement[0] = -dir.x;
+            playerMovement[1] = -dir.y;
 
-        float[] playerMovement = { 0.0f, 0.0f }; // = //HEURISTIC (what would a good player do in this state?)
+            // shooting:
+            if (new System.Random().NextDouble() < 0.2)
+                fm.GetGame().GiveGunInputs(true, false);
+            if (new System.Random().NextDouble() < 0.1)
+                fm.GetGame().GiveGunInputs(false, true);
+        }
+        else //go to it
+        {
+            playerMovement[0] = dir.x;
+            playerMovement[1] = dir.y;
+
+            // shooting/bombing:
+            if (new System.Random().NextDouble() < 0.1)
+                fm.GetGame().GiveGunInputs(true, false);
+            if (new System.Random().NextDouble() < 0.1)
+                fm.GetGame().GiveGunInputs(false, true);
+        }
+
+
 
         float[] stateAfterPlayerPlays = fm.UpdateGameState(playerMovement, state, projectilesStates, idx);
 
