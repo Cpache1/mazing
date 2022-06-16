@@ -7,7 +7,7 @@ public class FM_Player : FM_GameObject
     int maxHealth = 100;
     FM_HealthComponent health;
 
-    float size = 0.5f; //radius
+    float size = 0.2f; //radius 0.5
     FM_GunControlComponent gunControl;
 
     public FM_Player(Vector2 _position, float _speed, float _rotationSpeed, FM_GameObjectType _type, bool _alive) :

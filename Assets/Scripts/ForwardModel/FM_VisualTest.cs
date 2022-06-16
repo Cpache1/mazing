@@ -21,6 +21,8 @@ public class FM_VisualTest : MonoBehaviour
     public bool bomb = false;
     public bool dash = false;
 
+    private List<Vector2> navPoints;
+
     FM_Game game;
 
     public float padding = 50.0f;
@@ -44,7 +46,8 @@ public class FM_VisualTest : MonoBehaviour
         monster.GetMovementComponent().SetVel(0, 0);
         monster.GetMovementComponent().SetDir(0, 1);
 
-        
+        navPoints = new List<Vector2>();
+
         FM_GameObject[] gameObjs = CreateGameObjs(player, monster);
         game = new FM_Game(grid, gameObjs);
     }
@@ -98,10 +101,16 @@ public class FM_VisualTest : MonoBehaviour
         }
     }
 
+    public void setNavPoints(List<Vector2> points)
+    {
+        navPoints = points;
+    }
+
     private void OnDrawGizmosSelected()
     {
         DrawWalls();
         DrawGameObjects();
+        DrawNavPoints();
     }
 
     private void DrawWalls()
@@ -126,6 +135,17 @@ public class FM_VisualTest : MonoBehaviour
             Gizmos.DrawLine(topRight + new Vector3(padding, 0, 0), bottomLeft + new Vector3(sz.x * 2 + padding, 0, 0)); //tR to bR
         }
     }
+
+    private void DrawNavPoints()
+    {
+        foreach (Vector2 v in navPoints)
+        {
+            Vector3 c = new Vector3(v.x, v.y, 0);
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawSphere(c, 0.35f);
+        }
+    }
+
 
     private void DrawGameObjects()
     {

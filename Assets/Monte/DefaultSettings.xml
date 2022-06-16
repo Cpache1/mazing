@@ -4,8 +4,8 @@
 		NumberOfSimulations="-1"
 		Iterations="500" 
 		ExploreWeight="2"
-		MaxRollout="1"
-		MacroActionLength="5"
+		MaxRollout="0"
+		MacroActionLength="15"
 		DrawScore="0.5"
 		Epsilon="1E-6">
 	</MCTSSettings>

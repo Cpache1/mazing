@@ -8,7 +8,7 @@ public class MonsterAI : MonoBehaviour
     [Range(2, 3f)]
     public float speed = 2f;
     [Range(1, 5)]
-    public float rotationSpeed = 1f;
+    public float rotationSpeed = 20f;
 
     //AI related
     public static int NUM_ACTIONS = 9;

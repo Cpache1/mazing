@@ -16,7 +16,10 @@ namespace Monte
     {
         const float MAX_DISTANCE = 45.0f;
         const float MAX_HEALTH = 100.0f;
+        const float HIGH_POSITIVE = 100000.0f;
+        const float HIGH_NEGATIVE = -100000.0f;
 
+        List<Vector2> navPoints = new List<Vector2>();
 
         //Constructors
         public MCTSSimpleAgent(string file) : base(file) { }
@@ -34,7 +37,11 @@ namespace Monte
             done = true;
             return;*/
 
+            //No macro:
+            //nextActionId = runMCTS(initialState, a_timeDue);
+            //return;
 
+            navPoints.Clear();
 
             if (firstDecision)
             {
@@ -71,6 +78,11 @@ namespace Monte
             if (lastMADecision == -1) lastMADecision = 0;
             nextActionId = lastMADecision;
 
+            //DEBUG
+            FM_VisualTest gOb = GameObject.FindGameObjectWithTag("VisualTest").GetComponent<FM_VisualTest>();
+            //List<Vector2> test = new List<Vector2>();
+            //test.Add(new Vector2(0, 0));
+            gOb.setNavPoints(navPoints);
         }
 
         private AIState rollStateMacroAction(AIState state)
@@ -93,12 +105,14 @@ namespace Monte
                 return -1;
             }
 
+            navPoints.Add(new Vector2(initialState.stateRep[3], initialState.stateRep[4]));
+
             //Start a count
             int numIterations = 0;
             long remaining = timeDue - LevelManager.CurrentTimeMillis();
             //numbSimulations = 100;
-            //while (numIterations < numbSimulations) //uncomment this for number of simulations instead.
-            while (remaining > 0)   //Whilst time allows
+            while (numIterations < 500) //uncomment this for number of simulations instead.
+            //while (remaining > 0)   //Whilst time allows
             {
                 //Increment the count
                 numIterations++;
@@ -165,6 +179,11 @@ namespace Monte
 
             //Set the best child for the next iteration
             childIdx = bestIndex;
+
+            if (bestIndex == -1)
+            {
+                bestIndex = 4; // randGen.Next(0, node.children.Length);
+            }
             return node.children[bestIndex];
         }
 
@@ -213,23 +232,31 @@ namespace Monte
                 rolloutStart.addResult(rolloutStart.getWinner());
                 return;
             }
+            navPoints.Add(new Vector2(nextState.stateRep[3], nextState.stateRep[4]));
 
-            bool terminalStateFound = (nextState == null) || (nextState.getWinner() > -1);
+            bool terminalStateFound = (nextState.getWinner() > -1);
+            //bool terminalStateFound = (nextState == null) || (nextState.getWinner() > -1);
             int rolloutCount = 0;
 
-            AIState rolloutState = nextState.clone();
-            while (!terminalStateFound && rolloutCount < maxRollout)
-            {
-                rolloutCount++;
-                int indexAct = randGen.Next(rolloutState.children.Length);
-                rolloutState.ApplyActionToChild(indexAct, macroActionLength);
-                terminalStateFound = (rolloutState.getWinner() > -1);
-            }
-
-            float value = rolloutState.getWinner();
-            if (!terminalStateFound)
+            float value = 0.0f;
+            if(maxRollout > 0)
+            { 
+                AIState rolloutState = nextState.clone();
+                while (!terminalStateFound && rolloutCount < maxRollout)
+                {
+                    rolloutCount++;
+                    int indexAct = randGen.Next(rolloutState.children.Length);
+                    rolloutState.ApplyActionToChild(indexAct, macroActionLength);
+                    terminalStateFound = (rolloutState.getWinner() > -1);
+                }
                 value = evalState(initialState, rolloutState); 
+            }
+            else
+            {
+                value = evalState(initialState, nextState);
+            }
             
+
             nextState.addResult(value);
 
         }
@@ -258,11 +285,13 @@ namespace Monte
             //   * Other game state player attributes that could be useful?
             //   * Penalize collisions.
 
+            float terminalScore = 0.0f;
+
             //Default win/lose conditions.
             if (endState.getWinner() == 0) // Player wins
-                return 0;
+                terminalScore += HIGH_NEGATIVE;
             else if (endState.getWinner() == 1) // Bot wins.
-                return 1;
+                terminalScore += HIGH_POSITIVE;
 
             // We want distance to go down.
             float initialDistance = rootState.stateRep[20];
@@ -280,10 +309,17 @@ namespace Monte
             float collisionScore = 1 - (actualCollisions / maxCollisions);
 
             //Debug.Log(diffDist);
+            float wDist = 0.5f;
+            float wHealth = 0.25f;
+            float wCollision = 0.25f;
 
-            float totScore = diffDist * 0.75f + diffHealth * 0.20f  + collisionScore * 0.05f;
 
-            return totScore;
+            float nonTerminalScore = diffDist * wDist + diffHealth * wHealth + collisionScore * wCollision;
+            
+
+            Debug.Log(actualCollisions + " => " + collisionScore);
+
+            return terminalScore + nonTerminalScore;
         }
 
 

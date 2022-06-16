@@ -8,7 +8,7 @@ public class FM_Monster : FM_GameObject
     FM_HealthComponent health;
     FM_FrustrationComponent frustration;
 
-    float size = 0.5f; //radius
+    float size = 0.48f; //radius
 
     public FM_Monster(Vector2 _position, float _speed, float _rotationSpeed, FM_GameObjectType _type, bool _alive) :
         base(_position, _speed, _rotationSpeed, _type, _alive)
