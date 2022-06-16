@@ -288,9 +288,10 @@ namespace Monte
             float terminalScore = 0.0f;
 
             //Default win/lose conditions.
-            if (endState.getWinner() == 0) // Player wins
-                terminalScore += HIGH_NEGATIVE;
-            else if (endState.getWinner() == 1) // Bot wins.
+            //if (endState.getWinner() == 0) // Player wins
+           //     terminalScore += HIGH_NEGATIVE;
+            //else 
+            if (endState.getWinner() == 1) // Bot wins.
                 terminalScore += HIGH_POSITIVE;
 
             // We want distance to go down.

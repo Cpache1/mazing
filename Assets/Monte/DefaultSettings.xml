@@ -5,7 +5,7 @@
 		Iterations="500" 
 		ExploreWeight="2"
 		MaxRollout="0"
-		MacroActionLength="15"
+		MacroActionLength="5"
 		DrawScore="0.5"
 		Epsilon="1E-6">
 	</MCTSSettings>

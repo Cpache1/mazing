@@ -252,7 +252,7 @@ public class FM_Game
                     
                     bomb.Revive();
                 }
-                else if (projectiles[i].ttl > -1) //it's a live fire
+                else if (projectiles[n].ttl > -1) //it's a live fire
                 {
                     bomb.Revive();
                     bomb.Detonate();

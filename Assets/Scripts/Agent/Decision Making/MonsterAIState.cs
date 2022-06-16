@@ -131,6 +131,8 @@ public class MonsterAIState : AIState
         {
             int a = 0;
 
+            Debug.Log(e.StackTrace);
+            
             float[] act = getAction(actionId);
             float[] newState = (float[])stateRep.Clone();
             //As many actions as the macro action length
@@ -185,6 +187,7 @@ public class MonsterAIState : AIState
 
     private float[] playerAction(float[] state, int idx)
     {
+
         float[] playerMovement = { 0.0f, 0.0f };
 
         Vector2 diff = fm.GetGame().monster.GetPosition() - fm.GetGame().player.GetPosition();
