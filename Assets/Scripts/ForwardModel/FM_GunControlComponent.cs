@@ -52,17 +52,7 @@ public class FM_GunControlComponent
     private float rotationSpeed = 0.0f;
 
 
-    public FM_GunControlComponent()
-    {
-        SetupGunControls();
-    }
-
-    private void SetupGunControls()
-    {
-        
-
-        
-    }
+    public FM_GunControlComponent() { }
 
     public void Update(FM_Player p, FM_Game game)
     {
@@ -80,9 +70,9 @@ public class FM_GunControlComponent
     }
 
     public void Shoot(FM_Player _player, FM_Game _game)
-    {
+    { 
         //get positions and velocities/direction
-        Vector2 compDir = _player.GetMovementComponent().GetDir();
+        Vector2 compDir = (_game.monster.GetPosition() - _player.GetPosition()).normalized;
         Vector2 pos = _player.GetPosition() + compDir;
 
         //find a "dead" bullet and revive it
