@@ -3579,7 +3579,7 @@ GameObject:
   - component: {fileID: 1808879211}
   m_Layer: 0
   m_Name: FM_VisualTest
-  m_TagString: Untagged
+  m_TagString: VisualTest
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

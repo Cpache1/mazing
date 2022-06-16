@@ -12,6 +12,7 @@ TagManager:
   - AI
   - bomb
   - a-star
+  - VisualTest
   layers:
   - Default
   - TransparentFX
