@@ -208,7 +208,7 @@ public class Movement : MonoBehaviour
             {
                 rotationSpeed = coreRotationSpeed * 2;
             }
-            Debug.Log("...attempting to change position.");
+            //Debug.Log("...attempting to change position.");
             StopAllCoroutines();
             if (!hasTarget)
             {
@@ -313,7 +313,7 @@ public class Movement : MonoBehaviour
         //Debug.Log("Monster counter: " + counter);
         if (path.Length <= 0)
         {
-            Debug.Log("Path Ends.");
+            //Debug.Log("Path Ends.");
             StopAllCoroutines();
             shouldLookAround = true;
             shouldWait = true;
@@ -365,7 +365,7 @@ public class Movement : MonoBehaviour
             if (!hasTarget)
             {
                 hasTarget = true;
-                Debug.Log("Getting new target");
+                //Debug.Log("Getting new target");
                 GetNewTarget();
             }
             pathController.RequestPath(transform.position, newTarget, OnPathFound);

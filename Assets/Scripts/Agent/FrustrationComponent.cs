@@ -47,7 +47,7 @@ public class FrustrationComponent : MonoBehaviour
         movement = agent.GetComponent<Movement>();
         status = agent.GetComponent<Health>();
         viewSectorArea = (fov.viewAngle / 360) * Mathf.PI * Mathf.Pow(fov.viewRadius, 2f);
-        Debug.Log(viewSectorArea);
+        //Debug.Log(viewSectorArea);
         //reportGenerator = GameObject.Find("ReportGenerator").GetComponent<ReportGenerator>();
         speed = movement.speed;
         coreRotationSpeed = movement.coreRotationSpeed;
@@ -130,13 +130,13 @@ public class FrustrationComponent : MonoBehaviour
         {
             if (currentPath.Length > previousPathLength)
             {
-                Debug.Log("Retracing path, getting frustrated");
+                //Debug.Log("Retracing path, getting frustrated");
                 levelOfFrustration += (currentPath.Length - previousPathLength);
             }
 
             if (currentPath.Length > previousPathLength && targetIsVisible)
             {
-                Debug.Log("Getting closer to the player");
+                //Debug.Log("Getting closer to the player");
                 levelOfFrustration -= (currentPath.Length - previousPathLength) / 2;
             }
         }
@@ -150,14 +150,14 @@ public class FrustrationComponent : MonoBehaviour
 
         if (!targetIsVisible && targetWasVisible)
         {
-            Debug.Log("Target lost, getting frustrated");
+            //Debug.Log("Target lost, getting frustrated");
             //reportGenerator.currentPlaySession.agentLostPlayer++;
             levelOfFrustration += 7;
         }
 
         if (targetIsVisible && !targetWasVisible)
         {
-            Debug.Log("Spotted the player");
+            //Debug.Log("Spotted the player");
             //reportGenerator.currentPlaySession.agentDetectedPlayer++;
             levelOfFrustration += 3;
         }

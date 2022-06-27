@@ -152,7 +152,7 @@ public class Health : MonoBehaviour
             else
             {
                 bulletColliding = true;
-                Debug.Log("Hit");
+                //Debug.Log("Hit");
                 StartCoroutine("RenderHitDamage");
                 health -= bulletDamage;
                 //reportGenerator.currentPlaySession.agentHealthLost += bulletDamage;

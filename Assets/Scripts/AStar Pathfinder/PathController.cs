@@ -26,7 +26,7 @@ public class PathController : MonoBehaviour
 
     void TryProcessNext()
     {
-        Debug.Log("The number of paths are: " + pathRequestQueue.Count);
+        //Debug.Log("The number of paths are: " + pathRequestQueue.Count);
         if (!isProcessingPath && pathRequestQueue.Count > 0)
         {
             currentPathRequest = pathRequestQueue.Dequeue();

@@ -35,10 +35,13 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes_Main/Level - endless.unity
     guid: d41b7e8155ce7704495ded3c65cb31dd
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes_Online_Experiments/Tutorial.unity
     guid: d1410d5d6d1a89e4aa67e2c42001798b
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes_Online_Experiments/Experiment.unity
     guid: 86e4dfca813bd6c40bc6f440c78ae6fa
+  - enabled: 1
+    path: Assets/Scenes_AI_Experiment/Game_Effect.unity
+    guid: 540833f40f6e544498d6a01f34a4abb6
   m_configObjects: {}

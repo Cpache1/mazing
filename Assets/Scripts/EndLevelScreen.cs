@@ -12,7 +12,7 @@ public class EndLevelScreen : MonoBehaviour
 
     void Awake()
     {
-        Debug.Log("Background Loaded.");
+        //Debug.Log("Background Loaded.");
         Scene scene = SceneManager.GetActiveScene();
         if (scene.name != "Tutorial")
         {

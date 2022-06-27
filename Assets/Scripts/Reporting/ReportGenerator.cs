@@ -113,7 +113,7 @@ public class ReportGenerator : MonoBehaviour
         {
             if (recordGameplay && !recordStarted)
             {
-                Debug.Log("Record Started!");
+                //Debug.Log("Record Started!");
                 ResetForm();
                 recordStarted = true;
                 StartCoroutine(UpdatePackage(period));

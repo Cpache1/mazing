@@ -131,7 +131,7 @@ public class MonsterAIState : AIState
         {
             int a = 0;
 
-            Debug.Log(e.StackTrace);
+            //Debug.Log(e.StackTrace);
             
             float[] act = getAction(actionId);
             float[] newState = (float[])stateRep.Clone();

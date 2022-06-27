@@ -110,7 +110,7 @@ public class PlayerAIMovement : MonoBehaviour
             if (!hasTarget)
             {
                 hasTarget = true;
-                Debug.Log("(Player) Getting new target");
+                //Debug.Log("(Player) Getting new target");
                 GetNewTarget();
                 previousPosition = transform.position;
             }
@@ -126,7 +126,7 @@ public class PlayerAIMovement : MonoBehaviour
         if (pathSuccessful)
         {
             path = FindBestPath(newPath, newRiskyPath);
-            Debug.Log("(Player) Path found!");
+            //Debug.Log("(Player) Path found!");
             StopAllCoroutines();
             StartCoroutine("FollowThePath");
         }
@@ -183,7 +183,7 @@ public class PlayerAIMovement : MonoBehaviour
         Vector3 currentWaypoint;
         if (path.Length <= 0)
         {
-            Debug.Log("(Player) Path Ends.");
+            //Debug.Log("(Player) Path Ends.");
             StopAllCoroutines();
             hasTarget = false;
             takingRiskyPath = false;

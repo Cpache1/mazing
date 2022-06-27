@@ -44,7 +44,7 @@ public class ExperimentManager : MonoBehaviour
     /// <returns>yield enumerator</returns>
     public IEnumerator EndLevelProcess()
     {
-        Debug.Log("End Game");
+        //Debug.Log("End Game");
         //GameObject.FindWithTag("Player").SetActive(false);
         yield return new WaitForSeconds(0.5f);
         StopRecord();

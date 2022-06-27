@@ -249,7 +249,7 @@ public class LevelManager : MonoBehaviour
         if (!agentAI.done)
         {
             agentAI.interrupt = true;
-            Debug.Log("This happens.");
+            //Debug.Log("This happens.");
         }
         else
         {
