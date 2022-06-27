@@ -434,94 +434,10 @@ namespace Monte
                     gen_score = stateRep[56]
                 };
 
-                /*var example = new List<RFData>()
-                {
-                    new RFData()
-                    {
-                        idleTime = stateRep[0],
-                        score = stateRep[1],
-
-                        botDistanceTraveled = stateRep[2],
-                        botPositionX = stateRep[3],
-                        botPositionY = stateRep[4],
-                        botRotation = stateRep[5],
-                        botSpeed = stateRep[6],
-                        botRotationSpeed = stateRep[7],
-                        botViewAngle = stateRep[8],
-                        botViewRadius = stateRep[9],
-                        botSearching = stateRep[10],
-                        botSearchTurns = stateRep[11],
-                        botHearingRadius = stateRep[12],
-                        botHearingProbability = stateRep[13],
-                        botHealth = stateRep[14],
-                        botFrustration = stateRep[15],
-                        botRiskTakingFactor = stateRep[16],
-                        botTakingRiskyPath = stateRep[17],
-                        botSeeingPlayer = stateRep[18],
-                        botChasingPlayer = stateRep[19],
-
-                        botDistanceFromPlayer = stateRep[20],
-                        cursorDistanceFromPlayer = stateRep[21],
-                        cursorDistanceFromBot = stateRep[22],
-                        playerDistanceTravelled = stateRep[23],
-                        playerPositionX = stateRep[24],
-                        playerPositionY = stateRep[25],
-                        playerRotation = stateRep[26],
-                        playerHealth = stateRep[27],
-                        playerIsDashing = stateRep[28],
-                        playerTriesDashOnCD = stateRep[29],
-
-                        dashPressed = stateRep[30],
-                        cursorDistanceTraveled = stateRep[31],
-                        cursorPositionX = stateRep[32],
-                        cursorPositionY = stateRep[33],
-                        playerTriesToFireOnCD = stateRep[34],
-                        playerTriesToBombOnCD = stateRep[35],
-                        shotsFired = stateRep[36],
-                        bombDropped = stateRep[37],
-                        gunReloading = stateRep[38],
-                        bombReloading = stateRep[39],
-
-                        playerBurning = stateRep[40],
-                        playerHealing = stateRep[41],
-                        playerDeltaHealth = stateRep[42],
-                        playerDied = stateRep[43],
-                        botLostPlayer = stateRep[44],
-                        botSpottedPlayer = stateRep[45],
-                        botBurning = stateRep[46],
-                        botDeltaHealth = stateRep[47],
-                        botDied = stateRep[48],
-
-                        onScreenFires = stateRep[49],
-                        onScreenBullets = stateRep[50],
-
-                        keyPressCount = stateRep[51],
-                        gen_timePassed = stateRep[52],
-                        gen_inputIntensity = stateRep[53],
-                        gen_inputDiversity = stateRep[54],
-                        gen_activity = stateRep[55],
-                        gen_score = stateRep[56]
-                    }
-
-                };*/
-
-
                 var prediction = predictionEngine.Predict(state);
                 Debug.Log($"PredictedLabel: {prediction.PredictedLabel}, " +
                     $"Probability: {prediction.Probability}, Score: {prediction.Score}");
 
-                /*var loadedData = ctx.Data.LoadFromEnumerable(example);
-                var predictionDataView = loadedModel.Transform(loadedData);
-                // convert IDataView predictions to IEnumerable
-                var prediction = ctx.Data
-                    .CreateEnumerable<RFPrediction>(predictionDataView,
-                    reuseRowObject: false);//.ToList();*/
-
-                /*foreach (var p in prediction)
-                {
-                    Debug.Log($"PredictedLabel: {p.PredictedLabel}, " +
-                    $"Probability: {p.Probability}, Score: {p.Score}");
-                }*/
             }
         }
     }
