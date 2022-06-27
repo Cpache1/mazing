@@ -352,12 +352,6 @@ namespace Monte
                 ctx = new MLContext();
 
 
-                //ITransformer loadedModel;
-                /*using (var stream = new FileStream(".\\Assets\\RandomForest\\Models\\BTRACE_02_5_32_1.zip", FileMode.Open, FileAccess.Read, FileShare.Read))
-                {
-                    loadedModel = ctx.Model.Load(stream);
-                }*/
-
                 loadedModel = ctx.Model.Load(modelPath, out DataViewSchema inputSchema);
                 Debug.Log("Model Loaded");
             }
