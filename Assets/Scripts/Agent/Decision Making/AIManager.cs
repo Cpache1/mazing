@@ -6,6 +6,8 @@ public class AIManager : MonoBehaviour
     //Which AI is being used: Movement.cs; MCTS pack or ParetoMCTS 
     public enum AIPick { ORIGINAL, MONTE, PARETO };
     public AIPick aIPick;
+    public enum AIModel { B, PL};
+    public AIModel modelPick;
 
     //Which type of agent needs to be enabled
     [HideInInspector]
@@ -52,6 +54,11 @@ public class AIManager : MonoBehaviour
 
             //Once the game has been made set the rest of the game up
             monsterAI.ai = agent;
+
+            if (modelPick == AIModel.B)
+                monsterAI.ai.useModel = false;
+            else
+                monsterAI.ai.useModel = true;
         }
 
     }

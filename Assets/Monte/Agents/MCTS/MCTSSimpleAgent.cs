@@ -21,7 +21,6 @@ namespace Monte
         MLContext ctx;
         ITransformer loadedModel;
         PredictionEngine<RFData, RFPrediction> predictionEngine;
-        public bool useModel = false;
 
         const float MAX_DISTANCE = 45.0f;
         const float MAX_HEALTH = 100.0f;
@@ -280,6 +279,7 @@ namespace Monte
 
             if (useModel)
             {
+                //Debug.Log("YES2");
                 w_mcts = 0.5f;
                 w_model = 0.5f;
                 s_model = playerModelScore(endState);
@@ -326,10 +326,19 @@ namespace Monte
             float actualCollisions = endState.numCollisions;
             float collisionScore = 1 - (actualCollisions / maxCollisions);
 
+            float wDist = 0.5f;//0.5f; 20
+            float wHealth = 0.25f;//0.25f; 55
+            float wCollision = 0.25f;//0.25f; 25
+
             //Debug.Log(diffDist);
-            float wDist = 0.80f;//0.5f; 20
-            float wHealth = 0.10f;//0.25f; 55
-            float wCollision = 0.10f;//0.25f; 25
+            if (useModel)
+            {
+                //Debug.Log("YES");
+                wDist = 0.80f;//0.5f; 20
+                wHealth = 0.10f;//0.25f; 55
+                wCollision = 0.10f;//0.25f; 25
+            }
+
 
 
             float nonTerminalScore = diffDist * wDist + diffHealth * wHealth + collisionScore * wCollision;

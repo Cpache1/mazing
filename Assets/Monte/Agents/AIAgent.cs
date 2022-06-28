@@ -19,6 +19,8 @@ namespace Monte
         public AIState next;
         public int nextActionId;
 
+        public bool useModel = false;
+
         public void reset()
         {
             //Resets the flags
