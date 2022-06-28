@@ -6,12 +6,13 @@ using Monte;
 public class FM_Game
 {
     Time elapsed;
-    private int idleTime;
-    public int fullTime;
+    private float idleTime;
+    private float timePassed;
     private Vector2 previousPlayerPosition;
     private Vector2 previousBotPosition;
 
     private bool dashPressed = false;
+    private int keyPressCount = 0;
 
     private int score;
 
@@ -68,6 +69,7 @@ public class FM_Game
         if (agent.GetType() == FM_GameObjectType.Player) //player has more things it can do
         {
             player.GetMovementComponent().SetVel(action[0], action[1]);
+            keyPressCount++;
         }
         else if (agent.GetType() == FM_GameObjectType.Monster)
         {
@@ -82,11 +84,13 @@ public class FM_Game
         {
             shooting = false;
             player.GetGunControl().shoot = true;
+            keyPressCount++;
         }
         else if (bomb)
         {
             bomb = false;
             player.GetGunControl().bomb = true;
+            keyPressCount++;
         }
     }
 
@@ -97,6 +101,7 @@ public class FM_Game
             dashPressed = true;
             dash = false;
             player.GetMovementComponent().playerIsDashing = true;
+            keyPressCount++;
         }
     }
 
@@ -112,30 +117,31 @@ public class FM_Game
     public void UpdateGame()
     {
         if (player.GetMovementComponent().GetVel()==new Vector2(0.0f, 0.0f) &&
-            !player.GetGunControl().shoot && !player.GetGunControl().bomb)
+            !player.GetGunControl().shoot && !player.GetGunControl().bomb &&
+            !player.GetMovementComponent().playerIsDashing)
         {
             //Starts counting when no button is being pressed
-            idleTime = idleTime + 1;
+            idleTime += 0.1f;
         }
-        fullTime = fullTime + 1;
+        timePassed += 0.1f;
 
         //Some reset
         player.burning = false; //will be true by the end if colliding with fire
         monster.burning = false;
+        monster.botTakingRiskyPath = false;
 
-        //Updates all entities        
-        foreach (FM_GameObject obj in gameObjects)
-        {
-            if (obj.IsAlive())
-            {
-                obj.Update(this, 1.0f);
-            }
-        }
-
-
-        //COLLISIONS (between moving objects)
         if (player.IsAlive() && monster.IsAlive()) //if they're not, game is over so no point checking collisions
         {
+            //Updates all entities        
+            foreach (FM_GameObject obj in gameObjects)
+            {
+                if (obj.IsAlive())
+                {
+                    obj.Update(this, 1.0f);
+                }
+            }
+
+            //COLLISIONS (between moving objects)
             //player and monster first
             if (player.IntersectsWith(monster))
             {
@@ -176,7 +182,8 @@ public class FM_Game
         stateRep = currentState;
 
         //time and score
-        idleTime = (int)stateRep[0];
+        idleTime = stateRep[0];
+        timePassed = stateRep[52];
         score = (int)stateRep[1];
 
         //monster
@@ -187,6 +194,13 @@ public class FM_Game
         monster.GetMovementComponent().SetSpeed(stateRep[6]);
         monster.GetMovementComponent().SetRotationSpeed(stateRep[7]);
         monster.burning = (stateRep[46] == 1.0f) ? true : false;
+        monster.botTakingRiskyPath = (stateRep[17] == 1.0f) ? true : false;
+        monster.botSearching = (stateRep[10] == 1.0f) ? true : false;
+        monster.botSearchTurns = (int)stateRep[11];
+        monster.botSeeingPlayer = (stateRep[18] == 1.0f) ? true : false;
+        monster.botChasingPlayer = (stateRep[19] == 1.0f) ? true : false;
+        monster.botLostPlayer = (stateRep[44] == 1.0f) ? true : false;
+        monster.botSpottedPlayer = (stateRep[45] == 1.0f) ? true : false;
 
         monster.GetHealthComponent().SetHealth((int)stateRep[14]);
         monster.GetHealthComponent().SetDeltaHealth((int)stateRep[47]); //botDeltaHealth
@@ -208,13 +222,14 @@ public class FM_Game
 
         player.GetHealthComponent().SetHealth((int)stateRep[27]);
         player.GetHealthComponent().SetDeltaHealth((int)stateRep[42]);
+        player.GetHealthComponent().playerHealing = (stateRep[41] == 1.0f) ? true : false;
         if (stateRep[43] == 0)
             player.Revive();
         else
             player.DeleteGameObject();
 
         //monster/player related
-
+        
 
 
         //bullets + bombs
@@ -234,6 +249,7 @@ public class FM_Game
             }
             n++;
         }
+        player.GetGunControl().shotsFired = (stateRep[36] == 1.0f) ? true : false;
 
         //int noFires = (int)stateRep[49]; //check how many bombs are ignited 
         for (int i = gameObjects.Length - 3; i < gameObjects.Length; i++)
@@ -265,6 +281,10 @@ public class FM_Game
             }
             n++;
         }
+        player.GetGunControl().bombDropped = (stateRep[37] == 1.0f) ? true : false;
+
+
+        keyPressCount = (int)stateRep[51];
     }
 
     //Gets the current state based on the state rep
@@ -275,8 +295,9 @@ public class FM_Game
     public float[] GetNextState()
     {
         //game has been updated, update state representation
-        stateRep[0] = ((float)idleTime / (float)fullTime); //idleTime
-        stateRep[55] = 1 - ((float)idleTime / (float)fullTime); //[general]activity
+        stateRep[0] = (idleTime / timePassed); //idleTime
+        stateRep[55] = 1 - ((float)idleTime / (float)timePassed); //[general]activity
+        stateRep[52] = timePassed;
         stateRep[1] = score; //score
         stateRep[56] = score; //[general]score
 
@@ -289,7 +310,14 @@ public class FM_Game
         stateRep[5] = Vector2.SignedAngle(origin, monster.GetMovementComponent().GetDir());
         stateRep[6] = monster.GetMovementComponent().GetSpeed();
         stateRep[7] = monster.GetMovementComponent().GetRotationSpeed();
+        stateRep[10] = monster.botSearching ? 1.0f : 0.0f;
+        stateRep[11] = monster.botSearchTurns;
+        stateRep[18] = monster.botSeeingPlayer ? 1.0f : 0.0f;
+        stateRep[19] = monster.botChasingPlayer ? 1.0f : 0.0f;
         stateRep[46] = monster.burning ? 1.0f : 0.0f;
+        stateRep[17] = monster.botTakingRiskyPath ? 1.0f : 0.0f;
+        stateRep[44] = monster.botLostPlayer ? 1.0f : 0.0f;
+        stateRep[45] = monster.botSpottedPlayer ? 1.0f : 0.0f;
         stateRep[14] = monster.GetHealthComponent().GetHealth();
         stateRep[47] = monster.GetHealthComponent().GetDeltaHealth();
         stateRep[48] = monster.IsAlive() ? 0.0f : 1.0f; //botDied
@@ -304,6 +332,7 @@ public class FM_Game
         stateRep[28] = player.GetMovementComponent().playerIsDashing ? 1.0f : 0.0f;
         stateRep[40] = player.burning ? 1.0f : 0.0f;
         stateRep[27] = player.GetHealthComponent().GetHealth();
+        stateRep[41] = player.GetHealthComponent().playerHealing ? 1.0f : 0.0f;
         stateRep[42] = player.GetHealthComponent().GetDeltaHealth();
         stateRep[43] = player.IsAlive() ? 0.0f : 1.0f; //playerDied
 
@@ -354,13 +383,17 @@ public class FM_Game
         }
         stateRep[49] = noFires;
         stateRep[50] = noBullets;
+        stateRep[36] = (player.GetGunControl().shotsFired) ? 1.0f : 0.0f;
+        stateRep[37] = (player.GetGunControl().bombDropped) ? 1.0f : 0.0f;
 
         //input
         stateRep[29] = 0.0f;
-        stateRep[30] = dashPressed == true ? 1.0f : 0.0f;
+        stateRep[30] = (dashPressed == true) ? 1.0f : 0.0f;
         dashPressed = false;
         stateRep[34] = 0.0f;
         stateRep[35] = 0.0f;
+        stateRep[51] = keyPressCount;
+        stateRep[53] = keyPressCount;
 
         //cursor
         stateRep[21] = stateRep[20]; //cursorDistanceFromPlayer

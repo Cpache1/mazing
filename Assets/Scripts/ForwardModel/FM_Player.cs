@@ -36,7 +36,7 @@ public class FM_Player : FM_GameObject
         gunControl.Update(this, game);
         movement.Update(this, game);
         collider.Update(this);
-        health.Update();
+        health.Update(true);
         CheckState();
     }
 

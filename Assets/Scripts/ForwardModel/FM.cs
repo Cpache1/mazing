@@ -74,12 +74,6 @@ public class FM : MonoBehaviour
         //change FM_Game with new state representation
         game.UpdateStateRep(currentState, projectiles);
 
-        //TODO: ACCUMULATE UNDER THIS THE INFO THAT STILL NEEDS TO PASS, LIKE PROJECTILES...
-        game.fullTime = levelManager.fullTime; // TODO: This is wrong, the same way you pass projectiles you will have to pass this info in
-
-        //...UP TO HERE
-
-
         //apply an action to it
         if (idx == 0)
         {

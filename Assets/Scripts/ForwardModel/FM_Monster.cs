@@ -3,8 +3,18 @@
 public class FM_Monster : FM_GameObject
 {
     public bool burning = false;
+    public bool botTakingRiskyPath = false;
+
     int startingHealth = 100;
     int maxHealth = 100;
+
+    public bool botSearching = false;
+    public bool botSeeingPlayer = false;
+    public int botSearchTurns = 0;
+    public bool botChasingPlayer = false;
+    public bool botLostPlayer = false;
+    public bool botSpottedPlayer = false;
+
     FM_HealthComponent health;
     FM_FrustrationComponent frustration;
 
@@ -30,20 +40,45 @@ public class FM_Monster : FM_GameObject
     {
         movement.Update(this, game);
         collider.Update(this);
-        health.Update();
+        health.Update(false);
         frustration.Update();
-        CheckState();
+        CheckState(game);
     }
 
     public FM_HealthComponent GetHealthComponent() { return health; }
     public FM_FrustrationComponent GetFrustrationComponent() { return frustration; }
 
 
-    private void CheckState()
+    private void CheckState(FM_Game game)
     {
         if (GetHealthComponent().GetHealth() == 0)
         {
             alive = false;
         }
+
+        float distance = (game.player.GetPosition() - GetPosition()).magnitude;
+        if (botSearching)
+        {
+            if (distance < 10) //hearing radius
+            {
+                botSearching = false;
+                botChasingPlayer = true;
+                botSeeingPlayer = true;
+                botLostPlayer = false;
+                botSpottedPlayer = true;
+            }
+        }
+        else
+        {
+            if (distance > 10)
+            {
+                botSearching = true;
+                botChasingPlayer = false;
+                botSeeingPlayer = false;
+                botSearchTurns++;
+                botLostPlayer = true;
+                botSpottedPlayer = false;
+            }
+        }        
     }
 }

@@ -63,6 +63,7 @@ public class FM_Bomb : FM_GameObject
             {
                 FM_Monster monster = (FM_Monster)other;
                 monster.burning = true;
+                monster.botTakingRiskyPath = true;
                 monster.GetHealthComponent().AddHealth(-fireDamage);
                 game.AddScore(fireDamage);
             }

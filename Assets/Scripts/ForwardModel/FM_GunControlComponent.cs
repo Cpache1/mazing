@@ -25,27 +25,29 @@ public class FM_GunControlComponent
     public string primaryWeapon = "sixgun"; //Player starts with sixgun
     public int startingBullets = 5;
     public int bulletSpeed = 1000;
-    public float firingRate;// = 0.5f;
-    public float reloadTime;// = 2.5f;
+    //public float firingRate;// = 0.5f;
+    //public float reloadTime;// = 2.5f;
     public bool shoot = false;
+    public bool shotsFired = false;
 
     //Private variables for the primary weapon cooldown
     public bool reloading = false;
     public int projectileCount;
-    private float reloadTimeStamp;
-    private float projectileTimeStamp;
+    //private float reloadTimeStamp;
+    //private float projectileTimeStamp;
 
     //Public variables for the secondary weapon
     public int startingBombs = 3;
     public int bombThrowSpeed = 500;
-    public float bombThrowRate;// = 1f;
-    public float bombCooldown;// = 3f;
+    //public float bombThrowRate;// = 1f;
+    //public float bombCooldown;// = 3f;
     public int bombCount;
     public bool bomb = false;
     //Private variables for the secondary weapon cooldown
-    public bool bombReloading = false;
-    private float bombCoodownTimeStamp;
-    private float bombThrowTimeStamp;
+    //public bool bombReloading = false;
+    //private float bombCoodownTimeStamp;
+    //private float bombThrowTimeStamp;
+    public bool bombDropped;
 
     //Private variables for aiming
     //private Vector3 mousePosition;
@@ -59,14 +61,18 @@ public class FM_GunControlComponent
         if (shoot)
         {
             shoot = false;
+            shotsFired = true;
             Shoot(p, game);
         }
 
         if (bomb)
         {
             bomb = false;
+            bombDropped = true;
             Bomb(p, game);
         }
+
+        CheckProjectilesInGame(game);
     }
 
     public void Shoot(FM_Player _player, FM_Game _game)
@@ -114,6 +120,27 @@ public class FM_GunControlComponent
                 bomb.Revive();
                 break;
             }
+        }
+    }
+
+    private void CheckProjectilesInGame(FM_Game _game)
+    {
+        FM_GameObject[] projectiles = _game.GetGameObjects();
+        for (int i = 2; i < 7; i++)
+        {
+            if (projectiles[i].IsAlive())
+            {
+                break; //stays true
+            }
+            shotsFired = false;
+        }
+        for (int i = 7; i < 10; i++)
+        {
+            if (projectiles[i].IsAlive())
+            {
+                break; //stays true
+            }
+            bombDropped = false;
         }
     }
 }
