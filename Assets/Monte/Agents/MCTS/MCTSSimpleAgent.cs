@@ -8,8 +8,6 @@ using UnityEngine;
 using System.Collections.Generic;
 using MLHelperClasses;
 using Microsoft.ML;
-//using Microsoft.ML.Core.Data;
-//using Microsoft.ML.Data;
 using System.IO;
 
 namespace Monte
@@ -20,10 +18,10 @@ namespace Monte
     public class MCTSSimpleAgent : MCTSMasterAgent
     {
         private bool hasLoadedModel = false;
-        private bool madeOnePrediction = false;
         MLContext ctx;
         ITransformer loadedModel;
         PredictionEngine<RFData, RFPrediction> predictionEngine;
+        public bool useModel = false;
 
         const float MAX_DISTANCE = 45.0f;
         const float MAX_HEALTH = 100.0f;
@@ -120,9 +118,9 @@ namespace Monte
 
             //Start a count
             int numIterations = 0;
-            long remaining = timeDue - LevelManager.CurrentTimeMillis();
+            //long remaining = timeDue - LevelManager.CurrentTimeMillis();
             //numbSimulations = 100;
-            while (numIterations < 500) //uncomment this for number of simulations instead.
+            while (numIterations < 400) //uncomment this for number of simulations instead.
             //while (remaining > 0)   //Whilst time allows
             {
                 //Increment the count
@@ -144,11 +142,11 @@ namespace Monte
 
                 //Finally roll out this node. Includes Back-prop.
                 rollout(initialState, bestNode, nextToExpand);
-                remaining = timeDue - LevelManager.CurrentTimeMillis();
+                //remaining = timeDue - LevelManager.CurrentTimeMillis();
             }
 
 
-            Debug.Log("Iterations: "  + numIterations);
+            //Debug.Log("Iterations: "  + numIterations);
 
             return recommendation(initialState);
         }
@@ -260,7 +258,7 @@ namespace Monte
                     rolloutState.ApplyActionToChild(indexAct, macroActionLength);
                     terminalStateFound = (rolloutState.getWinner() > -1);
                 }
-                value = evalState(initialState, rolloutState); 
+                value = evalState(initialState, rolloutState);
             }
             else
             {
@@ -274,13 +272,21 @@ namespace Monte
 
         private float evalState(AIState rootState, AIState endState)
         {
-            float w0 = 1.0f; // 0.5f;
-            float a0 = winningScore(rootState, endState);
+            float w_mcts = 1.0f;
+            float w_model = 0.0f;
 
-            float w1 = 0.0f; // 0.5f;
-            float a1 = playerModelScore(rootState, endState);
+            float s_mcts = winningScore(rootState, endState);
+            float s_model = 0.0f;
 
-            return w0 * a0 + w1 * a1;
+            if (useModel)
+            {
+                w_mcts = 0.5f;
+                w_model = 0.5f;
+                s_model = playerModelScore(endState);
+            }
+            
+
+            return w_mcts * s_mcts + w_model * s_model;
 
         }
 
@@ -321,26 +327,26 @@ namespace Monte
             float collisionScore = 1 - (actualCollisions / maxCollisions);
 
             //Debug.Log(diffDist);
-            float wDist = 0.5f;
-            float wHealth = 0.25f;
-            float wCollision = 0.25f;
+            float wDist = 0.80f;//0.5f; 20
+            float wHealth = 0.10f;//0.25f; 55
+            float wCollision = 0.10f;//0.25f; 25
 
 
             float nonTerminalScore = diffDist * wDist + diffHealth * wHealth + collisionScore * wCollision;
             
 
-            Debug.Log(actualCollisions + " => " + collisionScore);
+            //Debug.Log(actualCollisions + " => " + collisionScore);
 
             return terminalScore + nonTerminalScore;
         }
 
 
 
-        private float playerModelScore(AIState rootState, AIState endState)
+        private float playerModelScore(AIState endState)
         {
             LoadMLModel();
-            MakePrediction(endState.stateRep);
-            return 0.0f;
+            float pred = MakePrediction(endState.stateRep);
+            return pred;
         }
 
         void LoadMLModel()
@@ -348,97 +354,95 @@ namespace Monte
             if (!hasLoadedModel)
             {
                 hasLoadedModel = true;
-                var modelPath = ".\\Assets\\RandomForest\\Models\\BTRACE_02_5_32_1.zip";
-                Debug.Log("Creating Context Object");
+                var modelPath = Application.dataPath + "\\RandomForest\\Models\\BTRACE_025_10_64_1.zip";
+                //var modelPath = Application.dataPath + "\\BTRACE_02_5_32_1.zip";
+                //".\\Assets\\RandomForest\\Models\\BTRACE_02_5_32_1.zip";
+                //Debug.Log("Creating Context Object");
                 ctx = new MLContext();
 
 
                 loadedModel = ctx.Model.Load(modelPath, out DataViewSchema inputSchema);
-                Debug.Log("Model Loaded");
+                //Debug.Log("Model Loaded");
 
                 predictionEngine = ctx.Model.CreatePredictionEngine<RFData, RFPrediction>(loadedModel);
-                Debug.Log("Prediction Engine Created");
+                //Debug.Log("Prediction Engine Created");
             }
 
         }
 
-        void MakePrediction(float[] stateRep)
+        private float MakePrediction(float[] stateRep)
         {
-            if (!madeOnePrediction)
+            RFData state = new RFData
             {
-                //madeOnePrediction = true;
-                RFData state = new RFData
-                {
-                    idleTime = stateRep[0],
-                    score = stateRep[1],
+                idleTime = stateRep[0],
+                score = stateRep[1],
 
-                    botDistanceTraveled = stateRep[2],
-                    botPositionX = stateRep[3],
-                    botPositionY = stateRep[4],
-                    botRotation = stateRep[5],
-                    botSpeed = stateRep[6],
-                    botRotationSpeed = stateRep[7],
-                    botViewAngle = stateRep[8],
-                    botViewRadius = stateRep[9],
-                    botSearching = stateRep[10],
-                    botSearchTurns = stateRep[11],
-                    botHearingRadius = stateRep[12],
-                    botHearingProbability = stateRep[13],
-                    botHealth = stateRep[14],
-                    botFrustration = stateRep[15],
-                    botRiskTakingFactor = stateRep[16],
-                    botTakingRiskyPath = stateRep[17],
-                    botSeeingPlayer = stateRep[18],
-                    botChasingPlayer = stateRep[19],
+                botDistanceTraveled = stateRep[2],
+                botPositionX = stateRep[3],
+                botPositionY = stateRep[4],
+                botRotation = stateRep[5],
+                botSpeed = stateRep[6],
+                botRotationSpeed = stateRep[7],
+                botViewAngle = stateRep[8],
+                botViewRadius = stateRep[9],
+                botSearching = stateRep[10],
+                botSearchTurns = stateRep[11],
+                botHearingRadius = stateRep[12],
+                botHearingProbability = stateRep[13],
+                botHealth = stateRep[14],
+                botFrustration = stateRep[15],
+                botRiskTakingFactor = stateRep[16],
+                botTakingRiskyPath = stateRep[17],
+                botSeeingPlayer = stateRep[18],
+                botChasingPlayer = stateRep[19],
 
-                    botDistanceFromPlayer = stateRep[20],
-                    cursorDistanceFromPlayer = stateRep[21],
-                    cursorDistanceFromBot = stateRep[22],
-                    playerDistanceTravelled = stateRep[23],
-                    playerPositionX = stateRep[24],
-                    playerPositionY = stateRep[25],
-                    playerRotation = stateRep[26],
-                    playerHealth = stateRep[27],
-                    playerIsDashing = stateRep[28],
-                    playerTriesDashOnCD = stateRep[29],
+                botDistanceFromPlayer = stateRep[20],
+                cursorDistanceFromPlayer = stateRep[21],
+                cursorDistanceFromBot = stateRep[22],
+                playerDistanceTravelled = stateRep[23],
+                playerPositionX = stateRep[24],
+                playerPositionY = stateRep[25],
+                playerRotation = stateRep[26],
+                playerHealth = stateRep[27],
+                playerIsDashing = stateRep[28],
+                playerTriesDashOnCD = stateRep[29],
 
-                    dashPressed = stateRep[30],
-                    cursorDistanceTraveled = stateRep[31],
-                    cursorPositionX = stateRep[32],
-                    cursorPositionY = stateRep[33],
-                    playerTriesToFireOnCD = stateRep[34],
-                    playerTriesToBombOnCD = stateRep[35],
-                    shotsFired = stateRep[36],
-                    bombDropped = stateRep[37],
-                    gunReloading = stateRep[38],
-                    bombReloading = stateRep[39],
+                dashPressed = stateRep[30],
+                cursorDistanceTraveled = stateRep[31],
+                cursorPositionX = stateRep[32],
+                cursorPositionY = stateRep[33],
+                playerTriesToFireOnCD = stateRep[34],
+                playerTriesToBombOnCD = stateRep[35],
+                shotsFired = stateRep[36],
+                bombDropped = stateRep[37],
+                gunReloading = stateRep[38],
+                bombReloading = stateRep[39],
 
-                    playerBurning = stateRep[40],
-                    playerHealing = stateRep[41],
-                    playerDeltaHealth = stateRep[42],
-                    playerDied = stateRep[43],
-                    botLostPlayer = stateRep[44],
-                    botSpottedPlayer = stateRep[45],
-                    botBurning = stateRep[46],
-                    botDeltaHealth = stateRep[47],
-                    botDied = stateRep[48],
+                playerBurning = stateRep[40],
+                playerHealing = stateRep[41],
+                playerDeltaHealth = stateRep[42],
+                playerDied = stateRep[43],
+                botLostPlayer = stateRep[44],
+                botSpottedPlayer = stateRep[45],
+                botBurning = stateRep[46],
+                botDeltaHealth = stateRep[47],
+                botDied = stateRep[48],
 
-                    onScreenFires = stateRep[49],
-                    onScreenBullets = stateRep[50],
+                onScreenFires = stateRep[49],
+                onScreenBullets = stateRep[50],
 
-                    keyPressCount = stateRep[51],
-                    gen_timePassed = stateRep[52],
-                    gen_inputIntensity = stateRep[53],
-                    gen_inputDiversity = stateRep[54],
-                    gen_activity = stateRep[55],
-                    gen_score = stateRep[56]
-                };
+                keyPressCount = stateRep[51],
+                gen_timePassed = stateRep[52],
+                gen_inputIntensity = stateRep[53],
+                gen_inputDiversity = stateRep[54],
+                gen_activity = stateRep[55],
+                gen_score = stateRep[56]
+            };
 
-                var prediction = predictionEngine.Predict(state);
-                Debug.Log($"PredictedLabel: {prediction.PredictedLabel}, " +
-                    $"Probability: {prediction.Probability}, Score: {prediction.Score}");
+            var prediction = predictionEngine.Predict(state);
+            
+            return prediction.Probability;
 
-            }
         }
     }
 }

@@ -6,6 +6,7 @@ Library released under MIT License
 using System;
 using System.IO;
 using System.Xml;
+using UnityEngine;
 
 namespace Monte
 {
@@ -79,25 +80,27 @@ namespace Monte
             //If the file was not found
             catch (FileNotFoundException)
             {
-                numbSimulations = 500;
-                exploreWeight = 1.45;
+                numbSimulations = 400;
+                exploreWeight = 2;
                 maxRollout = 64;
                 drawScore = 0.5;
                 epsilon = 1e-6;
-                macroActionLength = 15;
+                macroActionLength = 5;
                 Console.WriteLine("Monte Error: could not find file when constructing MCTS base class. Default settings values used (NumberOfSimulations = 500, ExploreWeight = 1.45, MaxRollout = 64, DrawScore = 0.5). File:" + filePath);
+                Debug.Log("UPS");
             }
             //Or it was malformed
             catch
             {
-                numbSimulations = 500;
-                exploreWeight = 1.45;
+                numbSimulations = 400;
+                exploreWeight = 2;
                 maxRollout = 64;
                 drawScore = 0.5;
                 epsilon = 1e-6;
-                macroActionLength = 15;
+                macroActionLength = 5;
                 Console.WriteLine(
                     "Monte, Error reading settings file when constructing MCTS base class, perhaps it is malformed. Default settings values used (NumberOfSimulations = 500, ExploreWeight = 1.45, MaxRollout = 64, DrawScore = 0.5). File:" + filePath);
+                Debug.Log("UPSie");
             }
         }
 

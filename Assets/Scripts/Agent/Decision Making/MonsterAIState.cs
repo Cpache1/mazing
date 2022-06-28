@@ -204,10 +204,10 @@ public class MonsterAIState : AIState
             playerMovement[1] = -dir.y;
 
             // shooting:
-            if (new System.Random().NextDouble() < 0.2)
+            /*if (new System.Random().NextDouble() < 0.2)
                 fm.GetGame().GiveGunInputs(true, false);
             if (new System.Random().NextDouble() < 0.1)
-                fm.GetGame().GiveGunInputs(false, true);
+                fm.GetGame().GiveGunInputs(false, true);*/
         }
         else //go to it
         {

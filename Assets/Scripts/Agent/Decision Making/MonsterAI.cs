@@ -19,7 +19,7 @@ public class MonsterAI : MonoBehaviour
     private AIState latestAIState = null;
     private List<ProjectileStruct> latestProjectilesStates = new List<ProjectileStruct>();
     private float[] latestStateRep;
-    private long decisionTimer = 40; //milliseconds
+    private long decisionTimer = 1000; //milliseconds
     private LevelManager levelManager;
 	private FM fm;
 

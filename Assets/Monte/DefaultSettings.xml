@@ -2,7 +2,7 @@
 <Settings>
 	<MCTSSettings
 		NumberOfSimulations="-1"
-		Iterations="500" 
+		Iterations="400" 
 		ExploreWeight="2"
 		MaxRollout="0"
 		MacroActionLength="5"

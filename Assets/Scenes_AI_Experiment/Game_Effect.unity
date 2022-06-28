@@ -4356,6 +4356,11 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 135167210769621340, guid: 998c0213913d56148a9bde0799adbecf,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 9043574600142097798, guid: 998c0213913d56148a9bde0799adbecf,
         type: 3}
       propertyPath: aIPick
