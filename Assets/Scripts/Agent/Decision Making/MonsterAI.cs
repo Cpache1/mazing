@@ -21,6 +21,7 @@ public class MonsterAI : MonoBehaviour
     private float[] latestStateRep;
     private long decisionTimer = 1000; //milliseconds
     private LevelManager levelManager;
+    private FieldOfView view;
 	private FM fm;
 
     //Game related
@@ -28,6 +29,7 @@ public class MonsterAI : MonoBehaviour
 
     //How many moves/decisions have been made
     protected int numbMovesPlayed;
+    private bool changed = false;
 
 
     // Start is called before the first frame update
@@ -35,10 +37,20 @@ public class MonsterAI : MonoBehaviour
     {
 		//Get the level manager and the forward model.
         levelManager = GameObject.Find("LevelManager").GetComponent<LevelManager>();
+        view = GetComponent<FieldOfView>();
 		fm = levelManager.transform.GetComponent<FM>();
 		//Reset algorithm.
 		numbMovesPlayed = 0;
 		ai.reset();
+    }
+
+    private void FixedUpdate()
+    {
+        if (view.targetDetected && !changed)
+        {
+            changed = true;
+            speed += 1.0f;
+        }
     }
 
     // Update is called once per frame
